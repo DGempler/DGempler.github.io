@@ -1,0 +1,105 @@
+body {
+  background-color: RGBA(148, 144, 132, 1);
+}
+
+div {
+  background-color: gray;
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+  margin: 15px;
+  border: 3px black solid;
+}
+
+div:hover {
+  border:3px solid white;
+}
+
+p {
+  display: inline-block;
+  margin: 5px 35px;
+  font-size: 24px;
+}
+
+#header {
+  width: 30%;
+  margin-left: 35%;
+  padding-top: 5px;
+  padding-bottom: 5px;
+
+}
+
+#container {
+  width:52%;
+  margin-left: 24%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+img {
+  width:150px;
+  height: 150px;
+  border-radius: 10px;
+  margin-right: 0px;
+  margin-left: 0px;
+  position: relative;
+  display: inline-block;
+}
+
+.innerContainer {
+  padding: 3px;
+  border: 0px;
+  background-color: none;
+  height: 154px;
+  width: 154px;
+  display: inline-block;
+}
+
+.innerContainer:hover {
+  border: 0px;
+}
+
+#rock:active, #paper:active, #scissors:active {
+  padding-right: -5px;
+  padding-left: +5px;
+}
+
+
+
+#console {
+  background-color: RGBA(230, 230, 230, 1);
+  margin-top: 0px;
+  margin-bottom: 10px;
+  width: 30%;
+  margin-left: 35%;
+  height: 30px;
+  padding-top:8px;
+  font-size: 16px;
+  color: black;
+}
+
+#gameInfo {
+  height:45px;
+  width:40%;
+  margin-left: 30%;
+  margin-top:0px;
+  padding-top: 8px;
+  font-size: 30px;
+}
+
+#score {
+  width: 20%;
+  margin-left: 40%;
+  font-size: 24px;
+
+}
+
+button {
+  width: 12%;
+  margin-left: 44%;
+  margin-top: 0px;
+  height:28px;
+  font-size: 18px;
+  background-color: RGBA(253, 246, 226, 1);
+
+}
