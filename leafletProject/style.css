@@ -39,3 +39,7 @@ p {
 h1 {
   display: inline-block;
 }
+
+#info-container {
+  clear:both;
+}

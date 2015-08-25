@@ -1,17 +1,22 @@
 $(function() {
 
+
   // function showMap(position) {
   //   var map = L.map('map').setView([position.coords.latitude, position.coords.longitude], 15);
   // }
   // navigator.geolocation.getCurrentPosition(showMap);
   // var map = L.map('map').setView([47.679223, -122.196983], 15);
-
+  L.mapbox.accessToken = 'pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA';
   var $container = $('#container');
   var $map = $('#map');
   var $body = $('body');
   var $window = $(window);
+  var $form = $('form');
+  var $infoContainer = $('#info-container');
+  var $labelInfo;
   var $secretMsg;
   var currentSelection;
+  var marker;
 
   var seahawksIcon = iconMaker('seahawks', [51,22],[47,22]);
   var flowersIcon = iconMaker('flowers', [28, 40], [14, 40]);
@@ -40,6 +45,8 @@ $(function() {
   var fireworks = L.layerGroup(fireworksArray);
   var saleArray = [];
   var sale = L.layerGroup(saleArray);
+
+  var savedInfo = {};
 
   var map = L.map('map', {
     center: [47.679223, -122.196983],
@@ -108,6 +115,15 @@ $(function() {
         selectorObject[key][0].addLayer(marker);
         selectorObject[key][1][marker._leaflet_id] = marker;
         marker.bindPopup("<input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
+        $labelInfo = $("<div class='label-info' data-layer='" + key + "'></div>");
+        $infoContainer.append($labelInfo);
+        $labelInfo.prepend("<p>Peddler Type: " + key + " - ID: " + marker._leaflet_id + "</p><br/>");
+        $labelInfo.append("<form id='" + marker._leaflet_id + "'></form><br/>");
+        $('#' + marker._leaflet_id).prepend("<label>Location:<input type='text' class='location' value='" + e.latlng.toString() + "' style='width: 299px'/></label><br/>");
+        $('#' + marker._leaflet_id).append("<label>Enter items for Sale:<input type='text' class='items' style='width: 228px'/></label><br/>");
+        $('#' + marker._leaflet_id).append("<label>Enter Prices:<input type='text' class='prices' style='width: 278px'/></label><br/>");
+        $('#' + marker._leaflet_id).append("<button class='save'>Save & Close</button>");
+        $('#' + marker._leaflet_id).append("<button class='delete'>Delete</button>");
       }
     }
   }
@@ -117,9 +133,33 @@ $(function() {
       if (this.dataset.layer === key) {
         selectorObject[key][0].removeLayer(selectorObject[key][1][$(this).attr('id')]);
         delete selectorObject[key][1][$(this).attr('id')];
+        $('#' + $(this).attr('id')).remove();
       }
     }
   });
+
+  $infoContainer.on("click", "button", function(e) {
+    e.preventDefault();
+
+    if ($(this).attr("class") === "delete") {
+      for (var key in selectorObject) {
+        if ($(this).parent().parent().data('layer') === key) {
+          selectorObject[key][0].removeLayer(selectorObject[key][1][$(this).parent().attr('id')]);
+          delete selectorObject[key][1][$(this).parent().attr('id')];
+          $(this).parent().parent().remove();
+        }
+      }
+    }
+    if ($(this).attr("class") === "save") {
+      var thisId = $(this).parent().attr('id');
+      savedInfo[thisId] = {};
+      savedInfo[thisId].location = $(this).parent().find('.location').val();
+      savedInfo[thisId].items = $(this).parent().find('.items').val();
+      savedInfo[thisId].prices = $(this).parent().find('.prices').val();
+      console.log(savedInfo);
+    }
+  });
+
 
     // var marker = new L.Marker(e.latlng, {draggable:true});
     //     map.addLayer(marker);
@@ -148,22 +188,6 @@ $(function() {
     // seahawks.addLayer(seahawksArray[seahawksArray.length-1]);
 
   map.on("click", onMapClick);
-
-  // Function to handle delete as well as other events on marker popup open
-
-  function onPopupOpen() {
-    console.log(this);
-    var tempMarker = this;
-
-    // To remove marker on click of delete button in the popup of marker
-    $(".marker-delete-button:visible").click(function () {
-        console.log(this);
-        console.log($(this));
-        console.log(tempMarker);
-        map.removeLayer(tempMarker);
-    });
-  }
-
 
 
 //for this function, either use a trackable poPoOn variable, or you have to actually remove
@@ -291,6 +315,18 @@ $(function() {
     lemonade.clearLayers();
     fireworks.clearLayers();
     sale.clearLayers();
+    $('.label-info').remove();
   }
+
+  // Initialize the geocoder control and add it to the map.
+  var geocoderControl = L.mapbox.geocoderControl('mapbox.places');
+  geocoderControl.addTo(map);
+
+// Listen for the `found` result and display the first result
+// in the output container. For all available events, see
+// https://www.mapbox.com/mapbox.js/api/v2.2.1/l-mapbox-geocodercontrol/#section-geocodercontrol-on
+  geocoderControl.on('found', function(res) {
+    var result = res.results.features[0];
+  });
 
 });
