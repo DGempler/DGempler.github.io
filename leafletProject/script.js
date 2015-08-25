@@ -38,12 +38,10 @@ $(function() {
     layers: [seahawks, fruits, flowers, trees, cops],
   });
 
-  marker = L.marker([47.679223, -122.196983]).addTo(map);
-  marker.bindPopup
-
   function scrollMap(position) {
       map.setView([position.coords.latitude, position.coords.longitude], 15);
-      marker.setLatLng([position.coords.latitude, position.coords.longitude]);
+      marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
+      marker.bindPopup("Your location").openPopup();
     }
 
     // Request repeated updates.
