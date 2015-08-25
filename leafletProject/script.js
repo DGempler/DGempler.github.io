@@ -13,7 +13,6 @@ $(function() {
   var $window = $(window);
   var $form = $('form');
   var $infoContainer = $('#info-container');
-  var $labelInfo;
   var $secretMsg;
   var currentSelection;
   var marker;
@@ -115,15 +114,16 @@ $(function() {
         selectorObject[key][0].addLayer(marker);
         selectorObject[key][1][marker._leaflet_id] = marker;
         marker.bindPopup("<input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
-        $labelInfo = $("<div class='label-info' data-layer='" + key + "'></div>");
+        var $labelInfo = $("<div class='label-info' data-layer='" + key + "'></div>");
         $infoContainer.append($labelInfo);
         $labelInfo.prepend("<p>Peddler Type: " + key + " - ID: " + marker._leaflet_id + "</p><br/>");
-        $labelInfo.append("<form id='" + marker._leaflet_id + "'></form><br/>");
-        $('#' + marker._leaflet_id).prepend("<label>Location:<input type='text' class='location' value='" + e.latlng.toString() + "' style='width: 299px'/></label><br/>");
-        $('#' + marker._leaflet_id).append("<label>Enter items for Sale:<input type='text' class='items' style='width: 228px'/></label><br/>");
-        $('#' + marker._leaflet_id).append("<label>Enter Prices:<input type='text' class='prices' style='width: 278px'/></label><br/>");
-        $('#' + marker._leaflet_id).append("<button class='save'>Save & Close</button>");
-        $('#' + marker._leaflet_id).append("<button class='delete'>Delete</button>");
+        var $form = $("<form id='" + marker._leaflet_id + "'></form><br/>");
+        $labelInfo.append($form);
+        $form.prepend("<label>Location:<input type='text' class='location' value='" + e.latlng.toString() + "' style='width: 299px'/></label><br/>");
+        $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 228px'/></label><br/>");
+        $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 278px'/></label><br/>");
+        $form.append("<button class='save'>Save & Close</button>");
+        $form.append("<button class='delete'>Delete</button>");
       }
     }
   }
@@ -133,9 +133,28 @@ $(function() {
       if (this.dataset.layer === key) {
         selectorObject[key][0].removeLayer(selectorObject[key][1][$(this).attr('id')]);
         delete selectorObject[key][1][$(this).attr('id')];
-        $('#' + $(this).attr('id')).remove();
+        $('input#' + $(this).attr('id')).remove();
+        $('form#' + $(this).attr('id')).parent().fadeOut('slow', function() {
+            $(this).remove();
+          });
+        delete savedInfo[$(this).attr('id')];
       }
     }
+  });
+
+  //definitely put most of this code into a separate function!!!!
+  map.on("popupopen", function(e) {
+    var id = e.popup._source._leaflet_id;
+    var $labelInfo = $("<div class='label-info' data-layer='" + savedInfo[id].layer + "'></div>");
+    $infoContainer.append($labelInfo);
+    $labelInfo.prepend("<p>Peddler Type: " + savedInfo[id].layer + " - ID: " + id + "</p><br/>");
+    var $form = $("<form id='" + id + "'></form><br/>");
+    $labelInfo.append($form);
+    $form.prepend("<label>Location:<input type='text' class='location' value='" + savedInfo[id].location + "' style='width: 299px'/></label><br/>");
+    $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" + savedInfo[id].items + "' style='width: 228px'/></label><br/>");
+    $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + savedInfo[id].prices + "' style='width: 278px'/></label><br/>");
+    $form.append("<button class='save'>Save & Close</button>");
+    $form.append("<button class='delete'>Delete</button>");
   });
 
   $infoContainer.on("click", "button", function(e) {
@@ -146,17 +165,24 @@ $(function() {
         if ($(this).parent().parent().data('layer') === key) {
           selectorObject[key][0].removeLayer(selectorObject[key][1][$(this).parent().attr('id')]);
           delete selectorObject[key][1][$(this).parent().attr('id')];
-          $(this).parent().parent().remove();
+          $(this).parent().parent().fadeOut('slow', function() {
+            $(this).remove();
+          });
+          delete savedInfo[$(this).attr('id')];
+          console.log(savedInfo);
         }
       }
     }
     if ($(this).attr("class") === "save") {
       var thisId = $(this).parent().attr('id');
       savedInfo[thisId] = {};
+      savedInfo[thisId].layer = $(this).parent().parent().data('layer');
       savedInfo[thisId].location = $(this).parent().find('.location').val();
       savedInfo[thisId].items = $(this).parent().find('.items').val();
       savedInfo[thisId].prices = $(this).parent().find('.prices').val();
-      console.log(savedInfo);
+      $(this).parent().parent().fadeOut('slow', function() {
+        $(this).remove();
+      });
     }
   });
 
@@ -316,6 +342,7 @@ $(function() {
     fireworks.clearLayers();
     sale.clearLayers();
     $('.label-info').remove();
+    savedInfo = {};
   }
 
   // Initialize the geocoder control and add it to the map.
