@@ -30,12 +30,10 @@ $(function() {
   var copsArray = [];
   var cops = L.layerGroup(copsArray);
 
-  var poPoOn = false;
-
   var map = L.map('map', {
     center: [47.679223, -122.196983],
     zoom: 15,
-    layers: [seahawks, fruits, flowers, trees, cops],
+    layers: [seahawks, fruits, flowers, trees],
   });
 
   // function scrollMap(position) {
@@ -54,13 +52,6 @@ $(function() {
 
   // map.removeLayer(cops);
 
-  // var overlayMaps = {
-  //   "fruits": fruits,
-  //   "seahawks": seahawks,
-  //   "flowers": flowers,
-  //   "cops": cops,
-  //   "trees": trees
-  // };
 
   var base = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     attribution: '&#169 <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
@@ -98,15 +89,11 @@ $(function() {
 //eg, !map.hasLayer(cops)
 
   $(window).on("keypress", function(e) {
-    if (e.keyCode === 960) {
-      currentSelection = "cops";
-    }
     if (e.keyCode === 16 && e.altKey === true && e.shiftKey === true) {
-      if (!poPoOn) {
+      if (!map.hasLayer(cops)) {
         map.addLayer(cops);
         control.addOverlay(cops, "po-po");
         currentSelection = "cops";
-        poPoOn = true;
         $secretMsg = $('<p display="none">ACTIVATED secret po-po mode</p>');
         $secretMsg.css("color", "gray");
         $body.append($secretMsg);
@@ -117,7 +104,6 @@ $(function() {
         control.removeLayer(cops);
         map.removeLayer(cops);
         currentSelection = "";
-        poPoOn = false;
         $secretMsg = $('<p display="none">DEACTIVATED secret po-po mode</p>');
         $secretMsg.css("color", "gray");
         $body.append($secretMsg);
