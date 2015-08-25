@@ -12,7 +12,6 @@ $(function() {
   var $window = $(window);
   var $secretMsg;
   var currentSelection;
-  var marker;
 
   var seahawksIcon = iconMaker('seahawks', [51,22],[47,22]);
   var flowersIcon = iconMaker('flowers', [28, 40], [14, 40]);
@@ -64,11 +63,24 @@ $(function() {
 
   // map.removeLayer(cops);
 
+//   L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+//     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+//     maxZoom: 18,
+//     id: 'your.mapbox.project.id',
+//     accessToken: 'your.mapbox.public.access.token'
+// }).addTo(map);
 
-  var base = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-    attribution: '&#169 <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+  //https://a.tiles.mapbox.com/v4/dgempler.4a7eb7cb/{z}/{x}/{y}.html?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#4
+
+  var base = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.4a7eb7cb/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#4', {
+    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
     maxZoom: 18
   }).addTo(map);
+
+  var baseSat = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.n947bfnn/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#19/', {
+    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 18
+  });
 
   var selectorObject = {
     "seahawks": [seahawks, seahawksArray, seahawksIcon],
@@ -87,16 +99,71 @@ $(function() {
     // popup.openOn(map);
     for (var key in selectorObject) {
       if (currentSelection === key) {
-        selectorObject[key][1].push(L.marker(e.latlng, {icon: selectorObject[key][2]}));
-        selectorObject[key][0].addLayer(selectorObject[key][1][selectorObject[key][1].length-1]);
+        var marker = L.marker(e.latlng, {
+          icon: selectorObject[key][2],
+          draggable: true,
+          title: key,
+          riseOnHover: true,
+        });
+        selectorObject[key][0].addLayer(marker);
+        selectorObject[key][1][marker._leaflet_id] = marker;
+        marker.bindPopup("<input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
       }
     }
+  }
+
+  $map.on("click", ".remove", function() {
+    for (var key in selectorObject) {
+      if (this.dataset.layer === key) {
+        selectorObject[key][0].removeLayer(selectorObject[key][1][$(this).attr('id')]);
+        delete selectorObject[key][1][$(this).attr('id')];
+      }
+    }
+  });
+
+    // var marker = new L.Marker(e.latlng, {draggable:true});
+    //     map.addLayer(marker);
+    //     markers[marker._leaflet_id] = marker;
+    //     console.log(markers);
+    //     $('#overlay > ul').append('<li>Marker '+ marker._leaflet_id + ' - <a href="#" class="remove" id="' + marker._leaflet_id + '">remove</a></li>');
+
+
+   // // Remove a marker
+   //  $('.remove').on("click", function() {
+   //      // Remove the marker
+   //      map.removeLayer(markers[$(this).attr('id')]);
+
+   //      // Remove the link
+   //      $(this).parent('li').remove();
+
+   //      // Remove the marker from the array
+   //      delete markers[$(this).attr('id')];
+
+   //  });
+
+
+
     // seahawksArray.push(L.marker(e.latlng, {icon: seahawksIcon}));
     // seahawksArray[seahawksArray.length-1].addTo(map);
     // seahawks.addLayer(seahawksArray[seahawksArray.length-1]);
-  }
 
   map.on("click", onMapClick);
+
+  // Function to handle delete as well as other events on marker popup open
+
+  function onPopupOpen() {
+    console.log(this);
+    var tempMarker = this;
+
+    // To remove marker on click of delete button in the popup of marker
+    $(".marker-delete-button:visible").click(function () {
+        console.log(this);
+        console.log($(this));
+        console.log(tempMarker);
+        map.removeLayer(tempMarker);
+    });
+  }
+
 
 
 //for this function, either use a trackable poPoOn variable, or you have to actually remove
@@ -104,7 +171,6 @@ $(function() {
 //eg, !map.hasLayer(cops)
 
   $(window).on("keydown", function(e) {
-    console.log(e);
     if(e.keyCode === 27) {
       currentSelection = "";
     }
@@ -172,7 +238,8 @@ $(function() {
   // });
 
   var baseMaps = {
-    "base": base,
+    "Street": base,
+    "Aerial": baseSat,
   };
 
   var overlayMaps = {
@@ -185,7 +252,7 @@ $(function() {
     "garage sales": sale,
   };
 
-  var control = L.control.layers(null, overlayMaps);
+  var control = L.control.layers(baseMaps, overlayMaps);
   control.addTo(map);
 
   var locate = L.control.locate().addTo(map);
