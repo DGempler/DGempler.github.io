@@ -1,34 +1,10 @@
 $(function() {
 
-  var map;
-  navigator.geolocation.getCurrentPosition(showMap);
-
-  function showMap(position) {
-    map = L.map('map', {
-      center: [position.coords.latitude, position.coords.longitude],
-      zoom: 15,
-      layers: [seahawks, fruits, flowers, trees, cops],
-    });
-  }
+  // function showMap(position) {
+  //   var map = L.map('map').setView([position.coords.latitude, position.coords.longitude], 15);
+  // }
+  // navigator.geolocation.getCurrentPosition(showMap);
   // var map = L.map('map').setView([47.679223, -122.196983], 15);
-
-  // function scrollMap(position) {
-  //     // Scrolls the map so that it is centered at (position.coords.latitude, position.coords.longitude).
-  //   }
-
-  //   // Request repeated updates.
-  //   var watchId = navigator.geolocation.watchPosition(scrollMap);
-
-  //   function buttonClickHandler() {
-  //     // Cancel the updates when the user clicks a button.
-  //     navigator.geolocation.clearWatch(watchId);
-  //   }
-
-
-
-
-
-
 
   var $container = $('#container');
   var $map = $('#map');
@@ -55,10 +31,23 @@ $(function() {
 
   var poPoOn = false;
 
-  // function showMap(position) {
-  //   map = L.map('map').setView([position.coords.latitude, position.coords.longitude], 15);
-  // }
+  var map = L.map('map', {
+    center: [47.679223, -122.196983],
+    zoom: 15,
+    layers: [seahawks, fruits, flowers, trees, cops],
+  });
 
+  function scrollMap(position) {
+      map.setView([position.coords.latitude, position.coords.longitude], 15);
+    }
+
+    // Request repeated updates.
+    var watchId = navigator.geolocation.watchPosition(scrollMap);
+
+    function buttonClickHandler() {
+      // Cancel the updates when the user clicks a button.
+      navigator.geolocation.clearWatch(watchId);
+    }
 
   // map.removeLayer(cops);
 
