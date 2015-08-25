@@ -38,19 +38,19 @@ $(function() {
     layers: [seahawks, fruits, flowers, trees, cops],
   });
 
-  function scrollMap(position) {
-      map.setView([position.coords.latitude, position.coords.longitude], 15);
-      marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
-      marker.bindPopup("Your location").openPopup();
-    }
+  // function scrollMap(position) {
+  //     map.setView([position.coords.latitude, position.coords.longitude], 15);
+  //     marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
+  //     marker.bindPopup("Your location").openPopup();
+  //   }
 
-    // Request repeated updates.
-    var watchId = navigator.geolocation.watchPosition(scrollMap);
+  //   // Request repeated updates.
+  //   var watchId = navigator.geolocation.watchPosition(scrollMap);
 
-    function buttonClickHandler() {
-      // Cancel the updates when the user clicks a button.
-      navigator.geolocation.clearWatch(watchId);
-    }
+  //   function buttonClickHandler() {
+  //     // Cancel the updates when the user clicks a button.
+  //     navigator.geolocation.clearWatch(watchId);
+  //   }
 
   // map.removeLayer(cops);
 
@@ -169,6 +169,16 @@ $(function() {
 
   var control = L.control.layers(null, overlayMaps);
   control.addTo(map);
+
+  var locate = L.control.locate().addTo(map);
+
+  locate.start();
+
+  map.on('startfollowing', function() {
+    map.on('dragstart', locate._stopFollowing, locate);
+  }).on('stopfollowing', function() {
+    map.off('dragstart', locate._stopFollowing, locate);
+  });
 
 
 
