@@ -1,11 +1,15 @@
 $(function() {
 
   var map;
-  function showMap(position) {
-    map = L.map('map').setView([position.coords.latitude, position.coords.longitude], 15);
-  }
   navigator.geolocation.getCurrentPosition(showMap);
 
+  function showMap(position) {
+    var map = L.map('map', {
+      center: [position.coords.latitude, position.coords.longitude],
+      zoom: 15,
+      layers: [seahawks, fruits, flowers, trees, cops],
+    });
+  }
   // var map = L.map('map').setView([47.679223, -122.196983], 15);
 
   var $container = $('#container');
@@ -33,11 +37,10 @@ $(function() {
 
   var poPoOn = false;
 
-  // var map = L.map('map', {
-  //   center: [47.679223, -122.196983],
-  //   zoom: 15,
-  //   layers: [seahawks, fruits, flowers, trees, cops],
-  // });
+  // function showMap(position) {
+  //   map = L.map('map').setView([position.coords.latitude, position.coords.longitude], 15);
+  // }
+
 
   // map.removeLayer(cops);
 
