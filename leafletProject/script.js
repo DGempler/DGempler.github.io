@@ -18,6 +18,10 @@ $(function() {
   var fruitsIcon = iconMaker('cherry', [31,40], [17, 0]);
   var treesIcon = iconMaker('tree', [31,43], [15, 43]);
   var copsIcon = iconMaker('chiefWiggum', [26,32], [13, 32]);
+  var lemonadeIcon = iconMaker('lemonade', [20, 30], [13, 30]);
+  var fireworksIcon = iconMaker('fireworks', [30, 30], [20, 25]);
+  var saleIcon = iconMaker('sale', [28, 40], [14, 35]);
+
 
 
   var seahawksArray = [L.marker({lat: 47.67928362728518, lng: -122.19530582427977}, {icon: seahawksIcon}), L.marker({lat: 47.677203215032385, lng: -122.19281673431396}, {icon: seahawksIcon})];
@@ -30,11 +34,17 @@ $(function() {
   var trees = L.layerGroup(treesArray);
   var copsArray = [];
   var cops = L.layerGroup(copsArray);
+  var lemonadeArray = [];
+  var lemonade = L.layerGroup(lemonadeArray);
+  var fireworksArray = [];
+  var fireworks = L.layerGroup(fireworksArray);
+  var saleArray = [];
+  var sale = L.layerGroup(saleArray);
 
   var map = L.map('map', {
     center: [47.679223, -122.196983],
     zoom: 15,
-    layers: [seahawks, fruits, flowers, trees],
+    layers: [seahawks, fruits, flowers, trees, lemonade, fireworks, sale],
   });
 
   // function scrollMap(position) {
@@ -64,7 +74,10 @@ $(function() {
     "fruits": [fruits, fruitsArray, fruitsIcon],
     "flowers": [flowers, flowersArray, flowersIcon],
     "trees": [trees, treesArray, treesIcon],
-    "cops": [cops, copsArray, copsIcon]
+    "cops": [cops, copsArray, copsIcon],
+    "lemonade": [lemonade, lemonadeArray, lemonadeIcon],
+    "fireworks": [fireworks, fireworksArray, fireworksIcon],
+    "sale": [sale, saleArray, saleIcon]
   };
 
   function onMapClick(e) {
@@ -154,6 +167,9 @@ $(function() {
     "fruits": fruits,
     "flowers": flowers,
     "trees": trees,
+    "lemonade": lemonade,
+    "fireworks": fireworks,
+    "garage sales": sale,
   };
 
   var control = L.control.layers(null, overlayMaps);
