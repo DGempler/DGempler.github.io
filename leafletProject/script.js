@@ -10,6 +10,7 @@ $(function() {
   var $map = $('#map');
   var $body = $('body');
   var currentSelection;
+  var marker;
 
   var seahawksIcon = iconMaker('seahawks', [51,22],[47,22]);
   var flowersIcon = iconMaker('flowers', [28, 40], [14, 40]);
@@ -37,8 +38,11 @@ $(function() {
     layers: [seahawks, fruits, flowers, trees, cops],
   });
 
+  marker = L.marker([47.679223, -122.196983]).addTo(map);
+
   function scrollMap(position) {
       map.setView([position.coords.latitude, position.coords.longitude], 15);
+      marker.setLatLng([position.coords.latitude, position.coords.longitude]);
     }
 
     // Request repeated updates.
