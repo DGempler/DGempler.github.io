@@ -9,6 +9,7 @@ $(function() {
   var $container = $('#container');
   var $map = $('#map');
   var $body = $('body');
+  var $secretMsg;
   var currentSelection;
   var marker;
 
@@ -94,21 +95,23 @@ $(function() {
         map.addLayer(cops);
         control.addOverlay(cops, "po-po");
         currentSelection = "cops";
-        $secretMsg = $('<p display="none">ACTIVATED secret po-po mode</p>');
-        $secretMsg.css("color", "gray");
+        $secretMsg = $('<p id="secret" display="none">ACTIVATED secret po-po mode</p>');
         $body.append($secretMsg);
-        $secretMsg.fadeIn('slow').fadeOut('slow');
-        $body.remove($secretMsg);
+        $secretMsg.css("color", "gray");
+        $secretMsg.fadeIn('slow').fadeOut('slow', function() {
+          $(this).remove();
+        });
       }
       else {
         control.removeLayer(cops);
         map.removeLayer(cops);
         currentSelection = "";
-        $secretMsg = $('<p display="none">DEACTIVATED secret po-po mode</p>');
-        $secretMsg.css("color", "gray");
+        $secretMsg = $('<p id="secret" display="none">DEACTIVATED secret po-po mode</p>');
         $body.append($secretMsg);
-        $secretMsg.fadeIn('slow').fadeOut('slow');
-        $body.remove($secretMsg);
+        $secretMsg.css("color", "gray");
+        $secretMsg.fadeIn('slow').fadeOut('slow', function() {
+          $(this).remove();
+        });
       }
     }
   });
