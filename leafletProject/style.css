@@ -29,3 +29,13 @@ p {
   display: inline-block;
   margin-right: 10px;
 }
+
+.canopy {
+  height: 20px;
+  width: 30px;
+  display: inline-block;
+}
+
+h1 {
+  display: inline-block;
+}

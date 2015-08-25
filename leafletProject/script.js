@@ -39,6 +39,7 @@ $(function() {
   });
 
   marker = L.marker([47.679223, -122.196983]).addTo(map);
+  marker.bindPopup
 
   function scrollMap(position) {
       map.setView([position.coords.latitude, position.coords.longitude], 15);
