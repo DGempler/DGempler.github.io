@@ -6,9 +6,10 @@ $(function() {
   // navigator.geolocation.getCurrentPosition(showMap);
   // var map = L.map('map').setView([47.679223, -122.196983], 15);
 
-  var $container = $('#container:not(#delete)');
+  var $container = $('#container');
   var $map = $('#map');
   var $body = $('body');
+  var $window = $(window);
   var $secretMsg;
   var currentSelection;
   var marker;
@@ -102,7 +103,19 @@ $(function() {
 //layers and add layers back in to track if a map has a layer (as your conditional).
 //eg, !map.hasLayer(cops)
 
-  $(window).on("keypress", function(e) {
+  $(window).on("keydown", function(e) {
+    console.log(e);
+    if(e.keyCode === 27) {
+      currentSelection = "";
+    }
+    if (e.keyCode === 8 && e.shiftKey === true) {
+      if (confirm("Are you sure you want to delete all data?")) {
+        deleteAll();
+      }
+    }
+  });
+
+  $window.on("keypress", function(e) {
     if (e.keyCode === 16 && e.altKey === true && e.shiftKey === true) {
       if (!map.hasLayer(cops)) {
         map.addLayer(cops);
@@ -185,10 +198,32 @@ $(function() {
     map.off('dragstart', locate._stopFollowing, locate);
   });
 
-
-
   $container.on("click", "div", function() {
+    if ($(this).attr('id') === "delete") {
+      if (confirm("Are you sure you want to delete all data?")) {
+        deleteAll();
+      }
+    }
     currentSelection = $(this).attr('id');
   });
+
+  function deleteAll() {
+    seahawksArray = [];
+    fruitsArray = [];
+    flowersArray = [];
+    treesArray = [];
+    copsArray = [];
+    lemonadeArray = [];
+    fireworksArray = [];
+    saleArray = [];
+    seahawks.clearLayers();
+    fruits.clearLayers();
+    flowers.clearLayers();
+    trees.clearLayers();
+    cops.clearLayers();
+    lemonade.clearLayers();
+    fireworks.clearLayers();
+    sale.clearLayers();
+  }
 
 });
