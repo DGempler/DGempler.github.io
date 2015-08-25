@@ -6,7 +6,7 @@ $(function() {
   // navigator.geolocation.getCurrentPosition(showMap);
   // var map = L.map('map').setView([47.679223, -122.196983], 15);
 
-  var $container = $('#container');
+  var $container = $('#container:not(#delete)');
   var $map = $('#map');
   var $body = $('body');
   var $secretMsg;
