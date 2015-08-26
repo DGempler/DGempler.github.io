@@ -16,13 +16,20 @@ $(function() {
   var $body = $('body');
   var $window = $(window);
   var $infoContainer = $('#info-container');
-  var currentSelection;
 
   var savedInfo = {};
   var selectorObject = {};
-
   var overlayMaps = {};
 
+  var map;
+  var control;
+  var locate;
+  var geocoderControl;
+  var base;
+  var baseSat;
+  var baseMaps;
+
+  var currentSelection;
 
   function categoryMaker(catName, iconSize, iconAnchor) {
     selectorObject[catName] = {
@@ -38,35 +45,52 @@ $(function() {
     return selectorObject[catName];
   }
 
-  var fruits = categoryMaker("fruits", [31,40], [17, 0]);
-  var flowers = categoryMaker("flowers", [28, 40], [14, 40]);
-  var trees = categoryMaker("trees", [31,43], [15, 43]);
-  var seahawks = categoryMaker("seahawks", [51,22],[47,22]);
-  var lemonde = categoryMaker("lemonade", [20, 30], [13, 30]);
-  var fireworks = categoryMaker("fireworks", [30, 30], [20, 25]);
-  var sale = categoryMaker("sale", [28, 40], [14, 35]);
-  var cops = categoryMaker("cops", [26,32], [13, 32]);
+  categoryMaker("fruits", [31,40], [17, 0]);
+  categoryMaker("flowers", [28, 40], [14, 40]);
+  categoryMaker("trees", [31,43], [15, 43]);
+  categoryMaker("seahawks", [51,22],[47,22]);
+  categoryMaker("lemonade", [20, 30], [13, 30]);
+  categoryMaker("fireworks", [30, 30], [20, 25]);
+  categoryMaker("sale", [28, 40], [14, 35]);
+  categoryMaker("cops", [26,32], [13, 32]);
 
-
-
-
-  var map = L.map('map', {
+  map = L.map('map', {
     center: [47.679223, -122.196983],
     zoom: 15,
     layers: loopLayerGroups(),
   });
 
-  function loopLayerGroups() {
-    var newArray = [];
-    for (var key in selectorObject) {
-      if (key === "cops") {}
-      else {
-        newArray.push(selectorObject[key].layerGroup);
-      }
-    }
-    return newArray;
-  }
 
+
+  control = L.control.layers(baseMaps, overlayMaps);
+  control.addTo(map);
+
+  locate = L.control.locate().addTo(map);
+  locate.start();
+
+  map.on('startfollowing', function() {
+    map.on('dragstart', locate._stopFollowing, locate);
+  }).on('stopfollowing', function() {
+    map.off('dragstart', locate._stopFollowing, locate);
+  });
+
+  geocoderControl = L.mapbox.geocoderControl('mapbox.places');
+  geocoderControl.addTo(map);
+
+  base = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.4a7eb7cb/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#4', {
+    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 18
+  }).addTo(map);
+
+  baseSat = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.n947bfnn/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#19/', {
+    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 18
+  });
+
+  baseMaps = {
+    "Street": base,
+    "Aerial": baseSat,
+  };
   // function scrollMap(position) {
   //     map.setView([position.coords.latitude, position.coords.longitude], 15);
   //     marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
@@ -92,15 +116,7 @@ $(function() {
 
   //https://a.tiles.mapbox.com/v4/dgempler.4a7eb7cb/{z}/{x}/{y}.html?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#4
 
-  var base = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.4a7eb7cb/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#4', {
-    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    maxZoom: 18
-  }).addTo(map);
 
-  var baseSat = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.n947bfnn/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#19/', {
-    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    maxZoom: 18
-  });
 
   // var selectorObject = {
   //   "seahawks": [seahawks, seahawksArray, seahawksIcon],
@@ -314,25 +330,11 @@ $(function() {
   //   popupAnchor: [-3, 76]
   // });
 
-  var baseMaps = {
-    "Street": base,
-    "Aerial": baseSat,
-  };
 
 
 
-  var control = L.control.layers(baseMaps, overlayMaps);
-  control.addTo(map);
 
-  var locate = L.control.locate().addTo(map);
 
-  locate.start();
-
-  map.on('startfollowing', function() {
-    map.on('dragstart', locate._stopFollowing, locate);
-  }).on('stopfollowing', function() {
-    map.off('dragstart', locate._stopFollowing, locate);
-  });
 
   $container.on("click", "div", function() {
     if ($(this).attr('id') === "delete") {
@@ -353,8 +355,7 @@ $(function() {
   }
 
   // Initialize the geocoder control and add it to the map.
-  var geocoderControl = L.mapbox.geocoderControl('mapbox.places');
-  geocoderControl.addTo(map);
+
 
   // var geocoder = L.mapbox.geocoder('mapbox.places');
 
@@ -380,7 +381,16 @@ $(function() {
   // geocoderControl.on('found', function(res) {
   //   var result = res.results.features[0];
   // });
-
+  function loopLayerGroups() {
+    var newArray = [];
+    for (var key in selectorObject) {
+      if (key === "cops") {}
+      else {
+        newArray.push(selectorObject[key].layerGroup);
+      }
+    }
+    return newArray;
+  }
 
 
 });
