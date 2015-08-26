@@ -40,22 +40,14 @@ $(function() {
   categoryMaker("sale", [28, 40], [14, 35]);
   categoryMaker("cops", [26,32], [13, 32]);
 
-  //test category
-  categoryMaker("carwashes", [30,30], [15,30]);
-  console.log(selectorObject["carwashes"].name);
-  console.log(selectorObject["carwashes"].icon.options.iconUrl);
-  console.log(selectorObject["carwashes"].layerGroup);
-  console.log(selectorObject["carwashes"].array);
-
-
 
 
 
   var map = L.map('map', {
     center: [47.679223, -122.196983],
     zoom: 15,
-    layers: [selectorObject["fruits"].layerGroup, selectorObject["fruits"].layerGroup,
-            selectorObject["flowers"].layerGroup, selectorObject["trees"].layerGroup,
+    layers: [selectorObject["fruits"].layerGroup, selectorObject["flowers"].layerGroup,
+            selectorObject["trees"].layerGroup, selectorObject["seahawks"].layerGroup,
             selectorObject["lemonade"].layerGroup, selectorObject["fireworks"].layerGroup,
             selectorObject["sale"].layerGroup]
   });
@@ -313,10 +305,10 @@ $(function() {
   };
 
   var overlayMaps = {
-    "seahawks": selectorObject["seahawks"].layerGroup,
     "fruits": selectorObject["fruits"].layerGroup,
     "flowers": selectorObject["flowers"].layerGroup,
     "trees": selectorObject["trees"].layerGroup,
+    "seahawks": selectorObject["seahawks"].layerGroup,
     "lemonade": selectorObject["lemonade"].layerGroup,
     "fireworks": selectorObject["fireworks"].layerGroup,
     "garage sales": selectorObject["sale"].layerGroup,
@@ -345,22 +337,10 @@ $(function() {
   });
 
   function deleteAll() {
-    seahawksArray = [];
-    fruitsArray = [];
-    flowersArray = [];
-    treesArray = [];
-    copsArray = [];
-    lemonadeArray = [];
-    fireworksArray = [];
-    saleArray = [];
-    seahawks.clearLayers();
-    fruits.clearLayers();
-    flowers.clearLayers();
-    trees.clearLayers();
-    cops.clearLayers();
-    lemonade.clearLayers();
-    fireworks.clearLayers();
-    sale.clearLayers();
+    for (var key in selectorObject) {
+      selectorObject[key].array = [];
+      selectorObject[key].layerGroup.clearLayers();
+    }
     $('.label-info').remove();
     savedInfo = {};
   }
