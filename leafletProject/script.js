@@ -28,7 +28,7 @@ $(function() {
 
 
 
-  var seahawksArray = [L.marker({lat: 47.67928362728518, lng: -122.19530582427977}, {icon: seahawksIcon}), L.marker({lat: 47.677203215032385, lng: -122.19281673431396}, {icon: seahawksIcon})];
+  var seahawksArray = [];
   var seahawks = L.layerGroup(seahawksArray);
   var fruitsArray = [];
   var fruits = L.layerGroup(fruitsArray);
