@@ -21,6 +21,9 @@ $(function() {
   var savedInfo = {};
   var selectorObject = {};
 
+  var overlayMaps = {};
+
+
   function categoryMaker(catName, iconSize, iconAnchor) {
     selectorObject[catName] = {
       name: catName,
@@ -28,17 +31,22 @@ $(function() {
       array: [],
       layerGroup: L.layerGroup(this.array)
     };
+    if (catName === "cops") {
+    }
+    else {
+    overlayMaps[catName] = selectorObject[catName].layerGroup;
+    }
+    return selectorObject[catName];
   }
 
-
-  categoryMaker("fruits", [31,40], [17, 0]);
-  categoryMaker("flowers", [28, 40], [14, 40]);
-  categoryMaker("trees", [31,43], [15, 43]);
-  categoryMaker("seahawks", [51,22],[47,22]);
-  categoryMaker("lemonade", [20, 30], [13, 30]);
-  categoryMaker("fireworks", [30, 30], [20, 25]);
-  categoryMaker("sale", [28, 40], [14, 35]);
-  categoryMaker("cops", [26,32], [13, 32]);
+  var fruits = categoryMaker("fruits", [31,40], [17, 0]);
+  var flowers = categoryMaker("flowers", [28, 40], [14, 40]);
+  var trees = categoryMaker("trees", [31,43], [15, 43]);
+  var seahawks = categoryMaker("seahawks", [51,22],[47,22]);
+  var lemonde = categoryMaker("lemonade", [20, 30], [13, 30]);
+  var fireworks = categoryMaker("fireworks", [30, 30], [20, 25]);
+  var sale = categoryMaker("sale", [28, 40], [14, 35]);
+  var cops = categoryMaker("cops", [26,32], [13, 32]);
 
 
 
@@ -304,15 +312,7 @@ $(function() {
     "Aerial": baseSat,
   };
 
-  var overlayMaps = {
-    "fruits": selectorObject["fruits"].layerGroup,
-    "flowers": selectorObject["flowers"].layerGroup,
-    "trees": selectorObject["trees"].layerGroup,
-    "seahawks": selectorObject["seahawks"].layerGroup,
-    "lemonade": selectorObject["lemonade"].layerGroup,
-    "fireworks": selectorObject["fireworks"].layerGroup,
-    "garage sales": selectorObject["sale"].layerGroup,
-  };
+
 
   var control = L.control.layers(baseMaps, overlayMaps);
   control.addTo(map);
