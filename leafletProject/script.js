@@ -74,15 +74,15 @@ $(function() {
   geocoderControl.addTo(map);
 
 //event handlers
-  map.on("click", createMarkerAndInfoLabel);
-  $map.on("click", ".remove", deleteMarkerOnPopupClick);
-  map.on("popupopen", addInfoLabelToScreen);
+  map.on("click", createMarkerAndInfoLabelHandler);
+  $map.on("click", ".remove", deleteMarkerOnPopupClickHandler);
+  map.on("popupopen", addInfoLabelToScreenHandler);
   $infoContainer.on("click", "button", infoLabelDeleteSaveButtonHandler);
   $window.on("keydown", hotkeyClearDeleteHandler);
-  $window.on("keypress", popoModeOnOff);
+  $window.on("keypress", popoModeOnOffHandler);
   $container.on("click", "div", clearDeleteButtonHandler);
 
-  function createMarkerAndInfoLabel(e) {
+  function createMarkerAndInfoLabelHandler(e) {
     for (var key in selectorObject) {
       if (currentSelection === key) {
         var marker = singleMarkerMaker(e, key);
@@ -92,31 +92,21 @@ $(function() {
     }
   }
 
-  function deleteMarkerOnPopupClick() {
+  function deleteMarkerOnPopupClickHandler() {
     for (var key in selectorObject) {
       if (this.dataset.layer === key) {
-        deleteMarker.call(this, key);
-        deleteInfoLabel.call(this);
+        deleteMarker.call(this, key, true);
+        deleteInfoLabel.call(this, true);
       }
     }
   }
 
-  //definitely put most of this code into a separate function!!!!
-  function addInfoLabelToScreen(e) {
+  function addInfoLabelToScreenHandler(e) {
     var id = e.popup._source._leaflet_id;
     if (savedInfo[id] === undefined) {
       return;
     }
-    var $labelInfo = $("<div class='label-info' data-layer='" + savedInfo[id].layer + "'></div>");
-    $infoContainer.append($labelInfo);
-    $labelInfo.prepend("<p>Peddler Type: " + savedInfo[id].layer + " - ID: " + id + "</p><br/>");
-    var $form = $("<form id='" + id + "'></form><br/>");
-    $labelInfo.append($form);
-    $form.prepend("<label>Location:<input type='text' class='location' value='" + savedInfo[id].location + "' style='width: 299px'/></label><br/>");
-    $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" + savedInfo[id].items + "' style='width: 228px'/></label><br/>");
-    $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + savedInfo[id].prices + "' style='width: 278px'/></label><br/>");
-    $form.append("<button class='save'>Save & Close</button>");
-    $form.append("<button class='delete'>Delete</button>");
+    addMarkerLabelInfoV2.call(this, id);
   }
 
   function infoLabelDeleteSaveButtonHandler(e) {
@@ -124,25 +114,14 @@ $(function() {
     if ($(this).attr("class") === "delete") {
       for (var key in selectorObject) {
         if ($(this).parent().parent().data('layer') === key) {
-          selectorObject[key].layerGroup.removeLayer(selectorObject[key].array[$(this).parent().attr('id')]);
-          delete selectorObject[key].array[$(this).parent().attr('id')];
-          $(this).parent().parent().fadeOut('slow', function() {
-            $(this).remove();
-          });
-          delete savedInfo[$(this).attr('id')];
+          deleteMarker.call(this, key, false);
+          deleteInfoLabel.call(this);
         }
       }
     }
     if ($(this).attr("class") === "save") {
       var thisId = $(this).parent().attr('id');
-      savedInfo[thisId] = {};
-      savedInfo[thisId].layer = $(this).parent().parent().data('layer');
-      savedInfo[thisId].location = $(this).parent().find('.location').val();
-      savedInfo[thisId].items = $(this).parent().find('.items').val();
-      savedInfo[thisId].prices = $(this).parent().find('.prices').val();
-      $(this).parent().parent().fadeOut('slow', function() {
-        $(this).remove();
-      });
+      saveInfo.call(this, thisId);
     }
   }
 
@@ -157,29 +136,13 @@ $(function() {
     }
   }
 
-  function popoModeOnOff(e) {
+  function popoModeOnOffHandler(e) {
     if (e.keyCode === 16 && e.altKey === true && e.shiftKey === true) {
       if (!map.hasLayer(selectorObject["cops"].layerGroup)) {
-        map.addLayer(selectorObject["cops"].layerGroup);
-        control.addOverlay(selectorObject["cops"].layerGroup, "cops");
-        currentSelection = "cops";
-        var $secretMsg = $('<p id="secret" display="none">ACTIVATED secret po-po mode</p>');
-        $body.append($secretMsg);
-        $secretMsg.css("color", "gray");
-        $secretMsg.fadeIn('slow').fadeOut('slow', function() {
-          $(this).remove();
-        });
+        popoMode.call(this, true);
       }
       else {
-        control.removeLayer(selectorObject["cops"].layerGroup);
-        map.removeLayer(selectorObject["cops"].layerGroup);
-        currentSelection = "";
-        var $secretMsg = $('<p id="secret" display="none">DEACTIVATED secret po-po mode</p>');
-        $body.append($secretMsg);
-        $secretMsg.css("color", "gray");
-        $secretMsg.fadeIn('slow').fadeOut('slow', function() {
-          $(this).remove();
-        });
+        popoMode.call(this);
       }
     }
   }
@@ -193,25 +156,7 @@ $(function() {
     currentSelection = $(this).attr('id');
   }
 
-  function iconMaker(url, size, iconAnchor) {
-    var icon = new IconMaker(url, size, iconAnchor);
-    return L.icon(icon);
-  }
-
-  function IconMaker(url, size, iconAnchor) {
-    this.iconUrl = "images/" + url + ".png";
-    this.iconSize = size;
-    this.iconAnchor = iconAnchor;
-  }
-
-  function deleteAll() {
-    for (var key in selectorObject) {
-      selectorObject[key].array = [];
-      selectorObject[key].layerGroup.clearLayers();
-    }
-    $('.label-info').remove();
-    savedInfo = {};
-  }
+//Functions used in event handler functions
 
 //creates markers & also adds them to overlapMaps, which is used in layer control
   function markerGroupMaker(catName, iconSize, iconAnchor) {
@@ -267,28 +212,104 @@ $(function() {
 
   function addMarkerLabelInfo(key, marker, e) {
     var $labelInfo = $("<div class='label-info' data-layer='" + key + "'></div>");
-      $infoContainer.append($labelInfo);
-      $labelInfo.prepend("<p>Peddler Type: " + key + " - ID: " + marker._leaflet_id + "</p><br/>");
-      var $form = $("<form id='" + marker._leaflet_id + "'></form><br/>");
-      $labelInfo.append($form);
-      $form.prepend("<label>Location:<input type='text' class='location' value=' Lat: " + e.latlng.lat + ", Lng: " + e.latlng.lng + "' style='width: 301px'/></label><br/>");
-      $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
-      $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
-      $form.append("<button class='save'>Save & Close</button>");
-      $form.append("<button class='delete'>Delete</button>");
+    $infoContainer.append($labelInfo);
+    $labelInfo.prepend("<p>Peddler Type: " + key + " - ID: " + marker._leaflet_id + "</p><br/>");
+    var $form = $("<form id='" + marker._leaflet_id + "'></form><br/>");
+    $labelInfo.append($form);
+    $form.prepend("<label>Location:<input type='text' class='location' value=' Lat: " + e.latlng.lat + ", Lng: " + e.latlng.lng + "' style='width: 301px'/></label><br/>");
+    $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
+    $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
+    $form.append("<button class='save'>Save & Close</button>");
+    $form.append("<button class='delete'>Delete</button>");
+  }
+
+//addInfoLabeltoScreen function(1) can probably combine with V1 later
+  function addMarkerLabelInfoV2(id) {
+    var $labelInfo = $("<div class='label-info' data-layer='" + savedInfo[id].layer + "'></div>");
+    $infoContainer.append($labelInfo);
+    $labelInfo.prepend("<p>Peddler Type: " + savedInfo[id].layer + " - ID: " + id + "</p><br/>");
+    var $form = $("<form id='" + id + "'></form><br/>");
+    $labelInfo.append($form);
+    $form.prepend("<label>Location:<input type='text' class='location' value='" + savedInfo[id].location + "' style='width: 299px'/></label><br/>");
+    $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" + savedInfo[id].items + "' style='width: 228px'/></label><br/>");
+    $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + savedInfo[id].prices + "' style='width: 278px'/></label><br/>");
+    $form.append("<button class='save'>Save & Close</button>");
+    $form.append("<button class='delete'>Delete</button>");
   }
 
  //deleteMarkerOnPopupClick functions (2)
-   function deleteMarker(key, popupTrueFalse) {
-    selectorObject[key].layerGroup.removeLayer(selectorObject[key].array[$(this).attr('id')]);
-    delete selectorObject[key].array[$(this).attr('id')];
-  };
+   function deleteMarker(key, OnPopup) {
+    if (OnPopup) {
+      selectorObject[key].layerGroup.removeLayer(selectorObject[key].array[$(this).attr('id')]);
+      delete selectorObject[key].array[$(this).attr('id')];
+    }
+    else {
+      selectorObject[key].layerGroup.removeLayer(selectorObject[key].array[$(this).parent().attr('id')]);
+      delete selectorObject[key].array[$(this).parent().attr('id')];
+    }
+  }
 
-  function deleteInfoLabel() {
-    $('input#' + $(this).attr('id')).remove();
-    $('form#' + $(this).attr('id')).parent().fadeOut('slow', function() {
-        $(this).remove();
-      });
+  function deleteInfoLabel(OnPopup) {
+    if (OnPopup) {
+      $('input#' + $(this).attr('id')).remove();
+      $('form#' + $(this).attr('id')).parent().fadeOut('slow', removeThis);
+    }
+    else {
+      $(this).parent().parent().fadeOut('slow', removeThis);
+    }
     delete savedInfo[$(this).attr('id')];
   }
+
+  function removeThis() {
+    $(this).remove();
+  }
+
+  function saveInfo(thisId) {
+    savedInfo[thisId] = {};
+    savedInfo[thisId].layer = $(this).parent().parent().data('layer');
+    savedInfo[thisId].location = $(this).parent().find('.location').val();
+    savedInfo[thisId].items = $(this).parent().find('.items').val();
+    savedInfo[thisId].prices = $(this).parent().find('.prices').val();
+    $(this).parent().parent().fadeOut('slow', removeThis);
+  }
+
+  function popoMode(on) {
+    if (on) {
+      map.addLayer(selectorObject["cops"].layerGroup);
+      control.addOverlay(selectorObject["cops"].layerGroup, "cops");
+      currentSelection = "cops";
+      var $secretMsg = $('<p id="secret" display="none">ACTIVATED secret po-po mode</p>');
+    }
+    else {
+      control.removeLayer(selectorObject["cops"].layerGroup);
+      map.removeLayer(selectorObject["cops"].layerGroup);
+      currentSelection = "";
+      var $secretMsg = $('<p id="secret" display="none">DEACTIVATED secret po-po mode</p>');
+    }
+    $body.append($secretMsg);
+    $secretMsg.css("color", "gray");
+    $secretMsg.fadeIn('slow').fadeOut('slow', removeThis);
+  }
+
+//Other functions
+  function iconMaker(url, size, iconAnchor) {
+    var icon = new IconMaker(url, size, iconAnchor);
+    return L.icon(icon);
+  }
+
+  function IconMaker(url, size, iconAnchor) {
+    this.iconUrl = "images/" + url + ".png";
+    this.iconSize = size;
+    this.iconAnchor = iconAnchor;
+  }
+
+  function deleteAll() {
+    for (var key in selectorObject) {
+      selectorObject[key].array = [];
+      selectorObject[key].layerGroup.clearLayers();
+    }
+    $('.label-info').remove();
+    savedInfo = {};
+  }
+
 });
