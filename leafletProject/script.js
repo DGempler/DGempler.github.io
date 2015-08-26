@@ -26,7 +26,6 @@ $(function() {
 
   function categoryMaker(catName, iconSize, iconAnchor) {
     selectorObject[catName] = {
-      name: catName,
       icon: iconMaker(catName, iconSize, iconAnchor),
       array: [],
       layerGroup: L.layerGroup(this.array)
@@ -34,7 +33,7 @@ $(function() {
     if (catName === "cops") {
     }
     else {
-    overlayMaps[catName] = selectorObject[catName].layerGroup;
+      overlayMaps[catName] = selectorObject[catName].layerGroup;
     }
     return selectorObject[catName];
   }
@@ -54,11 +53,19 @@ $(function() {
   var map = L.map('map', {
     center: [47.679223, -122.196983],
     zoom: 15,
-    layers: [selectorObject["fruits"].layerGroup, selectorObject["flowers"].layerGroup,
-            selectorObject["trees"].layerGroup, selectorObject["seahawks"].layerGroup,
-            selectorObject["lemonade"].layerGroup, selectorObject["fireworks"].layerGroup,
-            selectorObject["sale"].layerGroup]
+    layers: loopLayerGroups(),
   });
+
+  function loopLayerGroups() {
+    var newArray = [];
+    for (var key in selectorObject) {
+      if (key === "cops") {}
+      else {
+        newArray.push(selectorObject[key].layerGroup);
+      }
+    }
+    return newArray;
+  }
 
   // function scrollMap(position) {
   //     map.setView([position.coords.latitude, position.coords.longitude], 15);
