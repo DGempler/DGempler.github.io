@@ -22,28 +22,14 @@ $(function() {
 
   var currentSelection;
 
-  function categoryMaker(catName, iconSize, iconAnchor) {
-    selectorObject[catName] = {
-      icon: iconMaker(catName, iconSize, iconAnchor),
-      array: [],
-      layerGroup: L.layerGroup(this.array)
-    };
-    if (catName === "cops") {
-    }
-    else {
-      overlayMaps[catName] = selectorObject[catName].layerGroup;
-    }
-    return selectorObject[catName];
-  }
-
-  categoryMaker("fruits", [31,40], [17, 0]);
-  categoryMaker("flowers", [28, 40], [14, 40]);
-  categoryMaker("trees", [31,43], [15, 43]);
-  categoryMaker("seahawks", [51,22],[47,22]);
-  categoryMaker("lemonade", [20, 30], [13, 30]);
-  categoryMaker("fireworks", [30, 30], [20, 25]);
-  categoryMaker("sale", [28, 40], [14, 35]);
-  categoryMaker("cops", [26,32], [13, 32]);
+  labelMaker("fruits", [31,40], [17, 0]);
+  labelMaker("flowers", [28, 40], [14, 40]);
+  labelMaker("trees", [31,43], [15, 43]);
+  labelMaker("seahawks", [51,22],[47,22]);
+  labelMaker("lemonade", [20, 30], [13, 30]);
+  labelMaker("fireworks", [30, 30], [20, 25]);
+  labelMaker("sale", [28, 40], [14, 35]);
+  labelMaker("cops", [26,32], [13, 32]);
 
   map = L.map('map', {
     center: [47.679223, -122.196983],
@@ -243,6 +229,20 @@ $(function() {
     }
     $('.label-info').remove();
     savedInfo = {};
+  }
+
+  function labelMaker(catName, iconSize, iconAnchor) {
+    selectorObject[catName] = {
+      icon: iconMaker(catName, iconSize, iconAnchor),
+      array: [],
+      layerGroup: L.layerGroup(this.array)
+    };
+    if (catName === "cops") {
+    }
+    else {
+      overlayMaps[catName] = selectorObject[catName].layerGroup;
+    }
+    return selectorObject[catName];
   }
 
   function loopLayerGroups() {
