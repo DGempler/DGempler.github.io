@@ -50,9 +50,9 @@ $(function() {
 
   var savedInfo = {};
 
-  // localStorage.seahawksArray = JSON.stringify(seahawksArray);
+  // localStorage.removeItem('seahawksArray');
 
-  console.log(localStorage.seahawksArray);
+  console.log(localStorage);
 
 
   if (localStorage.getItem("seahawksArray") !== null) {
@@ -135,6 +135,7 @@ $(function() {
         });
         selectorObject[key][0].addLayer(marker);
         selectorObject[key][1][marker._leaflet_id] = marker.toGeoJSON();
+        console.log(seahawksArray);
         marker.bindPopup(key + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
         marker.on("dragend", function(e) {
           var newLoc = e.target._latlng;
