@@ -32,7 +32,7 @@ $(function() {
 
 
   var seahawksArray = [];
-
+  var seahawks = L.layerGroup(seahawksArray);
   var fruitsArray = [];
   var fruits = L.layerGroup(fruitsArray);
   var flowersArray = [];
@@ -49,38 +49,6 @@ $(function() {
   var sale = L.layerGroup(saleArray);
 
   var savedInfo = {};
-
-  // localStorage.removeItem('seahawksArray');
-
-  console.log(localStorage);
-
-
-  if (localStorage.getItem("seahawksArray") !== null) {
-    var tempArray = JSON.parse(localStorage.seahawksArray);
-    tempArray.forEach(function(element, index) {
-      if (element === null) {
-        tempArray[index] = "";
-      }
-      else {
-        element.icon = seahawksIcon;
-        element.draggable = true;
-        element.title = "seahawks";
-        element.riseOnHover = true;
-        tempArray[index] = element;
-        //   L.marker(e.latlng, {
-        //   icon: selectorObject[key][2],
-        //   draggable: true,
-        //   title: key,
-        //   riseOnHover: true,
-        // });
-      }
-    });
-    seahawksArray = tempArray;
-    console.log(seahawksArray);
-  }
-
-  var seahawks = L.geoJson(seahawksArray);
-
 
   var map = L.map('map', {
     center: [47.679223, -122.196983],
@@ -147,8 +115,7 @@ $(function() {
           riseOnHover: true,
         });
         selectorObject[key][0].addLayer(marker);
-        selectorObject[key][1][marker._leaflet_id] = marker.toGeoJSON();
-        console.log(seahawksArray);
+        selectorObject[key][1][marker._leaflet_id] = marker;
         marker.bindPopup(key + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
         marker.on("dragend", function(e) {
           var newLoc = e.target._latlng;
@@ -421,19 +388,6 @@ $(function() {
   // geocoderControl.on('found', function(res) {
   //   var result = res.results.features[0];
   // });
-
-  $window.on("unload", function() {
-    localStorage.seahawksArray = JSON.stringify(seahawksArray);
-    // localStorage.fruitsArray = JSON.stringify(fruitsArray);
-    // localStorage.flowersArray = JSON.stringify(flowersArray);
-    // localStorage.treesArray = JSON.stringify(treesArray);
-    // localStorage.copsArray = JSON.stringify(copsArray);
-    // localStorage.lemonadeArray = JSON.stringify(lemonadeArray);
-    // localStorage.fireworksArray = JSON.stringify(fireworksArray);
-    // localStorage.saleArray = JSON.stringify(saleArray);
-    // localStorage.savedInfo = JSON.stringify(savedInfo);
-    // localStorage.removeItem('seahawksArray');
-  });
 
 
 
