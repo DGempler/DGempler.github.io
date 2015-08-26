@@ -1,6 +1,9 @@
 $(function() {
 
 
+
+
+
   // function showMap(position) {
   //   var map = L.map('map').setView([position.coords.latitude, position.coords.longitude], 15);
   // }
@@ -46,6 +49,14 @@ $(function() {
   var sale = L.layerGroup(saleArray);
 
   var savedInfo = {};
+
+  if (localStorage.getItem("seahawks") !== null) {
+    seahawksArray = L.geoJson(JSON.parse(localStorage.seahawks));
+  }
+
+
+
+
 
   var map = L.map('map', {
     center: [47.679223, -122.196983],
@@ -246,6 +257,7 @@ $(function() {
   $window.on("keypress", function(e) {
     if (e.keyCode === 16 && e.altKey === true && e.shiftKey === true) {
       if (!map.hasLayer(cops)) {
+        console.log(JSON.stringify(seahawks.toGeoJSON()));
         map.addLayer(cops);
         control.addOverlay(cops, "po-po");
         currentSelection = "cops";
@@ -385,5 +397,20 @@ $(function() {
   // geocoderControl.on('found', function(res) {
   //   var result = res.results.features[0];
   // });
+
+  $window.on("unload", function() {
+    localStorage.seahawks = JSON.stringify(seahawks.toGeoJSON());
+    // localStorage.fruitsArray = JSON.stringify(fruitsArray);
+    // localStorage.flowersArray = JSON.stringify(flowersArray);
+    // localStorage.treesArray = JSON.stringify(treesArray);
+    // localStorage.copsArray = JSON.stringify(copsArray);
+    // localStorage.lemonadeArray = JSON.stringify(lemonadeArray);
+    // localStorage.fireworksArray = JSON.stringify(fireworksArray);
+    // localStorage.saleArray = JSON.stringify(saleArray);
+    // localStorage.savedInfo = JSON.stringify(savedInfo);
+    // localStorage.removeItem('seahawksArray');
+  });
+
+
 
 });
