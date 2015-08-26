@@ -86,8 +86,8 @@ $(function() {
     for (var key in selectorObject) {
       if (currentSelection === key) {
         var marker = singleMarkerMaker(e, key);
-        addMarkerToMap(key, marker);
-        addMarkerLabelInfo(key, marker, e);
+        addMarkerToMap.call(this, key, marker);
+        addMarkerLabelInfo.call(this, key, marker, e);
       }
     }
   }
@@ -95,13 +95,8 @@ $(function() {
   function deleteMarkerOnPopupClick() {
     for (var key in selectorObject) {
       if (this.dataset.layer === key) {
-        selectorObject[key].layerGroup.removeLayer(selectorObject[key].array[$(this).attr('id')]);
-        delete selectorObject[key].array[$(this).attr('id')];
-        $('input#' + $(this).attr('id')).remove();
-        $('form#' + $(this).attr('id')).parent().fadeOut('slow', function() {
-            $(this).remove();
-          });
-        delete savedInfo[$(this).attr('id')];
+        deleteMarker.call(this, key);
+        deleteInfoLabel.call(this);
       }
     }
   }
@@ -281,5 +276,19 @@ $(function() {
       $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
       $form.append("<button class='save'>Save & Close</button>");
       $form.append("<button class='delete'>Delete</button>");
+  }
+
+ //deleteMarkerOnPopupClick functions (2)
+   function deleteMarker(key, popupTrueFalse) {
+    selectorObject[key].layerGroup.removeLayer(selectorObject[key].array[$(this).attr('id')]);
+    delete selectorObject[key].array[$(this).attr('id')];
+  };
+
+  function deleteInfoLabel() {
+    $('input#' + $(this).attr('id')).remove();
+    $('form#' + $(this).attr('id')).parent().fadeOut('slow', function() {
+        $(this).remove();
+      });
+    delete savedInfo[$(this).attr('id')];
   }
 });
