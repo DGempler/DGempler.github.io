@@ -32,7 +32,7 @@ $(function() {
 
 
   var seahawksArray = [];
-  var seahawks = L.layerGroup(seahawksArray);
+
   var fruitsArray = [];
   var fruits = L.layerGroup(fruitsArray);
   var flowersArray = [];
@@ -50,12 +50,23 @@ $(function() {
 
   var savedInfo = {};
 
-  if (localStorage.getItem("seahawks") !== null) {
-    seahawksArray = L.geoJson(JSON.parse(localStorage.seahawks));
+  // localStorage.seahawksArray = JSON.stringify(seahawksArray);
+
+  console.log(localStorage.seahawksArray);
+
+
+  if (localStorage.getItem("seahawksArray") !== null) {
+    var tempArray = JSON.parse(localStorage.seahawksArray);
+    tempArray.forEach(function(element, index) {
+      if (element === null) {
+        tempArray[index] = "";
+      }
+    });
+    seahawksArray = tempArray;
+    console.log(seahawksArray);
   }
 
-
-
+  var seahawks = L.geoJson(seahawksArray);
 
 
   var map = L.map('map', {
@@ -123,7 +134,7 @@ $(function() {
           riseOnHover: true,
         });
         selectorObject[key][0].addLayer(marker);
-        selectorObject[key][1][marker._leaflet_id] = marker;
+        selectorObject[key][1][marker._leaflet_id] = marker.toGeoJSON();
         marker.bindPopup(key + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
         marker.on("dragend", function(e) {
           var newLoc = e.target._latlng;
@@ -257,7 +268,6 @@ $(function() {
   $window.on("keypress", function(e) {
     if (e.keyCode === 16 && e.altKey === true && e.shiftKey === true) {
       if (!map.hasLayer(cops)) {
-        console.log(JSON.stringify(seahawks.toGeoJSON()));
         map.addLayer(cops);
         control.addOverlay(cops, "po-po");
         currentSelection = "cops";
@@ -399,7 +409,7 @@ $(function() {
   // });
 
   $window.on("unload", function() {
-    localStorage.seahawks = JSON.stringify(seahawks.toGeoJSON());
+    localStorage.seahawksArray = JSON.stringify(seahawksArray);
     // localStorage.fruitsArray = JSON.stringify(fruitsArray);
     // localStorage.flowersArray = JSON.stringify(flowersArray);
     // localStorage.treesArray = JSON.stringify(treesArray);
