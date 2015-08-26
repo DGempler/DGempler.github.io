@@ -22,17 +22,17 @@ $(function() {
 
   var currentSelection;
 
-  //create markers
-  markerMaker("fruits", [31,40], [17, 0]);
-  markerMaker("flowers", [28, 40], [14, 40]);
-  markerMaker("trees", [31,43], [15, 43]);
-  markerMaker("seahawks", [51,22],[47,22]);
-  markerMaker("lemonade", [20, 30], [13, 30]);
-  markerMaker("fireworks", [30, 30], [20, 25]);
-  markerMaker("sale", [28, 40], [14, 35]);
-  markerMaker("cops", [26,32], [13, 32]);
+//create markers
+  markerGroupMaker("fruits", [31,40], [17, 0]);
+  markerGroupMaker("flowers", [28, 40], [14, 40]);
+  markerGroupMaker("trees", [31,43], [15, 43]);
+  markerGroupMaker("seahawks", [51,22],[47,22]);
+  markerGroupMaker("lemonade", [20, 30], [13, 30]);
+  markerGroupMaker("fireworks", [30, 30], [20, 25]);
+  markerGroupMaker("sale", [28, 40], [14, 35]);
+  markerGroupMaker("cops", [26,32], [13, 32]);
 
-  //create map, add base & overlap layers, various controls to map
+//create map, add base & overlap layers, various controls to map
   map = L.map('map', {
     center: [47.679223, -122.196983],
     zoom: 15,
@@ -73,9 +73,9 @@ $(function() {
   geocoderControl = L.mapbox.geocoderControl('mapbox.places');
   geocoderControl.addTo(map);
 
-  //event handlers
+//event handlers
   map.on("click", createMarkerAndInfoLabel);
-  $map.on("click", ".remove", deleteMarker);
+  $map.on("click", ".remove", deleteMarkerOnPopupClick);
   map.on("popupopen", addInfoLabelToScreen);
   $infoContainer.on("click", "button", infoLabelDeleteSaveButtonHandler);
   $window.on("keydown", hotkeyClearDeleteHandler);
@@ -85,39 +85,14 @@ $(function() {
   function createMarkerAndInfoLabel(e) {
     for (var key in selectorObject) {
       if (currentSelection === key) {
-        var marker = L.marker(e.latlng, {
-          icon: selectorObject[key].icon,
-          draggable: true,
-          title: key,
-          riseOnHover: true,
-        });
-        selectorObject[key].layerGroup.addLayer(marker);
-        selectorObject[key].array[marker._leaflet_id] = marker;
-        marker.bindPopup(key + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
-        marker.on("dragend", function(e) {
-          var newLoc = e.target._latlng;
-          var id = e.target._leaflet_id;
-          $('form#' + id + ' .location').val("Lat: " + newLoc.lat + ", Lng: " + newLoc.lng);
-          if (savedInfo[id] === undefined) {
-            return;
-          }
-          savedInfo[id].location = "Lat: " + newLoc.lat + ", Lng: " + newLoc.lng;
-        });
-        var $labelInfo = $("<div class='label-info' data-layer='" + key + "'></div>");
-        $infoContainer.append($labelInfo);
-        $labelInfo.prepend("<p>Peddler Type: " + key + " - ID: " + marker._leaflet_id + "</p><br/>");
-        var $form = $("<form id='" + marker._leaflet_id + "'></form><br/>");
-        $labelInfo.append($form);
-        $form.prepend("<label>Location:<input type='text' class='location' value=' Lat: " + e.latlng.lat + ", Lng: " + e.latlng.lng + "' style='width: 301px'/></label><br/>");
-        $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
-        $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
-        $form.append("<button class='save'>Save & Close</button>");
-        $form.append("<button class='delete'>Delete</button>");
+        var marker = singleMarkerMaker(e, key);
+        addMarkerToMap(key, marker);
+        addMarkerLabelInfo(key, marker, e);
       }
     }
   }
 
-  function deleteMarker() {
+  function deleteMarkerOnPopupClick() {
     for (var key in selectorObject) {
       if (this.dataset.layer === key) {
         selectorObject[key].layerGroup.removeLayer(selectorObject[key].array[$(this).attr('id')]);
@@ -187,7 +162,6 @@ $(function() {
     }
   }
 
-
   function popoModeOnOff(e) {
     if (e.keyCode === 16 && e.altKey === true && e.shiftKey === true) {
       if (!map.hasLayer(selectorObject["cops"].layerGroup)) {
@@ -235,8 +209,6 @@ $(function() {
     this.iconAnchor = iconAnchor;
   }
 
-
-
   function deleteAll() {
     for (var key in selectorObject) {
       selectorObject[key].array = [];
@@ -246,7 +218,8 @@ $(function() {
     savedInfo = {};
   }
 
-  function markerMaker(catName, iconSize, iconAnchor) {
+//creates markers & also adds them to overlapMaps, which is used in layer control
+  function markerGroupMaker(catName, iconSize, iconAnchor) {
     selectorObject[catName] = {
       icon: iconMaker(catName, iconSize, iconAnchor),
       array: [],
@@ -260,6 +233,7 @@ $(function() {
     return selectorObject[catName];
   }
 
+//for adding layers to map automatically
   function loopLayerGroups() {
     var newArray = [];
     for (var key in selectorObject) {
@@ -271,4 +245,41 @@ $(function() {
     return newArray;
   }
 
+//Create Marker and Info Label functions (3)
+  function singleMarkerMaker(event, currentKey) {
+    return L.marker(event.latlng, {
+      icon: selectorObject[currentKey].icon,
+      draggable: true,
+      title: currentKey,
+      riseOnHover: true,
+    });
+  }
+
+  function addMarkerToMap(key, marker) {
+    selectorObject[key].layerGroup.addLayer(marker);
+    selectorObject[key].array[marker._leaflet_id] = marker;
+    marker.bindPopup(key + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
+    marker.on("dragend", function(e) {
+      var newLoc = e.target._latlng;
+      var id = e.target._leaflet_id;
+      $('form#' + id + ' .location').val("Lat: " + newLoc.lat + ", Lng: " + newLoc.lng);
+      if (savedInfo[id] === undefined) {
+        return;
+      }
+      savedInfo[id].location = "Lat: " + newLoc.lat + ", Lng: " + newLoc.lng;
+    });
+  }
+
+  function addMarkerLabelInfo(key, marker, e) {
+    var $labelInfo = $("<div class='label-info' data-layer='" + key + "'></div>");
+      $infoContainer.append($labelInfo);
+      $labelInfo.prepend("<p>Peddler Type: " + key + " - ID: " + marker._leaflet_id + "</p><br/>");
+      var $form = $("<form id='" + marker._leaflet_id + "'></form><br/>");
+      $labelInfo.append($form);
+      $form.prepend("<label>Location:<input type='text' class='location' value=' Lat: " + e.latlng.lat + ", Lng: " + e.latlng.lng + "' style='width: 301px'/></label><br/>");
+      $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
+      $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
+      $form.append("<button class='save'>Save & Close</button>");
+      $form.append("<button class='delete'>Delete</button>");
+  }
 });
