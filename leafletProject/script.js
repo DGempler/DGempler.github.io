@@ -22,20 +22,41 @@ $(function() {
 
   var currentSelection;
 
-  labelMaker("fruits", [31,40], [17, 0]);
-  labelMaker("flowers", [28, 40], [14, 40]);
-  labelMaker("trees", [31,43], [15, 43]);
-  labelMaker("seahawks", [51,22],[47,22]);
-  labelMaker("lemonade", [20, 30], [13, 30]);
-  labelMaker("fireworks", [30, 30], [20, 25]);
-  labelMaker("sale", [28, 40], [14, 35]);
-  labelMaker("cops", [26,32], [13, 32]);
+  //create markers
+  markerMaker("fruits", [31,40], [17, 0]);
+  markerMaker("flowers", [28, 40], [14, 40]);
+  markerMaker("trees", [31,43], [15, 43]);
+  markerMaker("seahawks", [51,22],[47,22]);
+  markerMaker("lemonade", [20, 30], [13, 30]);
+  markerMaker("fireworks", [30, 30], [20, 25]);
+  markerMaker("sale", [28, 40], [14, 35]);
+  markerMaker("cops", [26,32], [13, 32]);
 
+  //create map, add base & overlap layers, various controls to map
   map = L.map('map', {
     center: [47.679223, -122.196983],
     zoom: 15,
     layers: loopLayerGroups(),
   });
+
+  base = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.4a7eb7cb/{z}/{x}/{y}.png?' +
+                      'access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmR' +
+                      'jZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#4', {
+    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 20
+  }).addTo(map);
+
+  baseSat = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.n947bfnn/{z}/{x}/{y}.png?' +
+                        'access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRj' +
+                        'ZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#19/', {
+    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 20
+  });
+
+  baseMaps = {
+    "Street": base,
+    "Aerial": baseSat,
+  };
 
   control = L.control.layers(baseMaps, overlayMaps);
   control.addTo(map);
@@ -52,20 +73,7 @@ $(function() {
   geocoderControl = L.mapbox.geocoderControl('mapbox.places');
   geocoderControl.addTo(map);
 
-  base = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.4a7eb7cb/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#4', {
-    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    maxZoom: 18
-  }).addTo(map);
-
-  baseSat = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.n947bfnn/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#19/', {
-    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    maxZoom: 18
-  });
-
-  baseMaps = {
-    "Street": base,
-    "Aerial": baseSat,
-  };
+  //event handlers
 
   function onMapClick(e) {
     for (var key in selectorObject) {
@@ -231,7 +239,7 @@ $(function() {
     savedInfo = {};
   }
 
-  function labelMaker(catName, iconSize, iconAnchor) {
+  function markerMaker(catName, iconSize, iconAnchor) {
     selectorObject[catName] = {
       icon: iconMaker(catName, iconSize, iconAnchor),
       array: [],
