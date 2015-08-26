@@ -103,7 +103,7 @@ $(function() {
 
   function addInfoLabelToScreenHandler(e) {
     var id = e.popup._source._leaflet_id;
-    if (savedInfo[id] === undefined) {
+    if (savedInfo[id] === undefined ) {
       return;
     }
     addMarkerLabelInfoV2.call(this, id);
@@ -252,10 +252,10 @@ $(function() {
   function deleteInfoLabel(OnPopup) {
     if (OnPopup) {
       $('input#' + $(this).attr('id')).remove();
-      $('form#' + $(this).attr('id')).parent().fadeOut('slow', removeThis);
+      $('form#' + $(this).attr('id')).parent().fadeOut('slow', removeThis.call(this));
     }
     else {
-      $(this).parent().parent().fadeOut('slow', removeThis);
+      $(this).parent().parent().fadeOut('slow', removeThis.call(this));
     }
     delete savedInfo[$(this).attr('id')];
   }
@@ -270,7 +270,7 @@ $(function() {
     savedInfo[thisId].location = $(this).parent().find('.location').val();
     savedInfo[thisId].items = $(this).parent().find('.items').val();
     savedInfo[thisId].prices = $(this).parent().find('.prices').val();
-    $(this).parent().parent().fadeOut('slow', removeThis);
+    $(this).parent().parent().fadeOut('slow', removeThis.call(this));
   }
 
   function popoMode(on) {
@@ -288,7 +288,7 @@ $(function() {
     }
     $body.append($secretMsg);
     $secretMsg.css("color", "gray");
-    $secretMsg.fadeIn('slow').fadeOut('slow', removeThis);
+    $secretMsg.fadeIn('slow').fadeOut('slow', removeThis.call(this));
   }
 
 //Other functions
