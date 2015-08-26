@@ -103,7 +103,7 @@ $(function() {
 
   function addInfoLabelToScreenHandler(e) {
     var id = e.popup._source._leaflet_id;
-    if (savedInfo[id] === undefined ) {
+    if (savedInfo[id] === undefined) {
       return;
     }
     addMarkerLabelInfoV2.call(this, id);
@@ -310,6 +310,7 @@ $(function() {
     }
     $('.label-info').remove();
     savedInfo = {};
+    currentSelection = "";
   }
 
 });
