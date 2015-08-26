@@ -113,15 +113,24 @@ $(function() {
         });
         selectorObject[key][0].addLayer(marker);
         selectorObject[key][1][marker._leaflet_id] = marker;
-        marker.bindPopup("<input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
+        marker.bindPopup(key + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
+        marker.on("dragend", function(e) {
+          var newLoc = e.target._latlng;
+          var id = e.target._leaflet_id;
+          $('form#' + id + ' .location').val("Lat: " + newLoc.lat + ", Lng: " + newLoc.lng);
+          if (savedInfo[id] === undefined) {
+            return;
+          }
+          savedInfo[id].location = "Lat: " + newLoc.lat + ", Lng: " + newLoc.lng;
+        });
         var $labelInfo = $("<div class='label-info' data-layer='" + key + "'></div>");
         $infoContainer.append($labelInfo);
         $labelInfo.prepend("<p>Peddler Type: " + key + " - ID: " + marker._leaflet_id + "</p><br/>");
         var $form = $("<form id='" + marker._leaflet_id + "'></form><br/>");
         $labelInfo.append($form);
-        $form.prepend("<label>Location:<input type='text' class='location' value='" + e.latlng.toString() + "' style='width: 299px'/></label><br/>");
-        $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 228px'/></label><br/>");
-        $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 278px'/></label><br/>");
+        $form.prepend("<label>Location:<input type='text' class='location' value=' Lat: " + e.latlng.lat + ", Lng: " + e.latlng.lng + "' style='width: 301px'/></label><br/>");
+        $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
+        $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
         $form.append("<button class='save'>Save & Close</button>");
         $form.append("<button class='delete'>Delete</button>");
       }
@@ -145,6 +154,9 @@ $(function() {
   //definitely put most of this code into a separate function!!!!
   map.on("popupopen", function(e) {
     var id = e.popup._source._leaflet_id;
+    if (savedInfo[id] === undefined) {
+      return;
+    }
     var $labelInfo = $("<div class='label-info' data-layer='" + savedInfo[id].layer + "'></div>");
     $infoContainer.append($labelInfo);
     $labelInfo.prepend("<p>Peddler Type: " + savedInfo[id].layer + " - ID: " + id + "</p><br/>");
@@ -349,11 +361,29 @@ $(function() {
   var geocoderControl = L.mapbox.geocoderControl('mapbox.places');
   geocoderControl.addTo(map);
 
+  // var geocoder = L.mapbox.geocoder('mapbox.places');
+
+  // geocoder.query('12319 Chain Lake Rd, Snohomish, WA 98290', function(err, data) {
+  //   console.log(err);
+  //   console.log(data);
+  // });
+
+    //acceptable reverseQuery first arguments
+    //   [lon, lat] // an array of lon, lat
+    //  { lat: 0, lon: 0 } // a lon, lat object
+    // { lat: 0, lng: 0 } // a lng, lat object
+
+  // geocoder.reverseQuery([47.68118337573163, -122.19596564769745], function(err, data) {
+  //   console.log(err);
+  //   console.log(data);
+  //   console.log(data.features[0]);
+  // });
+
 // Listen for the `found` result and display the first result
 // in the output container. For all available events, see
 // https://www.mapbox.com/mapbox.js/api/v2.2.1/l-mapbox-geocodercontrol/#section-geocodercontrol-on
-  geocoderControl.on('found', function(res) {
-    var result = res.results.features[0];
-  });
+  // geocoderControl.on('found', function(res) {
+  //   var result = res.results.features[0];
+  // });
 
 });
