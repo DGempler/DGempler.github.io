@@ -61,6 +61,19 @@ $(function() {
       if (element === null) {
         tempArray[index] = "";
       }
+      else {
+        element.icon = seahawksIcon;
+        element.draggable = true;
+        element.title = "seahawks";
+        element.riseOnHover = true;
+        tempArray[index] = element;
+        //   L.marker(e.latlng, {
+        //   icon: selectorObject[key][2],
+        //   draggable: true,
+        //   title: key,
+        //   riseOnHover: true,
+        // });
+      }
     });
     seahawksArray = tempArray;
     console.log(seahawksArray);
