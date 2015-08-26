@@ -10,6 +10,7 @@ $(function() {
   // navigator.geolocation.getCurrentPosition(showMap);
   // var map = L.map('map').setView([47.679223, -122.196983], 15);
   L.mapbox.accessToken = 'pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA';
+
   var $container = $('#container');
   var $map = $('#map');
   var $body = $('body');
@@ -20,33 +21,6 @@ $(function() {
   var savedInfo = {};
   var selectorObject = {};
 
-  var fruitsIcon = iconMaker('cherry', [31,40], [17, 0]);
-  var flowersIcon = iconMaker('flowers', [28, 40], [14, 40]);
-  var treesIcon = iconMaker('tree', [31,43], [15, 43]);
-  var seahawksIcon = iconMaker('seahawks', [51,22],[47,22]);
-  var lemonadeIcon = iconMaker('lemonade', [20, 30], [13, 30]);
-  var fireworksIcon = iconMaker('fireworks', [30, 30], [20, 25]);
-  var saleIcon = iconMaker('sale', [28, 40], [14, 35]);
-  var copsIcon = iconMaker('chiefWiggum', [26,32], [13, 32]);
-
-  var seahawksArray = [];
-  var fruitsArray = [];
-  var flowersArray = [];
-  var treesArray = [];
-  var copsArray = [];
-  var lemonadeArray = [];
-  var fireworksArray = [];
-  var saleArray = [];
-
-  var seahawks = L.layerGroup(seahawksArray);
-  var fruits = L.layerGroup(fruitsArray);
-  var flowers = L.layerGroup(flowersArray);
-  var trees = L.layerGroup(treesArray);
-  var cops = L.layerGroup(copsArray);
-  var lemonade = L.layerGroup(lemonadeArray);
-  var fireworks = L.layerGroup(fireworksArray);
-  var sale = L.layerGroup(saleArray);
-
   function categoryMaker(catName, iconSize, iconAnchor) {
     selectorObject[catName] = {
       name: catName,
@@ -55,8 +29,6 @@ $(function() {
       layerGroup: L.layerGroup(this.array)
     };
   }
-
-
 
 
   categoryMaker("fruits", [31,40], [17, 0]);
@@ -75,17 +47,6 @@ $(function() {
   console.log(selectorObject["carwashes"].layerGroup);
   console.log(selectorObject["carwashes"].array);
 
-  // var selectorObject = {
-  //   "seahawks": [seahawks, seahawksArray, seahawksIcon],
-  //   "fruits": [fruits, fruitsArray, fruitsIcon],
-  //   "flowers": [flowers, flowersArray, flowersIcon],
-  //   "trees": [trees, treesArray, treesIcon],
-  //   "cops": [cops, copsArray, copsIcon],
-  //   "lemonade": [lemonade, lemonadeArray, lemonadeIcon],
-  //   "fireworks": [fireworks, fireworksArray, fireworksIcon],
-  //   "sale": [sale, saleArray, saleIcon]
-  // };
-
 
 
 
@@ -93,7 +54,10 @@ $(function() {
   var map = L.map('map', {
     center: [47.679223, -122.196983],
     zoom: 15,
-    layers: [seahawks, fruits, flowers, trees, lemonade, fireworks, sale],
+    layers: [selectorObject["fruits"].layerGroup, selectorObject["fruits"].layerGroup,
+            selectorObject["flowers"].layerGroup, selectorObject["trees"].layerGroup,
+            selectorObject["lemonade"].layerGroup, selectorObject["fireworks"].layerGroup,
+            selectorObject["sale"].layerGroup]
   });
 
   // function scrollMap(position) {
@@ -131,6 +95,17 @@ $(function() {
     maxZoom: 18
   });
 
+  // var selectorObject = {
+  //   "seahawks": [seahawks, seahawksArray, seahawksIcon],
+  //   "fruits": [fruits, fruitsArray, fruitsIcon],
+  //   "flowers": [flowers, flowersArray, flowersIcon],
+  //   "trees": [trees, treesArray, treesIcon],
+  //   "cops": [cops, copsArray, copsIcon],
+  //   "lemonade": [lemonade, lemonadeArray, lemonadeIcon],
+  //   "fireworks": [fireworks, fireworksArray, fireworksIcon],
+  //   "sale": [sale, saleArray, saleIcon]
+  // };
+
 
 
   function onMapClick(e) {
@@ -140,13 +115,13 @@ $(function() {
     for (var key in selectorObject) {
       if (currentSelection === key) {
         var marker = L.marker(e.latlng, {
-          icon: selectorObject[key][2],
+          icon: selectorObject[key].icon,
           draggable: true,
           title: key,
           riseOnHover: true,
         });
-        selectorObject[key][0].addLayer(marker);
-        selectorObject[key][1][marker._leaflet_id] = marker;
+        selectorObject[key].layerGroup.addLayer(marker);
+        selectorObject[key].array[marker._leaflet_id] = marker;
         marker.bindPopup(key + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
         marker.on("dragend", function(e) {
           var newLoc = e.target._latlng;
@@ -174,8 +149,8 @@ $(function() {
   $map.on("click", ".remove", function() {
     for (var key in selectorObject) {
       if (this.dataset.layer === key) {
-        selectorObject[key][0].removeLayer(selectorObject[key][1][$(this).attr('id')]);
-        delete selectorObject[key][1][$(this).attr('id')];
+        selectorObject[key].layerGroup.removeLayer(selectorObject[key].array[$(this).attr('id')]);
+        delete selectorObject[key].array[$(this).attr('id')];
         $('input#' + $(this).attr('id')).remove();
         $('form#' + $(this).attr('id')).parent().fadeOut('slow', function() {
             $(this).remove();
@@ -209,13 +184,12 @@ $(function() {
     if ($(this).attr("class") === "delete") {
       for (var key in selectorObject) {
         if ($(this).parent().parent().data('layer') === key) {
-          selectorObject[key][0].removeLayer(selectorObject[key][1][$(this).parent().attr('id')]);
-          delete selectorObject[key][1][$(this).parent().attr('id')];
+          selectorObject[key].layerGroup.removeLayer(selectorObject[key].array[$(this).parent().attr('id')]);
+          delete selectorObject[key].array[$(this).parent().attr('id')];
           $(this).parent().parent().fadeOut('slow', function() {
             $(this).remove();
           });
           delete savedInfo[$(this).attr('id')];
-          console.log(savedInfo);
         }
       }
     }
@@ -279,9 +253,9 @@ $(function() {
 
   $window.on("keypress", function(e) {
     if (e.keyCode === 16 && e.altKey === true && e.shiftKey === true) {
-      if (!map.hasLayer(cops)) {
-        map.addLayer(cops);
-        control.addOverlay(cops, "po-po");
+      if (!map.hasLayer(selectorObject["cops"].layerGroup)) {
+        map.addLayer(selectorObject["cops"].layerGroup);
+        control.addOverlay(selectorObject["cops"].layerGroup, "cops");
         currentSelection = "cops";
         var $secretMsg = $('<p id="secret" display="none">ACTIVATED secret po-po mode</p>');
         $body.append($secretMsg);
@@ -291,8 +265,8 @@ $(function() {
         });
       }
       else {
-        control.removeLayer(cops);
-        map.removeLayer(cops);
+        control.removeLayer(selectorObject["cops"].layerGroup);
+        map.removeLayer(selectorObject["cops"].layerGroup);
         currentSelection = "";
         var $secretMsg = $('<p id="secret" display="none">DEACTIVATED secret po-po mode</p>');
         $body.append($secretMsg);
@@ -339,13 +313,13 @@ $(function() {
   };
 
   var overlayMaps = {
-    "seahawks": seahawks,
-    "fruits": fruits,
-    "flowers": flowers,
-    "trees": trees,
-    "lemonade": lemonade,
-    "fireworks": fireworks,
-    "garage sales": sale,
+    "seahawks": selectorObject["seahawks"].layerGroup,
+    "fruits": selectorObject["fruits"].layerGroup,
+    "flowers": selectorObject["flowers"].layerGroup,
+    "trees": selectorObject["trees"].layerGroup,
+    "lemonade": selectorObject["lemonade"].layerGroup,
+    "fireworks": selectorObject["fireworks"].layerGroup,
+    "garage sales": selectorObject["sale"].layerGroup,
   };
 
   var control = L.control.layers(baseMaps, overlayMaps);
