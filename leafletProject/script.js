@@ -74,8 +74,15 @@ $(function() {
   geocoderControl.addTo(map);
 
   //event handlers
+  map.on("click", createMarkerAndInfoLabel);
+  $map.on("click", ".remove", deleteMarker);
+  map.on("popupopen", addInfoLabelToScreen);
+  $infoContainer.on("click", "button", infoLabelDeleteSaveButtonHandler);
+  $window.on("keydown", hotkeyClearDeleteHandler);
+  $window.on("keypress", popoModeOnOff);
+  $container.on("click", "div", clearDeleteButtonHandler);
 
-  function onMapClick(e) {
+  function createMarkerAndInfoLabel(e) {
     for (var key in selectorObject) {
       if (currentSelection === key) {
         var marker = L.marker(e.latlng, {
@@ -110,7 +117,7 @@ $(function() {
     }
   }
 
-  $map.on("click", ".remove", function() {
+  function deleteMarker() {
     for (var key in selectorObject) {
       if (this.dataset.layer === key) {
         selectorObject[key].layerGroup.removeLayer(selectorObject[key].array[$(this).attr('id')]);
@@ -122,10 +129,10 @@ $(function() {
         delete savedInfo[$(this).attr('id')];
       }
     }
-  });
+  }
 
   //definitely put most of this code into a separate function!!!!
-  map.on("popupopen", function(e) {
+  function addInfoLabelToScreen(e) {
     var id = e.popup._source._leaflet_id;
     if (savedInfo[id] === undefined) {
       return;
@@ -140,11 +147,10 @@ $(function() {
     $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + savedInfo[id].prices + "' style='width: 278px'/></label><br/>");
     $form.append("<button class='save'>Save & Close</button>");
     $form.append("<button class='delete'>Delete</button>");
-  });
+  }
 
-  $infoContainer.on("click", "button", function(e) {
+  function infoLabelDeleteSaveButtonHandler(e) {
     e.preventDefault();
-
     if ($(this).attr("class") === "delete") {
       for (var key in selectorObject) {
         if ($(this).parent().parent().data('layer') === key) {
@@ -168,11 +174,9 @@ $(function() {
         $(this).remove();
       });
     }
-  });
+  }
 
-  map.on("click", onMapClick);
-
-  $(window).on("keydown", function(e) {
+  function hotkeyClearDeleteHandler(e) {
     if(e.keyCode === 27) {
       currentSelection = "";
     }
@@ -181,9 +185,10 @@ $(function() {
         deleteAll();
       }
     }
-  });
+  }
 
-  $window.on("keypress", function(e) {
+
+  function popoModeOnOff(e) {
     if (e.keyCode === 16 && e.altKey === true && e.shiftKey === true) {
       if (!map.hasLayer(selectorObject["cops"].layerGroup)) {
         map.addLayer(selectorObject["cops"].layerGroup);
@@ -208,7 +213,16 @@ $(function() {
         });
       }
     }
-  });
+  }
+
+  function clearDeleteButtonHandler() {
+    if ($(this).attr('id') === "delete") {
+      if (confirm("Are you sure you want to delete all data?")) {
+        deleteAll();
+      }
+    }
+    currentSelection = $(this).attr('id');
+  }
 
   function iconMaker(url, size, iconAnchor) {
     var icon = new IconMaker(url, size, iconAnchor);
@@ -221,14 +235,7 @@ $(function() {
     this.iconAnchor = iconAnchor;
   }
 
-  $container.on("click", "div", function() {
-    if ($(this).attr('id') === "delete") {
-      if (confirm("Are you sure you want to delete all data?")) {
-        deleteAll();
-      }
-    }
-    currentSelection = $(this).attr('id');
-  });
+
 
   function deleteAll() {
     for (var key in selectorObject) {
