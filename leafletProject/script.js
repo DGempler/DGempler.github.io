@@ -1,14 +1,5 @@
 $(function() {
 
-
-
-
-
-  // function showMap(position) {
-  //   var map = L.map('map').setView([position.coords.latitude, position.coords.longitude], 15);
-  // }
-  // navigator.geolocation.getCurrentPosition(showMap);
-  // var map = L.map('map').setView([47.679223, -122.196983], 15);
   L.mapbox.accessToken = 'pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA';
 
   var $container = $('#container');
@@ -60,8 +51,6 @@ $(function() {
     layers: loopLayerGroups(),
   });
 
-
-
   control = L.control.layers(baseMaps, overlayMaps);
   control.addTo(map);
 
@@ -91,50 +80,8 @@ $(function() {
     "Street": base,
     "Aerial": baseSat,
   };
-  // function scrollMap(position) {
-  //     map.setView([position.coords.latitude, position.coords.longitude], 15);
-  //     marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
-  //     marker.bindPopup("Your location").openPopup();
-  //   }
-
-  //   // Request repeated updates.
-  //   var watchId = navigator.geolocation.watchPosition(scrollMap);
-
-  //   function buttonClickHandler() {
-  //     // Cancel the updates when the user clicks a button.
-  //     navigator.geolocation.clearWatch(watchId);
-  //   }
-
-  // map.removeLayer(cops);
-
-//   L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-//     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-//     maxZoom: 18,
-//     id: 'your.mapbox.project.id',
-//     accessToken: 'your.mapbox.public.access.token'
-// }).addTo(map);
-
-  //https://a.tiles.mapbox.com/v4/dgempler.4a7eb7cb/{z}/{x}/{y}.html?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#4
-
-
-
-  // var selectorObject = {
-  //   "seahawks": [seahawks, seahawksArray, seahawksIcon],
-  //   "fruits": [fruits, fruitsArray, fruitsIcon],
-  //   "flowers": [flowers, flowersArray, flowersIcon],
-  //   "trees": [trees, treesArray, treesIcon],
-  //   "cops": [cops, copsArray, copsIcon],
-  //   "lemonade": [lemonade, lemonadeArray, lemonadeIcon],
-  //   "fireworks": [fireworks, fireworksArray, fireworksIcon],
-  //   "sale": [sale, saleArray, saleIcon]
-  // };
-
-
 
   function onMapClick(e) {
-    // popup.setLatLng(e.latlng);
-    // popup.setContent("You clicked the map at " + e.latlng.toString());
-    // popup.openOn(map);
     for (var key in selectorObject) {
       if (currentSelection === key) {
         var marker = L.marker(e.latlng, {
@@ -229,39 +176,7 @@ $(function() {
     }
   });
 
-
-    // var marker = new L.Marker(e.latlng, {draggable:true});
-    //     map.addLayer(marker);
-    //     markers[marker._leaflet_id] = marker;
-    //     console.log(markers);
-    //     $('#overlay > ul').append('<li>Marker '+ marker._leaflet_id + ' - <a href="#" class="remove" id="' + marker._leaflet_id + '">remove</a></li>');
-
-
-   // // Remove a marker
-   //  $('.remove').on("click", function() {
-   //      // Remove the marker
-   //      map.removeLayer(markers[$(this).attr('id')]);
-
-   //      // Remove the link
-   //      $(this).parent('li').remove();
-
-   //      // Remove the marker from the array
-   //      delete markers[$(this).attr('id')];
-
-   //  });
-
-
-
-    // seahawksArray.push(L.marker(e.latlng, {icon: seahawksIcon}));
-    // seahawksArray[seahawksArray.length-1].addTo(map);
-    // seahawks.addLayer(seahawksArray[seahawksArray.length-1]);
-
   map.on("click", onMapClick);
-
-
-//for this function, either use a trackable poPoOn variable, or you have to actually remove
-//layers and add layers back in to track if a map has a layer (as your conditional).
-//eg, !map.hasLayer(cops)
 
   $(window).on("keydown", function(e) {
     if(e.keyCode === 27) {
@@ -308,33 +223,9 @@ $(function() {
 
   function IconMaker(url, size, iconAnchor) {
     this.iconUrl = "images/" + url + ".png";
-    // this.shadowUrl = url + "Shadow.png";
     this.iconSize = size;
-    // this.shadowSize = shadowSize;
     this.iconAnchor = iconAnchor;
-    // this.shadowAnchor = shadowAnchor;
-    // this.popupAnchor = popupAnchor;
   }
-
-
-
-
-  // var seahawksIcon = L.icon({
-  //   iconUrl: 'seahawks',
-  //   shadowUrl: 'seahawksShadow',
-
-  //   iconSize: [64,28],
-  //   shadowSize: [72, 32],
-  //   iconAnchor: [59, 28],
-  //   shadowAnchor: [76, 36],
-  //   popupAnchor: [-3, 76]
-  // });
-
-
-
-
-
-
 
   $container.on("click", "div", function() {
     if ($(this).attr('id') === "delete") {
@@ -354,33 +245,6 @@ $(function() {
     savedInfo = {};
   }
 
-  // Initialize the geocoder control and add it to the map.
-
-
-  // var geocoder = L.mapbox.geocoder('mapbox.places');
-
-  // geocoder.query('12319 Chain Lake Rd, Snohomish, WA 98290', function(err, data) {
-  //   console.log(err);
-  //   console.log(data);
-  // });
-
-    //acceptable reverseQuery first arguments
-    //   [lon, lat] // an array of lon, lat
-    //  { lat: 0, lon: 0 } // a lon, lat object
-    // { lat: 0, lng: 0 } // a lng, lat object
-
-  // geocoder.reverseQuery([47.68118337573163, -122.19596564769745], function(err, data) {
-  //   console.log(err);
-  //   console.log(data);
-  //   console.log(data.features[0]);
-  // });
-
-// Listen for the `found` result and display the first result
-// in the output container. For all available events, see
-// https://www.mapbox.com/mapbox.js/api/v2.2.1/l-mapbox-geocodercontrol/#section-geocodercontrol-on
-  // geocoderControl.on('found', function(res) {
-  //   var result = res.results.features[0];
-  // });
   function loopLayerGroups() {
     var newArray = [];
     for (var key in selectorObject) {
@@ -391,6 +255,5 @@ $(function() {
     }
     return newArray;
   }
-
 
 });
