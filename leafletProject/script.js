@@ -20,7 +20,14 @@ $(function() {
   var savedInfo = {};
   var selectorObject = {};
 
-
+  var fruitsIcon = iconMaker('cherry', [31,40], [17, 0]);
+  var flowersIcon = iconMaker('flowers', [28, 40], [14, 40]);
+  var treesIcon = iconMaker('tree', [31,43], [15, 43]);
+  var seahawksIcon = iconMaker('seahawks', [51,22],[47,22]);
+  var lemonadeIcon = iconMaker('lemonade', [20, 30], [13, 30]);
+  var fireworksIcon = iconMaker('fireworks', [30, 30], [20, 25]);
+  var saleIcon = iconMaker('sale', [28, 40], [14, 35]);
+  var copsIcon = iconMaker('chiefWiggum', [26,32], [13, 32]);
 
   var seahawksArray = [];
   var fruitsArray = [];
@@ -49,27 +56,19 @@ $(function() {
     };
   }
 
-  var fruitsIcon = iconMaker('cherry', [31,40], [17, 0]);
-  var flowersIcon = iconMaker('flowers', [28, 40], [14, 40]);
-  var treesIcon = iconMaker('tree', [31,43], [15, 43]);
-  var seahawksIcon = iconMaker('seahawks', [51,22],[47,22]);
-  var lemonadeIcon = iconMaker('lemonade', [20, 30], [13, 30]);
-  var fireworksIcon = iconMaker('fireworks', [30, 30], [20, 25]);
-  var saleIcon = iconMaker('sale', [28, 40], [14, 35]);
-  var copsIcon = iconMaker('chiefWiggum', [26,32], [13, 32]);
-
-
-  categoryMaker("fruits", );
-  categoryMaker("flowers", );
-  categoryMaker("trees", );
-  categoryMaker("seahawks", );
-  categoryMaker("lemonade", );
-  categoryMaker("fireworks");
-  categoryMaker("sale", );
-  categoryMaker("cops", );
 
 
 
+  categoryMaker("fruits", [31,40], [17, 0]);
+  categoryMaker("flowers", [28, 40], [14, 40]);
+  categoryMaker("trees", [31,43], [15, 43]);
+  categoryMaker("seahawks", [51,22],[47,22]);
+  categoryMaker("lemonade", [20, 30], [13, 30]);
+  categoryMaker("fireworks", [30, 30], [20, 25]);
+  categoryMaker("sale", [28, 40], [14, 35]);
+  categoryMaker("cops", [26,32], [13, 32]);
+
+  //test category
   categoryMaker("carwashes", [30,30], [15,30]);
   console.log(selectorObject["carwashes"].name);
   console.log(selectorObject["carwashes"].icon.options.iconUrl);
