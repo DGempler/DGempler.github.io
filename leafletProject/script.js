@@ -14,39 +14,52 @@ $(function() {
   var $map = $('#map');
   var $body = $('body');
   var $window = $(window);
-  var $form = $('form');
   var $infoContainer = $('#info-container');
-  var $secretMsg;
   var currentSelection;
-  var marker;
 
-  var seahawksIcon = iconMaker('seahawks', [51,22],[47,22]);
-  var flowersIcon = iconMaker('flowers', [28, 40], [14, 40]);
   var fruitsIcon = iconMaker('cherry', [31,40], [17, 0]);
+  var flowersIcon = iconMaker('flowers', [28, 40], [14, 40]);
   var treesIcon = iconMaker('tree', [31,43], [15, 43]);
-  var copsIcon = iconMaker('chiefWiggum', [26,32], [13, 32]);
+  var seahawksIcon = iconMaker('seahawks', [51,22],[47,22]);
   var lemonadeIcon = iconMaker('lemonade', [20, 30], [13, 30]);
   var fireworksIcon = iconMaker('fireworks', [30, 30], [20, 25]);
   var saleIcon = iconMaker('sale', [28, 40], [14, 35]);
-
-
+  var copsIcon = iconMaker('chiefWiggum', [26,32], [13, 32]);
 
   var seahawksArray = [];
-  var seahawks = L.layerGroup(seahawksArray);
   var fruitsArray = [];
-  var fruits = L.layerGroup(fruitsArray);
   var flowersArray = [];
-  var flowers = L.layerGroup(flowersArray);
   var treesArray = [];
-  var trees = L.layerGroup(treesArray);
   var copsArray = [];
-  var cops = L.layerGroup(copsArray);
   var lemonadeArray = [];
-  var lemonade = L.layerGroup(lemonadeArray);
   var fireworksArray = [];
-  var fireworks = L.layerGroup(fireworksArray);
   var saleArray = [];
+
+  var seahawks = L.layerGroup(seahawksArray);
+  var fruits = L.layerGroup(fruitsArray);
+  var flowers = L.layerGroup(flowersArray);
+  var trees = L.layerGroup(treesArray);
+  var cops = L.layerGroup(copsArray);
+  var lemonade = L.layerGroup(lemonadeArray);
+  var fireworks = L.layerGroup(fireworksArray);
   var sale = L.layerGroup(saleArray);
+
+  function categoryMaker(catName, iconSize, iconAnchor) {
+    return {
+      icon: iconMaker(catName, iconSize, iconAnchor),
+      array: [],
+      layerGroup: L.layerGroup(this.array)
+    };
+  }
+
+  var carwashes = categoryMaker("carwashes", [30,30], [15,30]);
+  console.log(carwashes);
+  console.log(carwashes.icon.options.iconUrl);
+  console.log(carwashes.layerGroup);
+  console.log(carwashes.array);
+
+
+
 
   var savedInfo = {};
 
@@ -252,7 +265,7 @@ $(function() {
         map.addLayer(cops);
         control.addOverlay(cops, "po-po");
         currentSelection = "cops";
-        $secretMsg = $('<p id="secret" display="none">ACTIVATED secret po-po mode</p>');
+        var $secretMsg = $('<p id="secret" display="none">ACTIVATED secret po-po mode</p>');
         $body.append($secretMsg);
         $secretMsg.css("color", "gray");
         $secretMsg.fadeIn('slow').fadeOut('slow', function() {
@@ -263,7 +276,7 @@ $(function() {
         control.removeLayer(cops);
         map.removeLayer(cops);
         currentSelection = "";
-        $secretMsg = $('<p id="secret" display="none">DEACTIVATED secret po-po mode</p>');
+        var $secretMsg = $('<p id="secret" display="none">DEACTIVATED secret po-po mode</p>');
         $body.append($secretMsg);
         $secretMsg.css("color", "gray");
         $secretMsg.fadeIn('slow').fadeOut('slow', function() {
