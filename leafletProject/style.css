@@ -68,12 +68,18 @@ img {
   margin-top: 3px;
 }
 
-p {
+#container p {
   display: inline-block;
-  margin: 0;
   margin: 3px 10px;
   font-size: 16px;
   height: 90%;
+  padding: 0;
+}
+
+#info-container p {
+  display: inline-block;
+  margin: 0;
+  font-size: 12px;
   padding: 0;
 }
 
@@ -91,8 +97,15 @@ h1 {
   background-color: RGBA(215, 218, 219, 1);
   width: 33.5%;
   padding: 20px;
+  padding-top:3px;
   margin-top: 20px;
   border-radius: 10px;
   float: right;
   height: 151px;
+  text-align: center;
+}
+
+.button-like:active {
+  margin-right: -5px;
+  margin-left: +5px;
 }
