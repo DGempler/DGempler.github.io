@@ -2,32 +2,66 @@
   box-sizing: border-box;
 }
 
+body {
+  background-color: RGBA(255, 255, 255, 1);
+  text-align: center;
+}
+
+#main {
+  padding: 20px;
+  background-color: RGBA(43, 62, 80, 1);
+  width: 100%;
+  border-radius: 10px;
+}
+
+.clearfix:after {
+   content: ".";
+   visibility: hidden;
+   display: block;
+   height: 0;
+   clear: both;
+}
+
 #map {
-  height: 400px;
-  width: 60%;
+  height: 500px;
+  width: 59%;
   float: left;
 }
 
 #container {
-  height: 400px;
+  height: 301px;
   width: 40%;
-  float: left;
+  float: right;
+  background-color: RGBA(215, 218, 219, 1);
+  padding: 10px;
+  border-radius: 10px;
 }
 
 #container div {
   height: 10%;
   width: 100%;
-  font-size: 24px;
+  background-color: RGBA(106, 188, 221, 1);
+  border-radius: 5px;
+  margin-top:3px;
+  padding:1px;
+}
+
+div#clear, div#delete {
+  background-color: RGBA(255, 64, 67, 1);
+  margin-top: 5px;
 }
 
 img {
-  height: 90%;
+  height: 80%;
   display: inline-block;
   margin-left: 10px;
 }
+
 p {
   display: inline-block;
   margin-right: 10px;
+  font-size: 12px;
+  height: 90%;
 }
 
 .canopy {
@@ -41,5 +75,10 @@ h1 {
 }
 
 #info-container {
-  clear:both;
+  background-color: RGBA(215, 218, 219, 1);
+  width: 40%;
+  padding: 20px;
+  margin-top: 10px;
+  border-radius: 10px;
+  float: right;
 }
