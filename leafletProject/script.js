@@ -318,7 +318,7 @@ $(function() {
     }
     $body.append($secretMsg);
     $secretMsg.css("color", "gray");
-    $secretMsg.fadeIn('slow').fadeOut('slow', removeThis.call(this));
+    $secretMsg.fadeIn(1200).fadeOut(1200, removeThis.call(this));
   }
 
   function layerSelectorHandler() {
