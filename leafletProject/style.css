@@ -2,6 +2,13 @@
   box-sizing: border-box;
 }
 
+h3 {
+  display: inline-block;
+  height: 8%;
+  padding: 0;
+  margin: 0;
+}
+
 body {
   background-color: RGBA(255, 255, 255, 1);
   text-align: center;
@@ -24,13 +31,13 @@ body {
 
 #map {
   height: 500px;
-  width: 59%;
+  width: 65%;
   float: left;
 }
 
 #container {
-  height: 301px;
-  width: 40%;
+  height: 330px;
+  width: 33.5%;
   float: right;
   background-color: RGBA(215, 218, 219, 1);
   padding: 10px;
@@ -38,7 +45,7 @@ body {
 }
 
 #container div {
-  height: 10%;
+  height: 9%;
   width: 100%;
   background-color: RGBA(106, 188, 221, 1);
   border-radius: 5px;
@@ -76,9 +83,10 @@ h1 {
 
 #info-container {
   background-color: RGBA(215, 218, 219, 1);
-  width: 40%;
+  width: 33.5%;
   padding: 20px;
-  margin-top: 10px;
+  margin-top: 20px;
   border-radius: 10px;
   float: right;
+  height: 151px;
 }
