@@ -81,6 +81,7 @@ $(function() {
   $window.on("keydown", hotkeyClearDeleteHandler);
   $window.on("keypress", popoModeOnOffHandler);
   $container.on("click", "div", clearDeleteButtonHandler);
+  $('div.leaflet-control-layers-overlays').on("click", "input.leaflet-control-layers-selector", layerSelectorHandler);
 
   function createMarkerAndInfoLabelHandler(e) {
     for (var key in selectorObject) {
@@ -311,6 +312,7 @@ $(function() {
     else {
       control.removeLayer(selectorObject["cops"].layerGroup);
       map.removeLayer(selectorObject["cops"].layerGroup);
+      $infoContainer.children('.label-info').attr("data", "cops").remove();
       currentSelection = "";
       var $secretMsg = $('<p id="secret" display="none">DEACTIVATED secret po-po mode</p>');
     }
@@ -318,6 +320,15 @@ $(function() {
     $secretMsg.css("color", "gray");
     $secretMsg.fadeIn('slow').fadeOut('slow', removeThis.call(this));
   }
+
+  function layerSelectorHandler() {
+    if (!($(this).is(':checked'))) {
+      currentSelection = "";
+    }
+    var chosenLayer = $(this).next().html().trim();
+    $infoContainer.children('.label-info').attr("data", chosenLayer).remove();
+  }
+
 
 //Other functions
   function iconMaker(url, size, iconAnchor) {
