@@ -104,9 +104,21 @@ $(function() {
   function addInfoLabelToScreenHandler(e) {
     var id = e.popup._source._leaflet_id;
     if (savedInfo[id] === undefined) {
-      return;
+      var string = e.popup._content.toString();
+      var newString = "";
+      for (var i = 0; i < string.length; i++) {
+        if (string[i] !== " ") {
+          newString += string[i];
+        }
+        else {
+          break;
+        }
+      }
+    addMarkerLabelInfoV3.call(this, newString, id);
     }
-    addMarkerLabelInfoV2.call(this, id);
+    else {
+      addMarkerLabelInfoV2.call(this, id);
+    }
   }
 
   function infoLabelDeleteSaveButtonHandler(e) {
@@ -211,6 +223,7 @@ $(function() {
   }
 
   function addMarkerLabelInfo(key, marker, e) {
+    $infoContainer.children('.label-info').remove();
     var $labelInfo = $("<div class='label-info' data-layer='" + key + "'></div>");
     $infoContainer.append($labelInfo);
     $labelInfo.prepend("<p>Peddler Type: " + key + " - ID: " + marker._leaflet_id + "</p><br/>");
@@ -225,6 +238,7 @@ $(function() {
 
 //addInfoLabeltoScreen function(1) can probably combine with V1 later
   function addMarkerLabelInfoV2(id) {
+    $infoContainer.children('.label-info').remove();
     var $labelInfo = $("<div class='label-info' data-layer='" + savedInfo[id].layer + "'></div>");
     $infoContainer.append($labelInfo);
     $labelInfo.prepend("<p>Peddler Type: " + savedInfo[id].layer + " - ID: " + id + "</p><br/>");
@@ -233,6 +247,20 @@ $(function() {
     $form.prepend("<label>Location:<input type='text' class='location' value='" + savedInfo[id].location + "' style='width: 299px'/></label><br/>");
     $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" + savedInfo[id].items + "' style='width: 228px'/></label><br/>");
     $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + savedInfo[id].prices + "' style='width: 278px'/></label><br/>");
+    $form.append("<button class='save'>Save & Close</button>");
+    $form.append("<button class='delete'>Delete</button>");
+  }
+
+  function addMarkerLabelInfoV3(newString, id) {
+    $infoContainer.children('.label-info').remove();
+    var $labelInfo = $("<div class='label-info' data-layer='" + newString + "'></div>");
+    $infoContainer.append($labelInfo);
+    $labelInfo.prepend("<p>Peddler Type: " + newString + " - ID: " + id + "</p><br/>");
+    var $form = $("<form id='" + id + "'></form><br/>");
+    $labelInfo.append($form);
+    $form.prepend("<label>Location:<input type='text' class='location' value=' Lat: " + selectorObject[newString].array[id]._latlng.lat + ", Lng: " + selectorObject[newString].array[id]._latlng.lng + "' style='width: 301px'/></label><br/>");
+    $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
+    $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
     $form.append("<button class='save'>Save & Close</button>");
     $form.append("<button class='delete'>Delete</button>");
   }
