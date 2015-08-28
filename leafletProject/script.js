@@ -2,43 +2,28 @@ $(function() {
 
   L.mapbox.accessToken = 'pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA';
 
-  L.Map.addInitHook( function () {
-
-    var that = this
-    ,   h
-    ;
-
-    if (that.on)
-    {
-        that.on( 'click',    check_later );
-        that.on( 'dblclick', function () { setTimeout( clear_h, 0 ); } );
+  L.Map.addInitHook(function () {
+    var that = this, h ;
+    if (that.on) {
+      that.on( 'click',    check_later );
+      that.on( 'dblclick', function () { setTimeout( clear_h, 0 ); } );
     }
-
-    function check_later( e )
-    {
-        clear_h();
-
-        h = setTimeout( check, 300 );
-
-        function check()
-        {
-            that.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
-        }
+    function check_later( e ) {
+      clear_h();
+      h = setTimeout( check, 300 );
+      function check(){
+          that.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
+      }
     }
-
     function clear_h()
     {
-        if (h != null)
-        {
-            clearTimeout( h );
-            h = null;
-        }
+      if (h != null)
+      {
+          clearTimeout( h );
+          h = null;
+      }
     }
-
   });
-
-
-
 
   var $container = $('#container');
   var $map = $('#map');
@@ -122,7 +107,6 @@ $(function() {
   $('div.leaflet-control-layers-overlays').on("click", "input.leaflet-control-layers-selector", layerSelectorHandler);
 
   function createMarkerAndInfoLabelHandler(e) {
-    console.log(e);
     var $layerSelector = $('.leaflet-control-layers-overlays input.leaflet-control-layers-selector');
     var $layerSelectorArray = $layerSelector.next();
     var counter = 0;
@@ -418,5 +402,29 @@ $(function() {
     savedInfo = {};
     currentSelection = "";
   }
+
+//"click" to "singleclick" plugin - Alpstein's leaflet-singleclick_0.7
+L.Map.addInitHook(function () {
+    var that = this, h ;
+    if (that.on) {
+      that.on( 'click',    check_later );
+      that.on( 'dblclick', function () { setTimeout( clear_h, 0 ); } );
+    }
+    function check_later( e ) {
+      clear_h();
+      h = setTimeout( check, 100 );
+      function check(){
+          that.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
+      }
+    }
+    function clear_h()
+    {
+      if (h !== null)
+      {
+          clearTimeout( h );
+          h = null;
+      }
+    }
+  });
 
 });
