@@ -2,6 +2,44 @@ $(function() {
 
   L.mapbox.accessToken = 'pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA';
 
+  L.Map.addInitHook( function () {
+
+    var that = this
+    ,   h
+    ;
+
+    if (that.on)
+    {
+        that.on( 'click',    check_later );
+        that.on( 'dblclick', function () { setTimeout( clear_h, 0 ); } );
+    }
+
+    function check_later( e )
+    {
+        clear_h();
+
+        h = setTimeout( check, 300 );
+
+        function check()
+        {
+            that.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
+        }
+    }
+
+    function clear_h()
+    {
+        if (h != null)
+        {
+            clearTimeout( h );
+            h = null;
+        }
+    }
+
+  });
+
+
+
+
   var $container = $('#container');
   var $map = $('#map');
   var $body = $('body');
@@ -74,22 +112,46 @@ $(function() {
   geocoderControl.addTo(map);
 
 //event handlers
-  map.on("click", createMarkerAndInfoLabelHandler);
+  map.on("singleclick", createMarkerAndInfoLabelHandler);
   $map.on("click", ".remove", deleteMarkerOnPopupClickHandler);
   map.on("popupopen", addInfoLabelToScreenHandler);
   $infoContainer.on("click", "button", infoLabelDeleteSaveButtonHandler);
   $window.on("keydown", hotkeyClearDeleteHandler);
   $window.on("keypress", popoModeOnOffHandler);
-  $container.on("click", "div", clearDeleteButtonHandler);
+  $container.on("click", "div", assignSelectionHandler);
   $('div.leaflet-control-layers-overlays').on("click", "input.leaflet-control-layers-selector", layerSelectorHandler);
 
   function createMarkerAndInfoLabelHandler(e) {
-    for (var key in selectorObject) {
-      if (currentSelection === key) {
-        var marker = singleMarkerMaker(e, key);
-        addMarkerToMap.call(this, key, marker);
-        addMarkerLabelInfo.call(this, key, marker, e);
+    console.log(e);
+    var $layerSelector = $('.leaflet-control-layers-overlays input.leaflet-control-layers-selector');
+    var $layerSelectorArray = $layerSelector.next();
+    var counter = 0;
+    $layerSelectorArray.each(function(index, value) {
+      if ($(value).html().trim() === currentSelection) {
+          counter = index;
+        }
+      });
+    if ($layerSelector.eq(counter).is(':checked')) {
+      for (var key in selectorObject) {
+        if (currentSelection === key) {
+          var marker = singleMarkerMaker(e, key);
+          addMarkerToMap.call(this, key, marker);
+          addMarkerLabelInfo.call(this, key, marker, e);
+        }
       }
+    }
+    else {
+      $infoContainer.children('.label-info').remove();
+      var $selectLayerMessage = $("<br/><p id='select-layer-message'>This layer is currently turned off!</p>").hide();
+      $selectLayerMessage.css('margin-top', '25px').css('font-size', '24px').css('color', 'white');
+      $infoContainer.append($selectLayerMessage);
+      $selectLayerMessage.fadeIn(600, function() {
+        setTimeout(function () {
+          $selectLayerMessage.fadeOut(600, function() {
+            $(this).remove();
+          });
+        }, 1000);
+      });
     }
   }
 
@@ -160,13 +222,15 @@ $(function() {
     }
   }
 
-  function clearDeleteButtonHandler() {
+  function assignSelectionHandler() {
     if ($(this).attr('id') === "delete") {
       if (confirm("Are you sure you want to delete all data?")) {
         deleteAll();
       }
     }
-    currentSelection = $(this).attr('id');
+    else {
+        currentSelection = $(this).attr('id');
+    }
   }
 
 //Functions used in event handler functions
@@ -225,6 +289,7 @@ $(function() {
 
   function addMarkerLabelInfo(key, marker, e) {
     $infoContainer.children('.label-info').remove();
+    $infoContainer.children('#select-layer-message').remove();
     var $labelInfo = $("<div class='label-info' data-layer='" + key + "'></div>");
     $infoContainer.append($labelInfo);
     $labelInfo.prepend("<p>Peddler Type: " + key + " - ID: " + marker._leaflet_id + "</p><br/>");
@@ -240,6 +305,7 @@ $(function() {
 //addInfoLabeltoScreen function(1) can probably combine with V1 later
   function addMarkerLabelInfoV2(id) {
     $infoContainer.children('.label-info').remove();
+    $infoContainer.children('#select-layer-message').remove();
     var $labelInfo = $("<div class='label-info' data-layer='" + savedInfo[id].layer + "'></div>");
     $infoContainer.append($labelInfo);
     $labelInfo.prepend("<p>Peddler Type: " + savedInfo[id].layer + " - ID: " + id + "</p><br/>");
@@ -254,6 +320,7 @@ $(function() {
 
   function addMarkerLabelInfoV3(newString, id) {
     $infoContainer.children('.label-info').remove();
+    $infoContainer.children('#select-layer-message').remove();
     var $labelInfo = $("<div class='label-info' data-layer='" + newString + "'></div>");
     $infoContainer.append($labelInfo);
     $labelInfo.prepend("<p>Peddler Type: " + newString + " - ID: " + id + "</p><br/>");
@@ -325,7 +392,7 @@ $(function() {
     if (!($(this).is(':checked'))) {
       currentSelection = "";
     }
-    var chosenLayer = $(this).next().html().trim();
+    var chosenLayer = $(this).html().trim();
     $infoContainer.children('.label-info').attr("data", chosenLayer).remove();
   }
 
