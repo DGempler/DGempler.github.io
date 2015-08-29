@@ -37,19 +37,29 @@ $(function() {
 // localStorage.removeItem('seahawksarray');
 // localStorage.removeItem('seahawks');
 
-// var geojsonMarkerOptions = {
-//     icon: selectorObject['seahawks'].icon,
-//     draggable: true,
-//     title: 'seahawks',
-//     riseOnHover: true,
-// };
+var geojsonMarkerOptions = {
+    icon: selectorObject['seahawks'].icon,
+    draggable: true,
+    title: 'seahawks',
+    riseOnHover: true,
+};
 
   if (localStorage.getItem("seahawks") !== null) {
     console.log(L.geoJson(JSON.parse(localStorage.seahawks)));
-    selectorObject['seahawks'].layerGroup = L.geoJson(JSON.parse(localStorage.seahawks));
+    selectorObject['seahawks'].layerGroup = L.geoJson(JSON.parse(localStorage.seahawks), {
+      pointToLayer: function (feature, latlng) {
+        return L.marker(latlng, geojsonMarkerOptions);
+      }
+    });
   }
 
 
+
+    // selectorObject['seahawks'].layerGroup = L.geoJson(JSON.parse(localStorage.seahawks), {
+    //   pointToLayer: function (feature, latlng) {
+    //     return L.marker(latlng, geojsonMarkerOptions);
+    //   }
+    // }).addTo(map);
 
 
 
