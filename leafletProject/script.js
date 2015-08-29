@@ -118,8 +118,23 @@ var geojsonMarkerOptions = {
         return L.marker(latlng, geojsonMarkerOptions);
       }
     }).addTo(map);
+    console.log(selectorObject['seahawks'].layerGroup._layers);
+    for (var key in selectorObject['seahawks'].layerGroup._layers) {
+      var object = selectorObject['seahawks'].layerGroup._layers;
+      var marker = object[key];
+      var name = object[key].options.title;
+      marker.bindPopup(name + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + name + "'/>");
+      marker.on("dragend", function(e) {
+        var newLoc = e.target._latlng;
+        var id = e.target._leaflet_id;
+        $('form#' + id + ' .location').val("Lat: " + newLoc.lat + ", Lng: " + newLoc.lng);
+        if (savedInfo[id] === undefined) {
+          return;
+        }
+        savedInfo[id].location = "Lat: " + newLoc.lat + ", Lng: " + newLoc.lng;
+      });
 
-
+    }
   }
 
 /*
