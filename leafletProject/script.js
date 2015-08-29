@@ -113,13 +113,29 @@ var geojsonMarkerOptions = {
 };
 
   if (localStorage.getItem("seahawks") !== null) {
-    console.log(L.geoJson(JSON.parse(localStorage.seahawks)));
     selectorObject['seahawks'].layerGroup = L.geoJson(JSON.parse(localStorage.seahawks), {
       pointToLayer: function (feature, latlng) {
         return L.marker(latlng, geojsonMarkerOptions);
       }
     }).addTo(map);
+
+
   }
+
+/*
+    marker.bindPopup(key + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
+    marker.on("dragend", function(e) {
+      var newLoc = e.target._latlng;
+      var id = e.target._leaflet_id;
+      $('form#' + id + ' .location').val("Lat: " + newLoc.lat + ", Lng: " + newLoc.lng);
+      if (savedInfo[id] === undefined) {
+        return;
+      }
+      savedInfo[id].location = "Lat: " + newLoc.lat + ", Lng: " + newLoc.lng;
+    });
+*/
+
+
 
 
 
