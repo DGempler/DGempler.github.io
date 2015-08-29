@@ -34,64 +34,6 @@ $(function() {
 
 
 
-// localStorage.removeItem('seahawksarray');
-// localStorage.removeItem('seahawks');
-
-var geojsonMarkerOptions = {
-    icon: selectorObject['seahawks'].icon,
-    draggable: true,
-    title: 'seahawks',
-    riseOnHover: true,
-};
-
-  if (localStorage.getItem("seahawks") !== null) {
-    console.log(L.geoJson(JSON.parse(localStorage.seahawks)));
-    selectorObject['seahawks'].layerGroup = L.geoJson(JSON.parse(localStorage.seahawks), {
-      pointToLayer: function (feature, latlng) {
-        return L.marker(latlng, geojsonMarkerOptions);
-      }
-    });
-  }
-
-
-
-    // selectorObject['seahawks'].layerGroup = L.geoJson(JSON.parse(localStorage.seahawks), {
-    //   pointToLayer: function (feature, latlng) {
-    //     return L.marker(latlng, geojsonMarkerOptions);
-    //   }
-    // }).addTo(map);
-
-
-
-
-  // if (localStorage.getItem("seahawksArray") !== null) {
-  //   var tempArray = JSON.parse(localStorage.seahawksArray);
-  //   tempArray.forEach(function(element, index) {
-  //     if (element === null) {
-  //       tempArray[index] = "";
-  //     }
-  //   });
-  //   selectorObject['seahawks'].array = tempArray;
-  //   console.log(selectorObject['seahawks'].array);
-  //   selectorObject['seahawks'].layerGroup = L.layerGroup(selectorObject['seahawks'].array);
-  // }
-
-
-
-
-
-  // if (localStorage.getItem("seahawks") !== null) {
-  //   var newArray = [];
-  //   console.log(localStorage);
-  //   newArray = localStorage['seahawks'];
-  //   newArray.forEach(function(value) {
-  //     L.geoJson(value, {
-  //     pointToLayer: function (feature, latlng) {
-  //         return L.marker(latlng, geojsonMarkerOptions); //or try L.marker L.layergroup
-  //     }
-  //     }).addTo(map);
-  //   });
-  // }
 
 
 
@@ -159,6 +101,30 @@ L.Map.addInitHook(function () {
 
   geocoderControl = L.mapbox.geocoderControl('mapbox.places');
   geocoderControl.addTo(map);
+
+
+// localStorage.removeItem('seahawks');
+
+var geojsonMarkerOptions = {
+    icon: selectorObject['seahawks'].icon,
+    draggable: true,
+    title: 'seahawks',
+    riseOnHover: true,
+};
+
+  if (localStorage.getItem("seahawks") !== null) {
+    console.log(L.geoJson(JSON.parse(localStorage.seahawks)));
+    selectorObject['seahawks'].layerGroup = L.geoJson(JSON.parse(localStorage.seahawks), {
+      pointToLayer: function (feature, latlng) {
+        return L.marker(latlng, geojsonMarkerOptions);
+      }
+    }).addTo(map);
+  }
+
+
+
+
+
 
 //event handlers
   map.on("singleclick", createMarkerAndInfoLabelHandler);
