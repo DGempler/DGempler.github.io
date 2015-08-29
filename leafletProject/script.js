@@ -2,29 +2,6 @@ $(function() {
 
   L.mapbox.accessToken = 'pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA';
 
-  L.Map.addInitHook(function () {
-    var that = this, h ;
-    if (that.on) {
-      that.on( 'click',    check_later );
-      that.on( 'dblclick', function () { setTimeout( clear_h, 0 ); } );
-    }
-    function check_later( e ) {
-      clear_h();
-      h = setTimeout( check, 300 );
-      function check(){
-          that.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
-      }
-    }
-    function clear_h()
-    {
-      if (h != null)
-      {
-          clearTimeout( h );
-          h = null;
-      }
-    }
-  });
-
   var $container = $('#container');
   var $map = $('#map');
   var $body = $('body');
@@ -54,6 +31,83 @@ $(function() {
   markerGroupMaker("fireworks", [30, 30], [20, 25]);
   markerGroupMaker("sale", [28, 40], [14, 35]);
   markerGroupMaker("cops", [26,32], [13, 32]);
+
+
+
+// localStorage.removeItem('seahawksarray');
+// localStorage.removeItem('seahawks');
+
+// var geojsonMarkerOptions = {
+//     icon: selectorObject['seahawks'].icon,
+//     draggable: true,
+//     title: 'seahawks',
+//     riseOnHover: true,
+// };
+
+  if (localStorage.getItem("seahawks") !== null) {
+    console.log(L.geoJson(JSON.parse(localStorage.seahawks)));
+    selectorObject['seahawks'].layerGroup = L.geoJson(JSON.parse(localStorage.seahawks));
+  }
+
+
+
+
+
+
+  // if (localStorage.getItem("seahawksArray") !== null) {
+  //   var tempArray = JSON.parse(localStorage.seahawksArray);
+  //   tempArray.forEach(function(element, index) {
+  //     if (element === null) {
+  //       tempArray[index] = "";
+  //     }
+  //   });
+  //   selectorObject['seahawks'].array = tempArray;
+  //   console.log(selectorObject['seahawks'].array);
+  //   selectorObject['seahawks'].layerGroup = L.layerGroup(selectorObject['seahawks'].array);
+  // }
+
+
+
+
+
+  // if (localStorage.getItem("seahawks") !== null) {
+  //   var newArray = [];
+  //   console.log(localStorage);
+  //   newArray = localStorage['seahawks'];
+  //   newArray.forEach(function(value) {
+  //     L.geoJson(value, {
+  //     pointToLayer: function (feature, latlng) {
+  //         return L.marker(latlng, geojsonMarkerOptions); //or try L.marker L.layergroup
+  //     }
+  //     }).addTo(map);
+  //   });
+  // }
+
+
+
+//"click" to "singleclick" plugin - Alpstein's leaflet-singleclick_0.7
+L.Map.addInitHook(function () {
+    var that = this, h ;
+    if (that.on) {
+      that.on( 'click',    check_later );
+      that.on( 'dblclick', function () { setTimeout( clear_h, 0 ); } );
+    }
+    function check_later( e ) {
+      clear_h();
+      h = setTimeout( check, 200 );
+      function check(){
+          that.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
+      }
+    }
+    function clear_h()
+    {
+      if (h !== null)
+      {
+          clearTimeout( h );
+          h = null;
+      }
+    }
+  });
 
 //create map, add base & overlap layers, various controls to map
   map = L.map('map', {
@@ -256,6 +310,8 @@ $(function() {
     });
   }
 
+
+
   function addMarkerToMap(key, marker) {
     selectorObject[key].layerGroup.addLayer(marker);
     selectorObject[key].array[marker._leaflet_id] = marker;
@@ -403,28 +459,20 @@ $(function() {
     currentSelection = "";
   }
 
-//"click" to "singleclick" plugin - Alpstein's leaflet-singleclick_0.7
-L.Map.addInitHook(function () {
-    var that = this, h ;
-    if (that.on) {
-      that.on( 'click',    check_later );
-      that.on( 'dblclick', function () { setTimeout( clear_h, 0 ); } );
-    }
-    function check_later( e ) {
-      clear_h();
-      h = setTimeout( check, 100 );
-      function check(){
-          that.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
-      }
-    }
-    function clear_h()
-    {
-      if (h !== null)
-      {
-          clearTimeout( h );
-          h = null;
-      }
-    }
-  });
+
+
+ $window.on("beforeunload", function() {
+    localStorage.seahawks = JSON.stringify((selectorObject['seahawks'].layerGroup).toGeoJSON());
+
+    // console.log(localStorage.seahawks);
+    // return "are you sure?";
+
+
+    // localStorage.seahawksArray = JSON.stringify(selectorObject['seahawks'].array);
+
+  // localStorage.removeItem('seahawks');
+
+});
+
 
 });
