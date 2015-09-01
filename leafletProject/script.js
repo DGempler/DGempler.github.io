@@ -137,6 +137,10 @@ var geojsonMarkerOptions = {
     }
   }
 
+  if (localStorage.getItem("savedInfo") !== null) {
+    savedInfo = JSON.parse(localStorage.savedInfo);
+  }
+
 /*
     marker.bindPopup(key + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
     marker.on("dragend", function(e) {
@@ -471,6 +475,8 @@ var geojsonMarkerOptions = {
 
  $window.on("beforeunload", function() {
     localStorage.seahawks = JSON.stringify((selectorObject['seahawks'].layerGroup).toGeoJSON());
+
+    localStorage.savedInfo = JSON.stringify(savedInfo);
 
     // console.log(localStorage.seahawks);
     // return "are you sure?";
