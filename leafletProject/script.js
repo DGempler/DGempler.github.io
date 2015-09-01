@@ -148,53 +148,6 @@ function geojsonMarkerOptions(key) {
     }
   })();
 
-  // localStorage.removeItem('seahawks');
-
-  // if (localStorage.getItem("seahawks") !== null) {
-  //   selectorObject['seahawks'].layerGroup = L.geoJson(JSON.parse(localStorage.seahawks), {
-  //     pointToLayer: function (feature, latlng) {
-  //       return L.marker(latlng, geojsonMarkerOptions);
-  //     }
-  //   }).addTo(map);
-  //   for (var key in selectorObject['seahawks'].layerGroup._layers) {
-  //     var object = selectorObject['seahawks'].layerGroup._layers;
-  //     var marker = object[key];
-  //     selectorObject['seahawks'].array[key] = marker;
-  //     var name = object[key].options.title;
-  //     marker.bindPopup(name + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + name + "'/>");
-  //     marker.on("dragend", function(e) {
-  //       var newLoc = e.target._latlng;
-  //       var id = e.target._leaflet_id;
-  //       $('form#' + id + ' .location').val("Lat: " + newLoc.lat + ", Lng: " + newLoc.lng);
-  //       if (savedInfo[id] === undefined) {
-  //         return;
-  //       }
-  //       savedInfo[id].location = "Lat: " + newLoc.lat + ", Lng: " + newLoc.lng;
-  //     });
-
-  //   }
-  // }
-
-
-/*
-    marker.bindPopup(key + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
-    marker.on("dragend", function(e) {
-      var newLoc = e.target._latlng;
-      var id = e.target._leaflet_id;
-      $('form#' + id + ' .location').val("Lat: " + newLoc.lat + ", Lng: " + newLoc.lng);
-      if (savedInfo[id] === undefined) {
-        return;
-      }
-      savedInfo[id].location = "Lat: " + newLoc.lat + ", Lng: " + newLoc.lng;
-    });
-*/
-
-
-
-
-
-
-
 
 //event handlers
   map.on("singleclick", createMarkerAndInfoLabelHandler);
@@ -374,18 +327,25 @@ function geojsonMarkerOptions(key) {
   }
 
   function addMarkerLabelInfo(key, marker, e) {
+    var address;
     $infoContainer.children('.label-info').remove();
     $infoContainer.children('#select-layer-message').remove();
     var $labelInfo = $("<div class='label-info' data-layer='" + key + "'></div>");
     $infoContainer.append($labelInfo);
     $labelInfo.prepend("<p>Peddler Type: " + key + " - ID: " + marker._leaflet_id + "</p><br/>");
     var $form = $("<form id='" + marker._leaflet_id + "'></form><br/>");
-    $labelInfo.append($form);
-    $form.prepend("<label>Location:<input type='text' class='location' value=' Lat: " + e.latlng.lat + ", Lng: " + e.latlng.lng + "' style='width: 301px'/></label><br/>");
-    $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
-    $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
-    $form.append("<button class='save'>Save & Close</button>");
-    $form.append("<button class='delete'>Delete</button>");
+    $.ajax({
+      url: 'https://api.mapbox.com/v4/geocode/mapbox.places/' + e.latlng.lng + ',' + e.latlng.lat + '.json?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA',
+      success: function(data) {
+        address = data.features[0].place_name;
+        $labelInfo.append($form);
+        $form.prepend("<label>Location:<input type='text' class='location' value='" + address + "' style='width: 301px'/></label><br/>");
+        $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
+        $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
+        $form.append("<button class='save'>Save & Close</button>");
+        $form.append("<button class='delete'>Delete</button>");
+      },
+    });
   }
 
 //addInfoLabeltoScreen function(1) can probably combine with V1 later
@@ -525,5 +485,11 @@ function geojsonMarkerOptions(key) {
 
 });
 
+// $.ajax({
+//   url: 'https://api.mapbox.com/v4/geocode/{dataset}/{lon},{lat}.json?access_token=<your access token>',
+//   sucess: function(data) {
+//     console.log(data);
+//   }
+// })
 
 });
