@@ -103,43 +103,78 @@ L.Map.addInitHook(function () {
   geocoderControl.addTo(map);
 
 
-// localStorage.removeItem('seahawks');
 
-var geojsonMarkerOptions = {
-    icon: selectorObject['seahawks'].icon,
+function geojsonMarkerOptions(key) {
+  return {
+    icon: selectorObject[key].icon,
     draggable: true,
-    title: 'seahawks',
+    title: key,
     riseOnHover: true,
-};
+  };
+}
 
-  if (localStorage.getItem("seahawks") !== null) {
-    selectorObject['seahawks'].layerGroup = L.geoJson(JSON.parse(localStorage.seahawks), {
-      pointToLayer: function (feature, latlng) {
-        return L.marker(latlng, geojsonMarkerOptions);
-      }
-    }).addTo(map);
-    for (var key in selectorObject['seahawks'].layerGroup._layers) {
-      var object = selectorObject['seahawks'].layerGroup._layers;
-      var marker = object[key];
-      selectorObject['seahawks'].array[key] = marker;
-      var name = object[key].options.title;
-      marker.bindPopup(name + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + name + "'/>");
-      marker.on("dragend", function(e) {
-        var newLoc = e.target._latlng;
-        var id = e.target._leaflet_id;
-        $('form#' + id + ' .location').val("Lat: " + newLoc.lat + ", Lng: " + newLoc.lng);
-        if (savedInfo[id] === undefined) {
-          return;
+
+
+  (function localStorageRestore() {
+    for (var key in selectorObject) {
+      // localStorage.removeItem(key);
+      if (localStorage.getItem(key) !== null) {
+        selectorObject[key].layerGroup = L.geoJson(JSON.parse(localStorage[key]), {
+          pointToLayer: function (feature, latlng) {
+            return L.marker(latlng, geojsonMarkerOptions(key));
+          }
+        }).addTo(map);
+        for (var index in selectorObject[key].layerGroup._layers) {
+          var object = selectorObject[key].layerGroup._layers;
+          var marker = object[index];
+          selectorObject[key].array[index] = marker;
+          var name = object[index].options.title;
+          marker.bindPopup(name + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + name + "'/>");
+          marker.on("dragend", function(e) {
+            var newLoc = e.target._latlng;
+            var id = e.target._leaflet_id;
+            $('form#' + id + ' .location').val("Lat: " + newLoc.lat + ", Lng: " + newLoc.lng);
+            if (savedInfo[id] === undefined) {
+              return;
+            }
+            savedInfo[id].location = "Lat: " + newLoc.lat + ", Lng: " + newLoc.lng;
+          });
         }
-        savedInfo[id].location = "Lat: " + newLoc.lat + ", Lng: " + newLoc.lng;
-      });
-
+      }
     }
-  }
+    if (localStorage.getItem("savedInfo") !== null) {
+      // localStorage.removeItem('savedInfo');
+      savedInfo = JSON.parse(localStorage.savedInfo);
+    }
+  })();
 
-  if (localStorage.getItem("savedInfo") !== null) {
-    savedInfo = JSON.parse(localStorage.savedInfo);
-  }
+  // localStorage.removeItem('seahawks');
+
+  // if (localStorage.getItem("seahawks") !== null) {
+  //   selectorObject['seahawks'].layerGroup = L.geoJson(JSON.parse(localStorage.seahawks), {
+  //     pointToLayer: function (feature, latlng) {
+  //       return L.marker(latlng, geojsonMarkerOptions);
+  //     }
+  //   }).addTo(map);
+  //   for (var key in selectorObject['seahawks'].layerGroup._layers) {
+  //     var object = selectorObject['seahawks'].layerGroup._layers;
+  //     var marker = object[key];
+  //     selectorObject['seahawks'].array[key] = marker;
+  //     var name = object[key].options.title;
+  //     marker.bindPopup(name + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + name + "'/>");
+  //     marker.on("dragend", function(e) {
+  //       var newLoc = e.target._latlng;
+  //       var id = e.target._leaflet_id;
+  //       $('form#' + id + ' .location').val("Lat: " + newLoc.lat + ", Lng: " + newLoc.lng);
+  //       if (savedInfo[id] === undefined) {
+  //         return;
+  //       }
+  //       savedInfo[id].location = "Lat: " + newLoc.lat + ", Lng: " + newLoc.lng;
+  //     });
+
+  //   }
+  // }
+
 
 /*
     marker.bindPopup(key + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
@@ -474,8 +509,10 @@ var geojsonMarkerOptions = {
 
 
  $window.on("beforeunload", function() {
-    localStorage.seahawks = JSON.stringify((selectorObject['seahawks'].layerGroup).toGeoJSON());
-
+    for (var key in selectorObject) {
+      if (selectorObject[key].array !== [])
+      localStorage[key] = JSON.stringify((selectorObject[key].layerGroup).toGeoJSON());
+    }
     localStorage.savedInfo = JSON.stringify(savedInfo);
 
     // console.log(localStorage.seahawks);
