@@ -118,10 +118,10 @@ var geojsonMarkerOptions = {
         return L.marker(latlng, geojsonMarkerOptions);
       }
     }).addTo(map);
-    console.log(selectorObject['seahawks'].layerGroup._layers);
     for (var key in selectorObject['seahawks'].layerGroup._layers) {
       var object = selectorObject['seahawks'].layerGroup._layers;
       var marker = object[key];
+      selectorObject['seahawks'].array[key] = marker;
       var name = object[key].options.title;
       marker.bindPopup(name + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + name + "'/>");
       marker.on("dragend", function(e) {
@@ -222,7 +222,7 @@ var geojsonMarkerOptions = {
           break;
         }
       }
-    addMarkerLabelInfoV3.call(this, newString, id);
+      addMarkerLabelInfoV3.call(this, newString, id);
     }
     else {
       addMarkerLabelInfoV2.call(this, id);
@@ -373,6 +373,7 @@ var geojsonMarkerOptions = {
     $labelInfo.prepend("<p>Peddler Type: " + newString + " - ID: " + id + "</p><br/>");
     var $form = $("<form id='" + id + "'></form><br/>");
     $labelInfo.append($form);
+    // console.log(selectorObject[newString].array);
     $form.prepend("<label>Location:<input type='text' class='location' value=' Lat: " + selectorObject[newString].array[id]._latlng.lat + ", Lng: " + selectorObject[newString].array[id]._latlng.lng + "' style='width: 301px'/></label><br/>");
     $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
     $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
