@@ -140,6 +140,10 @@ function geojsonMarkerOptions(key) {
             savedInfo[id].location = "Lat: " + newLoc.lat + ", Lng: " + newLoc.lng;
           });
         }
+        if (key === "cops") {
+          control.removeLayer(selectorObject["cops"].layerGroup);
+          map.removeLayer(selectorObject["cops"].layerGroup);
+        }
       }
     }
     if (localStorage.getItem("savedInfo") !== null) {
@@ -327,7 +331,6 @@ function geojsonMarkerOptions(key) {
   }
 
   function addMarkerLabelInfo(key, marker, e) {
-    var address;
     $infoContainer.children('.label-info').remove();
     $infoContainer.children('#select-layer-message').remove();
     var $labelInfo = $("<div class='label-info' data-layer='" + key + "'></div>");
@@ -337,7 +340,7 @@ function geojsonMarkerOptions(key) {
     $.ajax({
       url: 'https://api.mapbox.com/v4/geocode/mapbox.places/' + e.latlng.lng + ',' + e.latlng.lat + '.json?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA',
       success: function(data) {
-        address = data.features[0].place_name;
+        var address = data.features[0].place_name;
         $labelInfo.append($form);
         $form.prepend("<label>Location:<input type='text' class='location' value='" + address + "' style='width: 301px'/></label><br/>");
         $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
