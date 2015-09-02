@@ -137,7 +137,7 @@ function geojsonMarkerOptions(key) {
             if (savedInfo[id] === undefined) {
               return;
             }
-            savedInfo[id].location = "Lat: " + newLoc.lat + ", Lng: " + newLoc.lng;
+            savedInfo[id].location = reverseGeocode(newLoc.lat, newLoc.lng);
           });
         }
         if (key === "cops") {
@@ -326,9 +326,11 @@ function geojsonMarkerOptions(key) {
       if (savedInfo[id] === undefined) {
         return;
       }
-      savedInfo[id].location = "Lat: " + newLoc.lat + ", Lng: " + newLoc.lng;
+      savedInfo[id].location = reverseGeocode(newLoc.lat, newLoc.lng);
     });
   }
+
+
 
   function addMarkerLabelInfo(key, marker, e) {
     $infoContainer.children('.label-info').remove();
@@ -337,18 +339,13 @@ function geojsonMarkerOptions(key) {
     $infoContainer.append($labelInfo);
     $labelInfo.prepend("<p>Peddler Type: " + key + " - ID: " + marker._leaflet_id + "</p><br/>");
     var $form = $("<form id='" + marker._leaflet_id + "'></form><br/>");
-    $.ajax({
-      url: 'https://api.mapbox.com/v4/geocode/mapbox.places/' + e.latlng.lng + ',' + e.latlng.lat + '.json?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA',
-      success: function(data) {
-        var address = data.features[0].place_name;
-        $labelInfo.append($form);
-        $form.prepend("<label>Location:<input type='text' class='location' value='" + address + "' style='width: 301px'/></label><br/>");
-        $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
-        $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
-        $form.append("<button class='save'>Save & Close</button>");
-        $form.append("<button class='delete'>Delete</button>");
-      },
-    });
+    $labelInfo.append($form);
+    $form.prepend("<label>Location:<input type='text' class='location' style='width: 301px'/></label><br/>");
+    $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
+    $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
+    $form.append("<button class='save'>Save & Close</button>");
+    $form.append("<button class='delete'>Delete</button>");
+    reverseGeocode(e.latlng.lat, e.latlng.lng, $form);
   }
 
 //addInfoLabeltoScreen function(1) can probably combine with V1 later
@@ -376,11 +373,12 @@ function geojsonMarkerOptions(key) {
     var $form = $("<form id='" + id + "'></form><br/>");
     $labelInfo.append($form);
     // console.log(selectorObject[newString].array);
-    $form.prepend("<label>Location:<input type='text' class='location' value=' Lat: " + selectorObject[newString].array[id]._latlng.lat + ", Lng: " + selectorObject[newString].array[id]._latlng.lng + "' style='width: 301px'/></label><br/>");
+    $form.prepend("<label>Location:<input type='text' class='location' style='width: 301px'/></label><br/>");
     $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
     $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
     $form.append("<button class='save'>Save & Close</button>");
     $form.append("<button class='delete'>Delete</button>");
+    reverseGeocode(selectorObject[newString].array[id]._latlng.lat, selectorObject[newString].array[id]._latlng.lng, $form);
   }
 
  //deleteMarkerOnPopupClick functions (2)
@@ -469,6 +467,20 @@ function geojsonMarkerOptions(key) {
     currentSelection = "";
   }
 
+  function reverseGeocode(lat, lng, $form) {
+    $.ajax({
+      url: 'https://api.mapbox.com/v4/geocode/mapbox.places/' + lng + ',' + lat + '.json?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA',
+      success: function(data) {
+        var address = data.features[0].place_name;
+        if ($form) {
+          $form.find('.location').attr("value", address);
+        }
+        else {
+          return address;
+        }
+      },
+    });
+  }
 
 
  $window.on("beforeunload", function() {
