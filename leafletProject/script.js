@@ -133,11 +133,11 @@ function geojsonMarkerOptions(key) {
           marker.on("dragend", function(e) {
             var newLoc = e.target._latlng;
             var id = e.target._leaflet_id;
-            $('form#' + id + ' .location').val("Lat: " + newLoc.lat + ", Lng: " + newLoc.lng);
+            // $('form#' + id + ' .location').val("Lat: " + newLoc.lat + ", Lng: " + newLoc.lng);
+            reverseGeocode(newLoc.lat, newLoc.lng, true, id);
             if (savedInfo[id] === undefined) {
               return;
             }
-            savedInfo[id].location = reverseGeocode(newLoc.lat, newLoc.lng);
           });
         }
         if (key === "cops") {
@@ -158,6 +158,7 @@ function geojsonMarkerOptions(key) {
   $map.on("click", ".remove", deleteMarkerOnPopupClickHandler);
   map.on("popupopen", addInfoLabelToScreenHandler);
   $infoContainer.on("click", "button", infoLabelDeleteSaveButtonHandler);
+  $infoContainer.on("change", "input", infoLabelSaveHandler);
   $window.on("keydown", hotkeyClearDeleteHandler);
   $window.on("keypress", popoModeOnOffHandler);
   $container.on("click", "div", assignSelectionHandler);
@@ -223,7 +224,23 @@ function geojsonMarkerOptions(key) {
     else {
       addMarkerLabelInfoV2.call(this, id);
     }
+    // saveInfo.call(this, id);
   }
+
+
+  function saveInfo(thisId) {
+    savedInfo[thisId] = {};
+    savedInfo[thisId].layer = $(this).parent().parent().data('layer');
+    savedInfo[thisId].location = $(this).parent().find('.location').val();
+    savedInfo[thisId].items = $(this).parent().find('.items').val();
+    savedInfo[thisId].prices = $(this).parent().find('.prices').val();
+  }
+
+  function saveInfoJustLoc(marker) {
+    savedInfo[marker._leaflet_id] = {};
+    reverseGeocode(marker._latlng.lat, marker._latlng.lng, true, marker._leaflet_id);
+  }
+
 
   function infoLabelDeleteSaveButtonHandler(e) {
     e.preventDefault();
@@ -237,8 +254,15 @@ function geojsonMarkerOptions(key) {
     }
     if ($(this).attr("class") === "save") {
       var thisId = $(this).parent().attr('id');
-      saveInfo.call(this, thisId);
+      // saveInfo.call(this, thisId);
+      $(this).parent().parent().fadeOut('slow', removeThis.call(this));
     }
+  }
+
+  function infoLabelSaveHandler(e) {
+    // var thisId = $(this).parent().parent().attr('id');
+    // saveInfo.call(this, thisId);
+    console.log('change');
   }
 
   function hotkeyClearDeleteHandler(e) {
@@ -317,16 +341,17 @@ function geojsonMarkerOptions(key) {
 
   function addMarkerToMap(key, marker) {
     selectorObject[key].layerGroup.addLayer(marker);
+    saveInfoJustLoc.call(this, marker);
     selectorObject[key].array[marker._leaflet_id] = marker;
     marker.bindPopup(key + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
     marker.on("dragend", function(e) {
       var newLoc = e.target._latlng;
       var id = e.target._leaflet_id;
-      $('form#' + id + ' .location').val("Lat: " + newLoc.lat + ", Lng: " + newLoc.lng);
-      if (savedInfo[id] === undefined) {
-        return;
-      }
-      savedInfo[id].location = reverseGeocode(newLoc.lat, newLoc.lng);
+      reverseGeocode(newLoc.lat, newLoc.lng, true, id);
+      // if (savedInfo[id] === undefined) {
+      //   return;
+      // }
+      // console.log(savedInfo[id].location);
     });
   }
 
@@ -345,7 +370,7 @@ function geojsonMarkerOptions(key) {
     $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
     $form.append("<button class='save'>Save & Close</button>");
     $form.append("<button class='delete'>Delete</button>");
-    reverseGeocode(e.latlng.lat, e.latlng.lng, $form);
+    // reverseGeocode(e.latlng.lat, e.latlng.lng, $form);
   }
 
 //addInfoLabeltoScreen function(1) can probably combine with V1 later
@@ -357,6 +382,7 @@ function geojsonMarkerOptions(key) {
     $labelInfo.prepend("<p>Peddler Type: " + savedInfo[id].layer + " - ID: " + id + "</p><br/>");
     var $form = $("<form id='" + id + "'></form><br/>");
     $labelInfo.append($form);
+    console.log(savedInfo[id].location);
     $form.prepend("<label>Location:<input type='text' class='location' value='" + savedInfo[id].location + "' style='width: 299px'/></label><br/>");
     $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" + savedInfo[id].items + "' style='width: 228px'/></label><br/>");
     $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + savedInfo[id].prices + "' style='width: 278px'/></label><br/>");
@@ -373,12 +399,19 @@ function geojsonMarkerOptions(key) {
     var $form = $("<form id='" + id + "'></form><br/>");
     $labelInfo.append($form);
     // console.log(selectorObject[newString].array);
-    $form.prepend("<label>Location:<input type='text' class='location' style='width: 301px'/></label><br/>");
-    $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
-    $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
+    // $form.prepend("<label>Location:<input type='text' class='location' style='width: 301px'/></label><br/>");
+    // $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
+    // $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
+    // $form.append("<button class='save'>Save & Close</button>");
+    // $form.append("<button class='delete'>Delete</button>");
+    console.log(savedInfo[id].location);
+    $form.prepend("<label>Location:<input type='text' class='location' value='" + savedInfo[id].location + "' style='width: 299px'/></label><br/>");
+    $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" + savedInfo[id].items + "' style='width: 228px'/></label><br/>");
+    $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + savedInfo[id].prices + "' style='width: 278px'/></label><br/>");
     $form.append("<button class='save'>Save & Close</button>");
     $form.append("<button class='delete'>Delete</button>");
-    reverseGeocode(selectorObject[newString].array[id]._latlng.lat, selectorObject[newString].array[id]._latlng.lng, $form);
+    // reverseGeocode(selectorObject[newString].array[id]._latlng.lat, selectorObject[newString].array[id]._latlng.lng, $form);
+    // saveInfo($form, id);
   }
 
  //deleteMarkerOnPopupClick functions (2)
@@ -408,14 +441,13 @@ function geojsonMarkerOptions(key) {
     $(this).remove();
   }
 
-  function saveInfo(thisId) {
-    savedInfo[thisId] = {};
-    savedInfo[thisId].layer = $(this).parent().parent().data('layer');
-    savedInfo[thisId].location = $(this).parent().find('.location').val();
-    savedInfo[thisId].items = $(this).parent().find('.items').val();
-    savedInfo[thisId].prices = $(this).parent().find('.prices').val();
-    $(this).parent().parent().fadeOut('slow', removeThis.call(this));
-  }
+  // function saveInfo($form, thisId) {
+  //   savedInfo[thisId] = {};
+  //   savedInfo[thisId].layer = $form.parent().data('layer');
+  //   savedInfo[thisId].location = $form.find('.location').val();
+  //   savedInfo[thisId].items = $form.find('.items').val();
+  //   savedInfo[thisId].prices = $form.find('.prices').val();
+  // }
 
   function popoMode(on) {
     if (on) {
@@ -467,16 +499,17 @@ function geojsonMarkerOptions(key) {
     currentSelection = "";
   }
 
-  function reverseGeocode(lat, lng, $form) {
+  function reverseGeocode(lat, lng, form, id) {
     $.ajax({
       url: 'https://api.mapbox.com/v4/geocode/mapbox.places/' + lng + ',' + lat + '.json?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA',
       success: function(data) {
         var address = data.features[0].place_name;
-        if ($form) {
-          $form.find('.location').attr("value", address);
+        if (form) {
+          $('form#' + id + ' .location').attr("value", address);
         }
-        else {
-          return address;
+        if (id) {
+          savedInfo[id].location = address;
+          console.log(savedInfo);
         }
       },
     });
