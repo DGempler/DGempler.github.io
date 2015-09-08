@@ -149,6 +149,7 @@ function geojsonMarkerOptions(key) {
     if (localStorage.getItem("savedInfo") !== null) {
       // localStorage.removeItem('savedInfo');
       savedInfo = JSON.parse(localStorage.savedInfo);
+      console.log(savedInfo);
     }
   })();
 
@@ -208,6 +209,7 @@ function geojsonMarkerOptions(key) {
 
   function addInfoLabelToScreenHandler(e) {
     var id = e.popup._source._leaflet_id;
+    console.log(id);
     if (savedInfo[id] === undefined) {
       var string = e.popup._content.toString();
       var newString = "";
@@ -219,9 +221,11 @@ function geojsonMarkerOptions(key) {
           break;
         }
       }
+      console.log("1");
       addMarkerLabelInfoV3.call(this, newString, id);
     }
     else {
+      console.log("2");
       addMarkerLabelInfoV2.call(this, id);
     }
     // saveInfo.call(this, id);
