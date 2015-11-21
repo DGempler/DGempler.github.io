@@ -236,22 +236,23 @@ $(function() {
   //on popup open
   function addInfoLabelToScreenHandler(e) {
     var id = e.popup._source._leaflet_id;
-    if (savedMarkerInfo[id] === undefined) {
-      var string = e.popup._content.toString();
-      var newString = "";
-      for (var i = 0; i < string.length; i++) {
-        if (string[i] !== " ") {
-          newString += string[i];
-        }
-        else {
-          break;
-        }
-      }
-      addMarkerLabelInfoIfNoSavedInfoExistsOnPopup.call(this, newString, id);
-    }
-    else {
+    // won't need this once localStorage starts working well
+    // if (savedMarkerInfo[id] === undefined) {
+    //   var string = e.popup._content.toString();
+    //   var newString = "";
+    //   for (var i = 0; i < string.length; i++) {
+    //     if (string[i] !== " ") {
+    //       newString += string[i];
+    //     }
+    //     else {
+    //       break;
+    //     }
+    //   }
+    //   addMarkerLabelInfoIfNoSavedInfoExistsOnPopup.call(this, newString, id);
+    // }
+    // else {
       populateMarkerLableInfoFromExistingSavedInfoOnPopupOpen.call(this, id);
-    }
+    // }
     // saveInfo.call(this, id);
   }
 
@@ -432,7 +433,10 @@ $(function() {
     $form.append("<button class='delete'>Delete</button>");
   }
 
+  //won't need this function once localStorage starts working well
+/*
   function addMarkerLabelInfoIfNoSavedInfoExistsOnPopup(newString, id) {
+    console.log('in addMarkerLabelInfoIfNoSavedInfoExistsOnPopup');
     $infoContainer.children('.label-info').remove();
     $infoContainer.children('#select-layer-message').remove();
     var $labelInfo = $("<div class='label-info' data-layer='" + newString + "'></div>");
@@ -457,7 +461,7 @@ $(function() {
     // reverseGeocode(selectorObject[newString].array[id]._latlng.lat, selectorObject[newString].array[id]._latlng.lng, $form);
     // saveInfo($form, id);
   }
-
+*/
    //deleteMarkerOnPopupClick functions (2), "this" refers to popup or info label click handler
    function deleteMarker(key, OnPopup) {
     if (OnPopup) {
