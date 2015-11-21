@@ -340,7 +340,6 @@ $(function() {
     savedMarkerInfo[id] = {};
     savedMarkerInfo[id].layer = layer;
     reverseGeocode(marker._latlng.lat, marker._latlng.lng, true, id);
-
     //here's where we get into storing markers for localStorage I think
     layerSelectorObject[layer].array[id] = marker;
 
@@ -349,7 +348,6 @@ $(function() {
                       "value='Delete' class='remove' id='" + id +
                       "' data-layer='" + layer + "'/>");
     marker.on("dragend", function(e) {
-      console.log(e.target);
       var newLoc = e.target._latlng;
       var id = e.target.id;
       reverseGeocode(newLoc.lat, newLoc.lng, true, id);
@@ -501,16 +499,30 @@ $(function() {
     });
   }
 
-/*
+
   $window.on("beforeunload", function() {
-    for (var key in layerSelectorObject) {
-      if (layerSelectorObject[key].array !== [])
-      localStorage[key] = JSON.stringify((layerSelectorObject[key].layerGroup).toGeoJSON());
+    for (var layer in layerSelectorObject) {
+      if (layerSelectorObject[layer].array.length !== 0) {
+        var layerArrayForLocalStorage = [];
+        layerSelectorObject[layer].array.forEach(function(marker) {
+          var geoJSONedMarker = marker.toGeoJSON();
+          var savedMarker = savedMarkerInfo[marker.id];
+          geoJSONedMarker.properties = {
+            location: savedMarker.location,
+            items: savedMarker.items,
+            prices: savedMarker.prices,
+          };
+          layerArrayForLocalStorage.push(JSON.stringify(geoJSONedMarker));
+        });
+
+        // localStorage[layer] = JSON.stringify((layerSelectorObject[layer].layerGroup).toGeoJSON());
+        localStorage[layer] = JSON.stringify(layerArrayForLocalStorage);
+      }
     }
-    localStorage.savedMarkerInfo = JSON.stringify(savedMarkerInfo);
+    // localStorage.savedMarkerInfo = JSON.stringify(savedMarkerInfo);
 
     // console.log(localStorage.seahawks);
-    // return "are you sure?";
+    return "are you sure?";
 
 
     // localStorage.seahawksArray = JSON.stringify(layerSelectorObject['seahawks'].array);
@@ -518,7 +530,7 @@ $(function() {
   // localStorage.removeItem('seahawks');
 
   });
-*/
+
 // $.ajax({
 //   url: 'https://api.mapbox.com/v4/geocode/{dataset}/{lon},{lat}.json?access_token=<your access token>',
 //   sucess: function(data) {
