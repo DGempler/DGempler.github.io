@@ -7,7 +7,7 @@ $(function() {
   var $body = $('body');
   var $window = $(window);
   var $infoContainer = $('#info-container');
-  var idCounter = 0;
+  var idCounter = 1;
 
   var savedMarkerInfo = {};
   var layerSelectorObject = {};
