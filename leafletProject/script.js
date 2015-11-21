@@ -169,18 +169,25 @@ $(function() {
                                               "input.leaflet-control-layers-selector",
                                               layerSelectorHandler);
 
-  function createMarkerAndInfoLabelHandler(e) {
-    var $layerSelector = $('.leaflet-control-layers-overlays input.leaflet-control-layers-selector');
-    console.log($layerSelector);
-    var $layerSelectorArray = $layerSelector.next();
-    console.log($layerSelectorArray);
-    var counter = 0;
-    $layerSelectorArray.each(function(index, value) {
+
+  function getIndexOfSelectedLayerFromLayerSelectorArray(layerSelectorArray) {
+    var foundIndex;
+    layerSelectorArray.each(function(index, value) {
       if ($(value).html().trim() === currentLayerSelected) {
-          counter = index;
+          foundIndex = index;
         }
       });
-    if ($layerSelector.eq(counter).is(':checked')) {
+    return foundIndex;
+  }
+
+
+  function createMarkerAndInfoLabelHandler(e) {
+    var $layerSelector = $('.leaflet-control-layers-overlays input.leaflet-control-layers-selector');
+    var $layerSelectorArray = $layerSelector.next();
+
+    var index = getIndexOfSelectedLayerFromLayerSelectorArray($layerSelectorArray);
+
+    if ($layerSelector.eq(index).is(':checked')) {
       for (var key in selectorObject) {
         if (currentLayerSelected === key) {
           var marker = singleMarkerMaker(e, key);
