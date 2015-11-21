@@ -301,8 +301,7 @@ $(function() {
       array: [],
       layerGroup: L.layerGroup(this.array)
     };
-    if (layer === "cops") {
-    }
+    if (layer === "cops") {}
     else {
       overlayMaps[layer] = layerSelectorObject[layer].layerGroup;
     }
