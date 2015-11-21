@@ -372,7 +372,9 @@ $(function() {
     selectorObject[key].array[marker._leaflet_id] = marker;
 
     //use your own IDs that later get saved to geoJSON object???
-    marker.bindPopup(key + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
+    marker.bindPopup(key + " id: " + marker._leaflet_id + "<br/><input type='button' " +
+                      "value='Delete' class='remove' id='" + marker._leaflet_id +
+                      "' data-layer='" + key + "'/>");
     marker.on("dragend", function(e) {
       var newLoc = e.target._latlng;
       var id = e.target._leaflet_id;
@@ -399,7 +401,6 @@ $(function() {
     $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
     $form.append("<button class='save'>Save & Close</button>");
     $form.append("<button class='delete'>Delete</button>");
-    // reverseGeocode(e.latlng.lat, e.latlng.lng, $form);
   }
 
   //addInfoLabeltoScreen function(1) can probably combine with V1 later
