@@ -265,7 +265,7 @@ $(function() {
     savedMarkerInfo[thisId].prices = $(this).parent().find('.prices').val();
   }*/
 
-  function findLayerAndDelete() {
+  function findLayerOfInfoLabelAndDelete() {
     for (var key in selectorObject) {
       if ($(this).parent().parent().data('layer') === key) {
         deleteMarker.call(this, key, false);
@@ -283,7 +283,7 @@ $(function() {
   function infoLabelDeleteSaveButtonHandler(e) {
     e.preventDefault();
     if ($(this).attr("class") === "delete") {
-      findLayerAndDelete.call(this);
+      findLayerOfInfoLabelAndDelete.call(this);
     }
     if ($(this).attr("class") === "save") {
       getIdSaveAndCloseInfoLabel.call(this);
@@ -325,7 +325,7 @@ $(function() {
       }
     }
     else {
-        currentLayerSelected = $(this).attr('id');
+      currentLayerSelected = $(this).attr('id');
     }
   }
 
