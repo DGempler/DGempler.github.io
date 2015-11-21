@@ -22,7 +22,7 @@ $(function() {
 
   var currentSelection;
 
-//create markers
+  //create markers
   markerGroupMaker("fruits", [31,40], [17, 0]);
   markerGroupMaker("flowers", [28, 40], [14, 40]);
   markerGroupMaker("trees", [31,43], [15, 43]);
@@ -33,12 +33,8 @@ $(function() {
   markerGroupMaker("cops", [26,32], [13, 32]);
 
 
-
-
-
-
-//"click" to "singleclick" plugin - Alpstein's leaflet-singleclick_0.7
-L.Map.addInitHook(function () {
+  //"click" to "singleclick" plugin - Alpstein's leaflet-singleclick_0.7
+  L.Map.addInitHook(function () {
     var that = this, h ;
     if (that.on) {
       that.on( 'click',    check_later );
@@ -61,7 +57,7 @@ L.Map.addInitHook(function () {
     }
   });
 
-//create map, add base & overlap layers, various controls to map
+  //create map, add base & overlap layers, various controls to map
   map = L.map('map', {
     center: [47.679223, -122.196983],
     zoom: 15,
@@ -109,14 +105,14 @@ L.Map.addInitHook(function () {
 
 
 
-function geojsonMarkerOptions(key) {
-  return {
-    icon: selectorObject[key].icon,
-    draggable: true,
-    title: key,
-    riseOnHover: true,
-  };
-}
+  function geojsonMarkerOptions(key) {
+    return {
+      icon: selectorObject[key].icon,
+      draggable: true,
+      title: key,
+      riseOnHover: true,
+    };
+  }
 
 
 
@@ -160,7 +156,7 @@ function geojsonMarkerOptions(key) {
   })();
 
 
-//event handlers
+  //event handlers
   map.on("singleclick", createMarkerAndInfoLabelHandler);
   $map.on("click", ".remove", deleteMarkerOnPopupClickHandler);
   map.on("popupopen", addInfoLabelToScreenHandler);
@@ -307,9 +303,9 @@ function geojsonMarkerOptions(key) {
     }
   }
 
-//Functions used in event handler functions
+  //Functions used in event handler functions
 
-//creates markers & also adds them to overlapMaps, which is used in layer control
+  //creates markers & also adds them to overlapMaps, which is used in layer control
   function markerGroupMaker(catName, iconSize, iconAnchor) {
     selectorObject[catName] = {
       icon: iconMaker(catName, iconSize, iconAnchor),
@@ -324,7 +320,7 @@ function geojsonMarkerOptions(key) {
     return selectorObject[catName];
   }
 
-//for adding layers to map automatically
+  //for adding layers to map automatically
   function loopLayerGroups() {
     var newArray = [];
     for (var key in selectorObject) {
@@ -336,7 +332,7 @@ function geojsonMarkerOptions(key) {
     return newArray;
   }
 
-//Create Marker and Info Label functions (3)
+  //Create Marker and Info Label functions (3)
   function singleMarkerMaker(event, currentKey) {
     return L.marker(event.latlng, {
       icon: selectorObject[currentKey].icon,
@@ -382,7 +378,7 @@ function geojsonMarkerOptions(key) {
     // reverseGeocode(e.latlng.lat, e.latlng.lng, $form);
   }
 
-//addInfoLabeltoScreen function(1) can probably combine with V1 later
+  //addInfoLabeltoScreen function(1) can probably combine with V1 later
   function addMarkerLabelInfoV2(id) {
     $infoContainer.children('.label-info').remove();
     $infoContainer.children('#select-layer-message').remove();
@@ -424,7 +420,7 @@ function geojsonMarkerOptions(key) {
     // saveInfo($form, id);
   }
 
- //deleteMarkerOnPopupClick functions (2)
+   //deleteMarkerOnPopupClick functions (2)
    function deleteMarker(key, OnPopup) {
     if (OnPopup) {
       selectorObject[key].layerGroup.removeLayer(selectorObject[key].array[$(this).attr('id')]);
@@ -487,7 +483,7 @@ function geojsonMarkerOptions(key) {
   }
 
 
-//Other functions
+  //Other functions
   function iconMaker(url, size, iconAnchor) {
     var icon = new IconMaker(url, size, iconAnchor);
     return L.icon(icon);
@@ -527,7 +523,7 @@ function geojsonMarkerOptions(key) {
   }
 
 
- $window.on("beforeunload", function() {
+  $window.on("beforeunload", function() {
     for (var key in selectorObject) {
       if (selectorObject[key].array !== [])
       localStorage[key] = JSON.stringify((selectorObject[key].layerGroup).toGeoJSON());
@@ -542,7 +538,7 @@ function geojsonMarkerOptions(key) {
 
   // localStorage.removeItem('seahawks');
 
-});
+  });
 
 // $.ajax({
 //   url: 'https://api.mapbox.com/v4/geocode/{dataset}/{lon},{lat}.json?access_token=<your access token>',
