@@ -323,7 +323,7 @@ $(function() {
   //creates markers & also adds them to overlapMaps, which is used in layer control
   function markerGroupMaker(catName, iconSize, iconAnchor) {
     selectorObject[catName] = {
-      icon: iconMaker(catName, iconSize, iconAnchor),
+      icon: produceIcon(catName, iconSize, iconAnchor),
       array: [],
       layerGroup: L.layerGroup(this.array)
     };
@@ -514,7 +514,7 @@ $(function() {
 
 
   //Other functions
-  function iconMaker(url, size, iconAnchor) {
+  function produceIcon(url, size, iconAnchor) {
     var icon = new IconMaker(url, size, iconAnchor);
     return L.icon(icon);
   }
