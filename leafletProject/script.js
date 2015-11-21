@@ -406,35 +406,6 @@ $(function() {
     $form.append("<button class='delete'>Delete Marker</button>");
   }
 
-  //won't need this function once localStorage starts working well
-/*
-  function addMarkerLabelInfoIfNoSavedInfoExistsOnPopup(newString, id) {
-    console.log('in addMarkerLabelInfoIfNoSavedInfoExistsOnPopup');
-    $infoContainer.children('.label-info').remove();
-    $infoContainer.children('#select-layer-message').remove();
-    var $labelInfo = $("<div class='label-info' data-layer='" + newString + "'></div>");
-    $infoContainer.append($labelInfo);
-    $labelInfo.prepend("<p>Peddler Type: " + newString + " - ID: " + id + "</p><br/>");
-    var $form = $("<form id='" + id + "'></form><br/>");
-    $labelInfo.append($form);
-    // console.log(selectorObject[newString].array);
-    // $form.prepend("<label>Location:<input type='text' class='location' style='width: 301px'/></label><br/>");
-    // $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
-    // $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
-    // $form.append("<button class='save'>Save & Close</button>");
-    // $form.append("<button class='delete'>Delete</button>");
-    $form.prepend("<label>Location:<input type='text' class='location' value='" +
-                  savedMarkerInfo[id].location + "' style='width: 299px'/></label><br/>");
-    $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" +
-                  savedMarkerInfo[id].items + "' style='width: 228px'/></label><br/>");
-    $form.append("<label>Enter Prices:<input type='text' class='prices' value='" +
-                  savedMarkerInfo[id].prices + "' style='width: 278px'/></label><br/>");
-    $form.append("<button class='save'>Save & Close</button>");
-    $form.append("<button class='delete'>Delete</button>");
-    // reverseGeocode(selectorObject[newString].array[id]._latlng.lat, selectorObject[newString].array[id]._latlng.lng, $form);
-    // saveInfo($form, id);
-  }
-*/
    //deleteMarkerOnPopupClick functions (2), "this" refers to popup or info label click handler
    function deleteMarker(key, OnPopup) {
     if (OnPopup) {
