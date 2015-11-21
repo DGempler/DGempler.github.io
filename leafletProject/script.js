@@ -115,7 +115,7 @@ $(function() {
   }
 
 
-
+/*
   (function localStorageRestore() {
     for (var key in selectorObject) {
       // localStorage.removeItem(key);
@@ -154,7 +154,7 @@ $(function() {
       savedMarkerInfo = JSON.parse(localStorage.savedMarkerInfo);
     }
   })();
-
+*/
 
   //event handlers
   map.on("singleclick", createMarkerAndInfoLabelHandler);
@@ -522,7 +522,7 @@ $(function() {
     });
   }
 
-
+/*
   $window.on("beforeunload", function() {
     for (var key in selectorObject) {
       if (selectorObject[key].array !== [])
@@ -539,7 +539,7 @@ $(function() {
   // localStorage.removeItem('seahawks');
 
   });
-
+*/
 // $.ajax({
 //   url: 'https://api.mapbox.com/v4/geocode/{dataset}/{lon},{lat}.json?access_token=<your access token>',
 //   sucess: function(data) {
