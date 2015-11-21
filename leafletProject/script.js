@@ -295,18 +295,18 @@ $(function() {
   //Functions used in event handler functions
 
   //creates markers & also adds them to overlapMaps, which is used in layer control
-  function markerGroupMaker(catName, iconSize, iconAnchor) {
-    layerSelectorObject[catName] = {
-      icon: produceIcon(catName, iconSize, iconAnchor),
+  function markerGroupMaker(layer, iconSize, iconAnchor) {
+    layerSelectorObject[layer] = {
+      icon: produceIcon(layer, iconSize, iconAnchor),
       array: [],
       layerGroup: L.layerGroup(this.array)
     };
-    if (catName === "cops") {
+    if (layer === "cops") {
     }
     else {
-      overlayMaps[catName] = layerSelectorObject[catName].layerGroup;
+      overlayMaps[layer] = layerSelectorObject[layer].layerGroup;
     }
-    return layerSelectorObject[catName];
+    return layerSelectorObject[layer];
   }
 
   //for adding layers to map automatically
