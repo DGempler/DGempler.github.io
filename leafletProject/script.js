@@ -161,7 +161,7 @@ $(function() {
   $map.on("click", ".remove", deleteMarkerOnPopupClickHandler);
   map.on("popupopen", addInfoLabelToScreenHandler);
   $infoContainer.on("click", "button", infoLabelDeleteSaveButtonHandler);
-  $infoContainer.on("change", "input", infoLabelSaveHandler);
+  // $infoContainer.on("change", "input", infoLabelSaveHandler);
   $window.on("keydown", hotkeyClearDeleteHandler);
   $window.on("keypress", popoModeOnOffHandler);
   $container.on("click", "div", assignSelectionHandler);
@@ -233,6 +233,7 @@ $(function() {
     }
   }
 
+  //on popup open
   function addInfoLabelToScreenHandler(e) {
     var id = e.popup._source._leaflet_id;
     if (savedMarkerInfo[id] === undefined) {
@@ -249,7 +250,7 @@ $(function() {
       addMarkerLabelInfoIfNoSavedInfoExistsOnPopup.call(this, newString, id);
     }
     else {
-      populateMarkerLableInfoFromExistingSavedInfo.call(this, id);
+      populateMarkerLableInfoFromExistingSavedInfoOnPopupOpen.call(this, id);
     }
     // saveInfo.call(this, id);
   }
@@ -261,29 +262,41 @@ $(function() {
     savedMarkerInfo[thisId].location = $(this).parent().find('.location').val();
     savedMarkerInfo[thisId].items = $(this).parent().find('.items').val();
     savedMarkerInfo[thisId].prices = $(this).parent().find('.prices').val();
+    console.log(savedMarkerInfo[thisId]);
+  }
+
+  function findLayerAndDelete() {
+    console.log('in findLayerAndDelete');
+    for (var key in selectorObject) {
+      if ($(this).parent().parent().data('layer') === key) {
+        console.log('calling');
+        deleteMarker.call(this, key, false);
+        deleteInfoLabel.call(this);
+      }
+    }
+  }
+
+  function getIdSaveAndCloseInfoLabel() {
+    var thisId = $(this).parent().attr('id');
+    saveInfo.call(this, thisId);
+    $(this).parent().parent().fadeOut('slow', removeThis.call(this));
   }
 
   function infoLabelDeleteSaveButtonHandler(e) {
     e.preventDefault();
     if ($(this).attr("class") === "delete") {
-      for (var key in selectorObject) {
-        if ($(this).parent().parent().data('layer') === key) {
-          deleteMarker.call(this, key, false);
-          deleteInfoLabel.call(this);
-        }
-      }
+      findLayerAndDelete.call(this);
     }
     if ($(this).attr("class") === "save") {
-      var thisId = $(this).parent().attr('id');
-      // saveInfo.call(this, thisId);
-      $(this).parent().parent().fadeOut('slow', removeThis.call(this));
+      getIdSaveAndCloseInfoLabel.call(this);
     }
   }
 
-  function infoLabelSaveHandler(e) {
-    // var thisId = $(this).parent().parent().attr('id');
-    // saveInfo.call(this, thisId);
-  }
+  //not being used at the moment, was being called every time on change in info container
+  // function infoLabelSaveHandler(e) {
+  //   var thisId = $(this).parent().parent().attr('id');
+  //   saveInfo.call(this, thisId);
+  // }
 
   function hotkeyClearDeleteHandler(e) {
     if(e.keyCode === 27) {
@@ -357,23 +370,41 @@ $(function() {
     });
   }
 
+/*
+  function saveInfo($form, thisId) {
+    savedMarkerInfo[thisId] = {};
+    savedMarkerInfo[thisId].layer = $form.parent().data('layer');
+    savedMarkerInfo[thisId].location = $form.find('.location').val();
+    savedMarkerInfo[thisId].items = $form.find('.items').val();
+    savedMarkerInfo[thisId].prices = $form.find('.prices').val();
+  }
 
+  function saveInfo(thisId) {
+    savedMarkerInfo[thisId] = {};
+    savedMarkerInfo[thisId].layer = $(this).parent().parent().data('layer');
+    savedMarkerInfo[thisId].location = $(this).parent().find('.location').val();
+    savedMarkerInfo[thisId].items = $(this).parent().find('.items').val();
+    savedMarkerInfo[thisId].prices = $(this).parent().find('.prices').val();
+    console.log(savedMarkerInfo[thisId]);
+  }
+*/
 
   function addMarkerToMap(key, marker) {
     selectorObject[key].layerGroup.addLayer(marker);
+    var id = marker._leaflet_id;
 
-    //create an object that stores .location, ...
+    //create an object that stores .location, label info...
     //use own ID?
-    savedMarkerInfo[marker._leaflet_id] = {};
-
-    reverseGeocode(marker._latlng.lat, marker._latlng.lng, true, marker._leaflet_id);
+    savedMarkerInfo[id] = {};
+    savedMarkerInfo[id].layer = key;
+    reverseGeocode(marker._latlng.lat, marker._latlng.lng, true, id);
 
     //here's where we get into storing markers for localStorage I think
-    selectorObject[key].array[marker._leaflet_id] = marker;
+    selectorObject[key].array[id] = marker;
 
     //use your own IDs that later get saved to geoJSON object???
-    marker.bindPopup(key + " id: " + marker._leaflet_id + "<br/><input type='button' " +
-                      "value='Delete' class='remove' id='" + marker._leaflet_id +
+    marker.bindPopup(key + " id: " + id + "<br/><input type='button' " +
+                      "value='Delete' class='remove' id='" + id +
                       "' data-layer='" + key + "'/>");
     marker.on("dragend", function(e) {
       var newLoc = e.target._latlng;
@@ -404,7 +435,7 @@ $(function() {
   }
 
   //addInfoLabeltoScreen function(1) can probably combine with V1 later
-  function populateMarkerLableInfoFromExistingSavedInfo(id) {
+  function populateMarkerLableInfoFromExistingSavedInfoOnPopupOpen(id) {
     $infoContainer.children('.label-info').remove();
     $infoContainer.children('#select-layer-message').remove();
     var $labelInfo = $("<div class='label-info' data-layer='" + savedMarkerInfo[id].layer + "'></div>");
@@ -454,6 +485,7 @@ $(function() {
       delete selectorObject[key].array[$(this).attr('id')];
     }
     else {
+      console.log('id is ' + $(this).parent().attr('id'));
       selectorObject[key].layerGroup.removeLayer(selectorObject[key].array[$(this).parent().attr('id')]);
       delete selectorObject[key].array[$(this).parent().attr('id')];
     }
