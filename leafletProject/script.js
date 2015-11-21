@@ -105,6 +105,9 @@ $(function() {
 
 
 
+
+
+/*
   function geojsonMarkerOptions(key) {
     return {
       icon: layerSelectorObject[key].icon,
@@ -113,9 +116,6 @@ $(function() {
       riseOnHover: true,
     };
   }
-
-
-/*
   (function localStorageRestore() {
     for (var key in layerSelectorObject) {
       // localStorage.removeItem(key);
