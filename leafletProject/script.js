@@ -445,10 +445,12 @@ $(function() {
     // saveInfo($form, id);
   }
 
-   //deleteMarkerOnPopupClick functions (2)
+   //deleteMarkerOnPopupClick functions (2), "this" refers to popup or info label click handler
    function deleteMarker(key, OnPopup) {
     if (OnPopup) {
+      //remove from layerGroup (map)
       selectorObject[key].layerGroup.removeLayer(selectorObject[key].array[$(this).attr('id')]);
+      //remove record of layer
       delete selectorObject[key].array[$(this).attr('id')];
     }
     else {
@@ -457,6 +459,7 @@ $(function() {
     }
   }
 
+  // "this" refers to popup or info label click handler
   function deleteInfoLabel(OnPopup) {
     if (OnPopup) {
       $('input#' + $(this).attr('id')).remove();
@@ -465,6 +468,7 @@ $(function() {
     else {
       $(this).parent().parent().fadeOut('slow', removeThis.call(this));
     }
+    //remove record of layer
     delete savedMarkerInfo[$(this).attr('id')];
   }
 
