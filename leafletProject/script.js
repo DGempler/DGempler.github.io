@@ -184,8 +184,8 @@ $(function() {
     for (var key in selectorObject) {
       if (currentLayerSelected === key) {
         var marker = singleMarkerMaker(e, key);
-        addMarkerToMap.call(this, key, marker);
-        addMarkerLabelInfoOnMarkerCreation.call(this, key, marker, e);
+        addMarkerToMap(key, marker);
+        addMarkerLabelInfoOnMarkerCreation(key, marker, e);
       }
     }
   }
