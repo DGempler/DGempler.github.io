@@ -71,14 +71,19 @@ L.Map.addInitHook(function () {
   base = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.4a7eb7cb/{z}/{x}/{y}.png?' +
                       'access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmR' +
                       'jZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#4', {
-    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a>' +
+                      'contributors, <a href="http://creativecommons.org/licenses/by-sa' +
+                      '/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
     maxZoom: 20
-  }).addTo(map);
+  })
+  .addTo(map);
 
   baseSat = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.n947bfnn/{z}/{x}/{y}.png?' +
                         'access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRj' +
                         'ZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#19/', {
-    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a>' +
+                  'contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">' +
+                  'CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
     maxZoom: 20
   });
 
@@ -129,7 +134,9 @@ function geojsonMarkerOptions(key) {
           var marker = object[index];
           selectorObject[key].array[index] = marker;
           var name = object[index].options.title;
-          marker.bindPopup(name + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + name + "'/>");
+          marker.bindPopup(name + " id: " + marker._leaflet_id + "<br/><input type='button' " +
+                            "value='Delete' class='remove' id='" + marker._leaflet_id +
+                            "' data-layer='" + name + "'/>");
           marker.on("dragend", function(e) {
             var newLoc = e.target._latlng;
             var id = e.target._leaflet_id;
@@ -149,7 +156,6 @@ function geojsonMarkerOptions(key) {
     if (localStorage.getItem("savedInfo") !== null) {
       // localStorage.removeItem('savedInfo');
       savedInfo = JSON.parse(localStorage.savedInfo);
-      console.log(savedInfo);
     }
   })();
 
@@ -163,7 +169,9 @@ function geojsonMarkerOptions(key) {
   $window.on("keydown", hotkeyClearDeleteHandler);
   $window.on("keypress", popoModeOnOffHandler);
   $container.on("click", "div", assignSelectionHandler);
-  $('div.leaflet-control-layers-overlays').on("click", "input.leaflet-control-layers-selector", layerSelectorHandler);
+  $('div.leaflet-control-layers-overlays').on("click",
+                                              "input.leaflet-control-layers-selector",
+                                              layerSelectorHandler);
 
   function createMarkerAndInfoLabelHandler(e) {
     var $layerSelector = $('.leaflet-control-layers-overlays input.leaflet-control-layers-selector');
@@ -185,7 +193,8 @@ function geojsonMarkerOptions(key) {
     }
     else {
       $infoContainer.children('.label-info').remove();
-      var $selectLayerMessage = $("<br/><p id='select-layer-message'>This layer is currently turned off!</p>").hide();
+      var $selectLayerMessage = $("<br/><p id='select-layer-message'>" +
+                                  "This layer is currently turned off!</p>").hide();
       $selectLayerMessage.css('margin-top', '25px').css('font-size', '24px').css('color', 'white');
       $infoContainer.append($selectLayerMessage);
       $selectLayerMessage.fadeIn(600, function() {
@@ -209,7 +218,6 @@ function geojsonMarkerOptions(key) {
 
   function addInfoLabelToScreenHandler(e) {
     var id = e.popup._source._leaflet_id;
-    console.log(id);
     if (savedInfo[id] === undefined) {
       var string = e.popup._content.toString();
       var newString = "";
@@ -221,11 +229,9 @@ function geojsonMarkerOptions(key) {
           break;
         }
       }
-      console.log("1");
       addMarkerLabelInfoV3.call(this, newString, id);
     }
     else {
-      console.log("2");
       addMarkerLabelInfoV2.call(this, id);
     }
     // saveInfo.call(this, id);
@@ -266,7 +272,6 @@ function geojsonMarkerOptions(key) {
   function infoLabelSaveHandler(e) {
     // var thisId = $(this).parent().parent().attr('id');
     // saveInfo.call(this, thisId);
-    console.log('change');
   }
 
   function hotkeyClearDeleteHandler(e) {
@@ -386,7 +391,6 @@ function geojsonMarkerOptions(key) {
     $labelInfo.prepend("<p>Peddler Type: " + savedInfo[id].layer + " - ID: " + id + "</p><br/>");
     var $form = $("<form id='" + id + "'></form><br/>");
     $labelInfo.append($form);
-    console.log(savedInfo[id].location);
     $form.prepend("<label>Location:<input type='text' class='location' value='" + savedInfo[id].location + "' style='width: 299px'/></label><br/>");
     $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" + savedInfo[id].items + "' style='width: 228px'/></label><br/>");
     $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + savedInfo[id].prices + "' style='width: 278px'/></label><br/>");
@@ -408,10 +412,12 @@ function geojsonMarkerOptions(key) {
     // $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
     // $form.append("<button class='save'>Save & Close</button>");
     // $form.append("<button class='delete'>Delete</button>");
-    console.log(savedInfo[id].location);
-    $form.prepend("<label>Location:<input type='text' class='location' value='" + savedInfo[id].location + "' style='width: 299px'/></label><br/>");
-    $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" + savedInfo[id].items + "' style='width: 228px'/></label><br/>");
-    $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + savedInfo[id].prices + "' style='width: 278px'/></label><br/>");
+    $form.prepend("<label>Location:<input type='text' class='location' value='" +
+                  savedInfo[id].location + "' style='width: 299px'/></label><br/>");
+    $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" +
+                  savedInfo[id].items + "' style='width: 228px'/></label><br/>");
+    $form.append("<label>Enter Prices:<input type='text' class='prices' value='" +
+                  savedInfo[id].prices + "' style='width: 278px'/></label><br/>");
     $form.append("<button class='save'>Save & Close</button>");
     $form.append("<button class='delete'>Delete</button>");
     // reverseGeocode(selectorObject[newString].array[id]._latlng.lat, selectorObject[newString].array[id]._latlng.lng, $form);
@@ -505,7 +511,9 @@ function geojsonMarkerOptions(key) {
 
   function reverseGeocode(lat, lng, form, id) {
     $.ajax({
-      url: 'https://api.mapbox.com/v4/geocode/mapbox.places/' + lng + ',' + lat + '.json?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA',
+      url: 'https://api.mapbox.com/v4/geocode/mapbox.places/' + lng + ',' + lat +
+            '.json?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMj' +
+            'BhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA',
       success: function(data) {
         var address = data.features[0].place_name;
         if (form) {
@@ -513,7 +521,6 @@ function geojsonMarkerOptions(key) {
         }
         if (id) {
           savedInfo[id].location = address;
-          console.log(savedInfo);
         }
       },
     });
