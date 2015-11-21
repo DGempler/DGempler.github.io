@@ -485,18 +485,19 @@ $(function() {
   // }
 
   function popoMode(on) {
+    var $secretMsg;
     if (on) {
       map.addLayer(selectorObject["cops"].layerGroup);
       control.addOverlay(selectorObject["cops"].layerGroup, "cops");
       currentLayerSelected = "cops";
-      var $secretMsg = $('<p id="secret" display="none">ACTIVATED secret po-po mode</p>');
+      $secretMsg = $('<p id="secret" display="none">ACTIVATED secret po-po mode</p>');
     }
     else {
       control.removeLayer(selectorObject["cops"].layerGroup);
       map.removeLayer(selectorObject["cops"].layerGroup);
       $infoContainer.children('.label-info').attr("data", "cops").remove();
       currentLayerSelected = "";
-      var $secretMsg = $('<p id="secret" display="none">DEACTIVATED secret po-po mode</p>');
+      $secretMsg = $('<p id="secret" display="none">DEACTIVATED secret po-po mode</p>');
     }
     $body.append($secretMsg);
     $secretMsg.css("color", "gray");
