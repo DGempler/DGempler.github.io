@@ -20,7 +20,7 @@ $(function() {
   var baseSat;
   var baseMaps;
 
-  var currentSelection;
+  var currentLayerSelected;
 
   //create markers
   markerGroupMaker("fruits", [31,40], [17, 0]);
@@ -171,16 +171,18 @@ $(function() {
 
   function createMarkerAndInfoLabelHandler(e) {
     var $layerSelector = $('.leaflet-control-layers-overlays input.leaflet-control-layers-selector');
+    console.log($layerSelector);
     var $layerSelectorArray = $layerSelector.next();
+    console.log($layerSelectorArray);
     var counter = 0;
     $layerSelectorArray.each(function(index, value) {
-      if ($(value).html().trim() === currentSelection) {
+      if ($(value).html().trim() === currentLayerSelected) {
           counter = index;
         }
       });
     if ($layerSelector.eq(counter).is(':checked')) {
       for (var key in selectorObject) {
-        if (currentSelection === key) {
+        if (currentLayerSelected === key) {
           var marker = singleMarkerMaker(e, key);
           addMarkerToMap.call(this, key, marker);
           addMarkerLabelInfoOnMarkerCreation.call(this, key, marker, e);
@@ -272,7 +274,7 @@ $(function() {
 
   function hotkeyClearDeleteHandler(e) {
     if(e.keyCode === 27) {
-      currentSelection = "";
+      currentLayerSelected = "";
     }
     if (e.keyCode === 8 && e.shiftKey === true) {
       if (confirm("Are you sure you want to delete all data?")) {
@@ -299,7 +301,7 @@ $(function() {
       }
     }
     else {
-        currentSelection = $(this).attr('id');
+        currentLayerSelected = $(this).attr('id');
     }
   }
 
@@ -459,14 +461,14 @@ $(function() {
     if (on) {
       map.addLayer(selectorObject["cops"].layerGroup);
       control.addOverlay(selectorObject["cops"].layerGroup, "cops");
-      currentSelection = "cops";
+      currentLayerSelected = "cops";
       var $secretMsg = $('<p id="secret" display="none">ACTIVATED secret po-po mode</p>');
     }
     else {
       control.removeLayer(selectorObject["cops"].layerGroup);
       map.removeLayer(selectorObject["cops"].layerGroup);
       $infoContainer.children('.label-info').attr("data", "cops").remove();
-      currentSelection = "";
+      currentLayerSelected = "";
       var $secretMsg = $('<p id="secret" display="none">DEACTIVATED secret po-po mode</p>');
     }
     $body.append($secretMsg);
@@ -476,7 +478,7 @@ $(function() {
 
   function layerSelectorHandler() {
     if (!($(this).is(':checked'))) {
-      currentSelection = "";
+      currentLayerSelected = "";
     }
     var chosenLayer = $(this).html().trim();
     $infoContainer.children('.label-info').attr("data", chosenLayer).remove();
@@ -502,7 +504,7 @@ $(function() {
     }
     $('.label-info').remove();
     savedMarkerInfo = {};
-    currentSelection = "";
+    currentLayerSelected = "";
   }
 
   function reverseGeocode(lat, lng, form, id) {
