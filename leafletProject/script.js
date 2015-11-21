@@ -161,7 +161,7 @@ $(function() {
   $map.on("click", ".remove", deleteMarkerOnPopupClickHandler);
   map.on("popupopen", addInfoLabelToScreenHandler);
   $infoContainer.on("click", "button", infoLabelDeleteSaveButtonHandler);
-  // $infoContainer.on("change", "input", infoLabelSaveHandler);
+  $infoContainer.on("change", "input", infoLabelSaveHandler);
   $window.on("keydown", hotkeyClearDeleteHandler);
   $window.on("keypress", popoModeOnOffHandler);
   $container.on("click", "div", assignSelectionHandler);
@@ -236,34 +236,8 @@ $(function() {
   //on popup open
   function addInfoLabelToScreenHandler(e) {
     var id = e.popup._source._leaflet_id;
-    // won't need this once localStorage starts working well
-    // if (savedMarkerInfo[id] === undefined) {
-    //   var string = e.popup._content.toString();
-    //   var newString = "";
-    //   for (var i = 0; i < string.length; i++) {
-    //     if (string[i] !== " ") {
-    //       newString += string[i];
-    //     }
-    //     else {
-    //       break;
-    //     }
-    //   }
-    //   addMarkerLabelInfoIfNoSavedInfoExistsOnPopup.call(this, newString, id);
-    // }
-    // else {
-      populateMarkerLableInfoFromExistingSavedInfoOnPopupOpen.call(this, id);
-    // }
-    // saveInfo.call(this, id);
+    populateMarkerLableInfoFromExistingSavedInfoOnPopupOpen.call(this, id);
   }
-
-
-/*  function saveInfo(thisId) {
-    savedMarkerInfo[thisId] = {};
-    savedMarkerInfo[thisId].layer = $(this).parent().parent().data('layer');
-    savedMarkerInfo[thisId].location = $(this).parent().find('.location').val();
-    savedMarkerInfo[thisId].items = $(this).parent().find('.items').val();
-    savedMarkerInfo[thisId].prices = $(this).parent().find('.prices').val();
-  }*/
 
   function findLayerOfInfoLabelAndDelete() {
     for (var key in selectorObject) {
@@ -285,16 +259,15 @@ $(function() {
     if ($(this).attr("class") === "delete") {
       findLayerOfInfoLabelAndDelete.call(this);
     }
-    if ($(this).attr("class") === "save") {
+    if ($(this).attr("class") === "close") {
       getIdSaveAndCloseInfoLabel.call(this);
     }
   }
 
-  //not being used at the moment, was being called every time on change in info container
-  // function infoLabelSaveHandler(e) {
-  //   var thisId = $(this).parent().parent().attr('id');
-  //   saveInfo.call(this, thisId);
-  // }
+  function infoLabelSaveHandler(e) {
+    var thisId = $(this).parent().parent().attr('id');
+    saveInfo.call(this, thisId);
+  }
 
   function hotkeyClearDeleteHandler(e) {
     if(e.keyCode === 27) {
@@ -410,8 +383,8 @@ $(function() {
     $form.prepend("<label>Location:<input type='text' class='location' style='width: 301px'/></label><br/>");
     $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
     $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
-    $form.append("<button class='save'>Save & Close</button>");
-    $form.append("<button class='delete'>Delete</button>");
+    $form.append("<button class='close'>Close</button>");
+    $form.append("<button class='delete'>Delete Marker</button>");
   }
 
   //addInfoLabeltoScreen function(1) can probably combine with V1 later
@@ -429,8 +402,8 @@ $(function() {
     $form.prepend("<label>Location:<input type='text' class='location' value='" + savedMarkerInfo[id].location + "' style='width: 299px'/></label><br/>");
     $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" + items + "' style='width: 228px'/></label><br/>");
     $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + prices + "' style='width: 278px'/></label><br/>");
-    $form.append("<button class='save'>Save & Close</button>");
-    $form.append("<button class='delete'>Delete</button>");
+    $form.append("<button class='close'>Close</button>");
+    $form.append("<button class='delete'>Delete Marker</button>");
   }
 
   //won't need this function once localStorage starts working well
