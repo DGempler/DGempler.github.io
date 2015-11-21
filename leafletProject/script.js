@@ -256,20 +256,17 @@ $(function() {
   }
 
 
-  function saveInfo(thisId) {
+/*  function saveInfo(thisId) {
     savedMarkerInfo[thisId] = {};
     savedMarkerInfo[thisId].layer = $(this).parent().parent().data('layer');
     savedMarkerInfo[thisId].location = $(this).parent().find('.location').val();
     savedMarkerInfo[thisId].items = $(this).parent().find('.items').val();
     savedMarkerInfo[thisId].prices = $(this).parent().find('.prices').val();
-    console.log(savedMarkerInfo[thisId]);
-  }
+  }*/
 
   function findLayerAndDelete() {
-    console.log('in findLayerAndDelete');
     for (var key in selectorObject) {
       if ($(this).parent().parent().data('layer') === key) {
-        console.log('calling');
         deleteMarker.call(this, key, false);
         deleteInfoLabel.call(this);
       }
@@ -370,25 +367,6 @@ $(function() {
     });
   }
 
-/*
-  function saveInfo($form, thisId) {
-    savedMarkerInfo[thisId] = {};
-    savedMarkerInfo[thisId].layer = $form.parent().data('layer');
-    savedMarkerInfo[thisId].location = $form.find('.location').val();
-    savedMarkerInfo[thisId].items = $form.find('.items').val();
-    savedMarkerInfo[thisId].prices = $form.find('.prices').val();
-  }
-
-  function saveInfo(thisId) {
-    savedMarkerInfo[thisId] = {};
-    savedMarkerInfo[thisId].layer = $(this).parent().parent().data('layer');
-    savedMarkerInfo[thisId].location = $(this).parent().find('.location').val();
-    savedMarkerInfo[thisId].items = $(this).parent().find('.items').val();
-    savedMarkerInfo[thisId].prices = $(this).parent().find('.prices').val();
-    console.log(savedMarkerInfo[thisId]);
-  }
-*/
-
   function addMarkerToMap(key, marker) {
     selectorObject[key].layerGroup.addLayer(marker);
     var id = marker._leaflet_id;
@@ -420,12 +398,13 @@ $(function() {
 
 
   function addMarkerLabelInfoOnMarkerCreation(key, marker, e) {
+    var id = marker._leaflet_id;
     $infoContainer.children('.label-info').remove();
     $infoContainer.children('#select-layer-message').remove();
     var $labelInfo = $("<div class='label-info' data-layer='" + key + "'></div>");
     $infoContainer.append($labelInfo);
-    $labelInfo.prepend("<p>Peddler Type: " + key + " - ID: " + marker._leaflet_id + "</p><br/>");
-    var $form = $("<form id='" + marker._leaflet_id + "'></form><br/>");
+    $labelInfo.prepend("<p>Peddler Type: " + key + " - ID: " + id + "</p><br/>");
+    var $form = $("<form id='" + id + "'></form><br/>");
     $labelInfo.append($form);
     $form.prepend("<label>Location:<input type='text' class='location' style='width: 301px'/></label><br/>");
     $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
@@ -436,6 +415,9 @@ $(function() {
 
   //addInfoLabeltoScreen function(1) can probably combine with V1 later
   function populateMarkerLableInfoFromExistingSavedInfoOnPopupOpen(id) {
+    var items = savedMarkerInfo[id].items ? savedMarkerInfo[id].items : "";
+    var prices = savedMarkerInfo[id].prices ? savedMarkerInfo[id].prices : "";
+
     $infoContainer.children('.label-info').remove();
     $infoContainer.children('#select-layer-message').remove();
     var $labelInfo = $("<div class='label-info' data-layer='" + savedMarkerInfo[id].layer + "'></div>");
@@ -444,8 +426,8 @@ $(function() {
     var $form = $("<form id='" + id + "'></form><br/>");
     $labelInfo.append($form);
     $form.prepend("<label>Location:<input type='text' class='location' value='" + savedMarkerInfo[id].location + "' style='width: 299px'/></label><br/>");
-    $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" + savedMarkerInfo[id].items + "' style='width: 228px'/></label><br/>");
-    $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + savedMarkerInfo[id].prices + "' style='width: 278px'/></label><br/>");
+    $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" + items + "' style='width: 228px'/></label><br/>");
+    $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + prices + "' style='width: 278px'/></label><br/>");
     $form.append("<button class='save'>Save & Close</button>");
     $form.append("<button class='delete'>Delete</button>");
   }
@@ -485,7 +467,6 @@ $(function() {
       delete selectorObject[key].array[$(this).attr('id')];
     }
     else {
-      console.log('id is ' + $(this).parent().attr('id'));
       selectorObject[key].layerGroup.removeLayer(selectorObject[key].array[$(this).parent().attr('id')]);
       delete selectorObject[key].array[$(this).parent().attr('id')];
     }
@@ -508,13 +489,10 @@ $(function() {
     $(this).remove();
   }
 
-  // function saveInfo($form, thisId) {
-  //   savedMarkerInfo[thisId] = {};
-  //   savedMarkerInfo[thisId].layer = $form.parent().data('layer');
-  //   savedMarkerInfo[thisId].location = $form.find('.location').val();
-  //   savedMarkerInfo[thisId].items = $form.find('.items').val();
-  //   savedMarkerInfo[thisId].prices = $form.find('.prices').val();
-  // }
+  function saveInfo(id) {
+    savedMarkerInfo[id].items = $(this).parent().find('.items').val();
+    savedMarkerInfo[id].prices = $(this).parent().find('.prices').val();
+  }
 
   function popoMode(on) {
     var $secretMsg;
