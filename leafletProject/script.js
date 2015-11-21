@@ -9,7 +9,7 @@ $(function() {
   var $infoContainer = $('#info-container');
 
   var savedMarkerInfo = {};
-  var selectorObject = {};
+  var layerSelectorObject = {};
   var overlayMaps = {};
 
   var map;
@@ -107,7 +107,7 @@ $(function() {
 
   function geojsonMarkerOptions(key) {
     return {
-      icon: selectorObject[key].icon,
+      icon: layerSelectorObject[key].icon,
       draggable: true,
       title: key,
       riseOnHover: true,
@@ -117,18 +117,18 @@ $(function() {
 
 /*
   (function localStorageRestore() {
-    for (var key in selectorObject) {
+    for (var key in layerSelectorObject) {
       // localStorage.removeItem(key);
       if (localStorage.getItem(key) !== null) {
-        selectorObject[key].layerGroup = L.geoJson(JSON.parse(localStorage[key]), {
+        layerSelectorObject[key].layerGroup = L.geoJson(JSON.parse(localStorage[key]), {
           pointToLayer: function (feature, latlng) {
             return L.marker(latlng, geojsonMarkerOptions(key));
           }
         }).addTo(map);
-        for (var index in selectorObject[key].layerGroup._layers) {
-          var object = selectorObject[key].layerGroup._layers;
+        for (var index in layerSelectorObject[key].layerGroup._layers) {
+          var object = layerSelectorObject[key].layerGroup._layers;
           var marker = object[index];
-          selectorObject[key].array[index] = marker;
+          layerSelectorObject[key].array[index] = marker;
           var name = object[index].options.title;
           marker.bindPopup(name + " id: " + marker._leaflet_id + "<br/><input type='button' " +
                             "value='Delete' class='remove' id='" + marker._leaflet_id +
@@ -144,8 +144,8 @@ $(function() {
           });
         }
         if (key === "cops") {
-          control.removeLayer(selectorObject["cops"].layerGroup);
-          map.removeLayer(selectorObject["cops"].layerGroup);
+          control.removeLayer(layerSelectorObject["cops"].layerGroup);
+          map.removeLayer(layerSelectorObject["cops"].layerGroup);
         }
       }
     }
@@ -195,7 +195,7 @@ $(function() {
   }
 
   function createMarkerBasedOnCurrentLayerSelected(e) {
-    for (var key in selectorObject) {
+    for (var key in layerSelectorObject) {
       if (currentLayerSelected === key) {
         var marker = singleMarkerMaker(e, key);
         addMarkerToMap(key, marker);
@@ -225,7 +225,7 @@ $(function() {
 
 
   function deleteMarkerOnPopupClickHandler() {
-    for (var key in selectorObject) {
+    for (var key in layerSelectorObject) {
       if (this.dataset.layer === key) {
         deleteMarker.call(this, key, true);
         deleteInfoLabel.call(this, true);
@@ -240,7 +240,7 @@ $(function() {
   }
 
   function findLayerOfInfoLabelAndDelete() {
-    for (var key in selectorObject) {
+    for (var key in layerSelectorObject) {
       if ($(this).parent().parent().data('layer') === key) {
         deleteMarker.call(this, key, false);
         deleteInfoLabel.call(this);
@@ -282,7 +282,7 @@ $(function() {
 
   function popoModeOnOffHandler(e) {
     if (e.keyCode === 16 && e.altKey === true && e.shiftKey === true) {
-      if (!map.hasLayer(selectorObject["cops"].layerGroup)) {
+      if (!map.hasLayer(layerSelectorObject["cops"].layerGroup)) {
         popoMode.call(this, true);
       }
       else {
@@ -306,7 +306,7 @@ $(function() {
 
   //creates markers & also adds them to overlapMaps, which is used in layer control
   function markerGroupMaker(catName, iconSize, iconAnchor) {
-    selectorObject[catName] = {
+    layerSelectorObject[catName] = {
       icon: produceIcon(catName, iconSize, iconAnchor),
       array: [],
       layerGroup: L.layerGroup(this.array)
@@ -314,18 +314,18 @@ $(function() {
     if (catName === "cops") {
     }
     else {
-      overlayMaps[catName] = selectorObject[catName].layerGroup;
+      overlayMaps[catName] = layerSelectorObject[catName].layerGroup;
     }
-    return selectorObject[catName];
+    return layerSelectorObject[catName];
   }
 
   //for adding layers to map automatically
   function loopLayerGroups() {
     var newArray = [];
-    for (var key in selectorObject) {
+    for (var key in layerSelectorObject) {
       if (key === "cops") {}
       else {
-        newArray.push(selectorObject[key].layerGroup);
+        newArray.push(layerSelectorObject[key].layerGroup);
       }
     }
     return newArray;
@@ -334,7 +334,7 @@ $(function() {
   //Create Marker and Info Label functions (3)
   function singleMarkerMaker(event, currentKey) {
     return L.marker(event.latlng, {
-      icon: selectorObject[currentKey].icon,
+      icon: layerSelectorObject[currentKey].icon,
       draggable: true,
       title: currentKey,
       riseOnHover: true,
@@ -342,7 +342,7 @@ $(function() {
   }
 
   function addMarkerToMap(key, marker) {
-    selectorObject[key].layerGroup.addLayer(marker);
+    layerSelectorObject[key].layerGroup.addLayer(marker);
     var id = marker._leaflet_id;
 
     //create an object that stores .location, label info...
@@ -352,7 +352,7 @@ $(function() {
     reverseGeocode(marker._latlng.lat, marker._latlng.lng, true, id);
 
     //here's where we get into storing markers for localStorage I think
-    selectorObject[key].array[id] = marker;
+    layerSelectorObject[key].array[id] = marker;
 
     //use your own IDs that later get saved to geoJSON object???
     marker.bindPopup(key + " id: " + id + "<br/><input type='button' " +
@@ -410,13 +410,13 @@ $(function() {
    function deleteMarker(key, OnPopup) {
     if (OnPopup) {
       //remove from layerGroup (map)
-      selectorObject[key].layerGroup.removeLayer(selectorObject[key].array[$(this).attr('id')]);
+      layerSelectorObject[key].layerGroup.removeLayer(layerSelectorObject[key].array[$(this).attr('id')]);
       //remove record of layer
-      delete selectorObject[key].array[$(this).attr('id')];
+      delete layerSelectorObject[key].array[$(this).attr('id')];
     }
     else {
-      selectorObject[key].layerGroup.removeLayer(selectorObject[key].array[$(this).parent().attr('id')]);
-      delete selectorObject[key].array[$(this).parent().attr('id')];
+      layerSelectorObject[key].layerGroup.removeLayer(layerSelectorObject[key].array[$(this).parent().attr('id')]);
+      delete layerSelectorObject[key].array[$(this).parent().attr('id')];
     }
   }
 
@@ -445,14 +445,14 @@ $(function() {
   function popoMode(on) {
     var $secretMsg;
     if (on) {
-      map.addLayer(selectorObject["cops"].layerGroup);
-      control.addOverlay(selectorObject["cops"].layerGroup, "cops");
+      map.addLayer(layerSelectorObject["cops"].layerGroup);
+      control.addOverlay(layerSelectorObject["cops"].layerGroup, "cops");
       currentLayerSelected = "cops";
       $secretMsg = $('<p id="secret" display="none">ACTIVATED secret po-po mode</p>');
     }
     else {
-      control.removeLayer(selectorObject["cops"].layerGroup);
-      map.removeLayer(selectorObject["cops"].layerGroup);
+      control.removeLayer(layerSelectorObject["cops"].layerGroup);
+      map.removeLayer(layerSelectorObject["cops"].layerGroup);
       $infoContainer.children('.label-info').attr("data", "cops").remove();
       currentLayerSelected = "";
       $secretMsg = $('<p id="secret" display="none">DEACTIVATED secret po-po mode</p>');
@@ -484,9 +484,9 @@ $(function() {
   }
 
   function deleteAll() {
-    for (var key in selectorObject) {
-      selectorObject[key].array = [];
-      selectorObject[key].layerGroup.clearLayers();
+    for (var key in layerSelectorObject) {
+      layerSelectorObject[key].array = [];
+      layerSelectorObject[key].layerGroup.clearLayers();
     }
     $('.label-info').remove();
     savedMarkerInfo = {};
@@ -512,9 +512,9 @@ $(function() {
 
 /*
   $window.on("beforeunload", function() {
-    for (var key in selectorObject) {
-      if (selectorObject[key].array !== [])
-      localStorage[key] = JSON.stringify((selectorObject[key].layerGroup).toGeoJSON());
+    for (var key in layerSelectorObject) {
+      if (layerSelectorObject[key].array !== [])
+      localStorage[key] = JSON.stringify((layerSelectorObject[key].layerGroup).toGeoJSON());
     }
     localStorage.savedMarkerInfo = JSON.stringify(savedMarkerInfo);
 
@@ -522,7 +522,7 @@ $(function() {
     // return "are you sure?";
 
 
-    // localStorage.seahawksArray = JSON.stringify(selectorObject['seahawks'].array);
+    // localStorage.seahawksArray = JSON.stringify(layerSelectorObject['seahawks'].array);
 
   // localStorage.removeItem('seahawks');
 
