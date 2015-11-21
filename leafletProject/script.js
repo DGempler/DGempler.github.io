@@ -170,6 +170,20 @@ $(function() {
                                               layerSelectorHandler);
 
 
+  function createMarkerAndInfoLabelHandler(e) {
+    var $layerSelector = $('.leaflet-control-layers-overlays input.leaflet-control-layers-selector');
+    var $layerSelectorArray = $layerSelector.next();
+
+    var index = getIndexOfSelectedLayerFromLayerSelectorArray($layerSelectorArray);
+
+    if ($layerSelector.eq(index).is(':checked')) {
+      createMarkerBasedOnCurrentLayerSelected(e);
+    }
+    else {
+      notifyUserThatMarkerLayerIsOff();
+    }
+  }
+
   function getIndexOfSelectedLayerFromLayerSelectorArray(layerSelectorArray) {
     var foundIndex;
     layerSelectorArray.each(function(index, value) {
@@ -205,19 +219,10 @@ $(function() {
     });
   }
 
-  function createMarkerAndInfoLabelHandler(e) {
-    var $layerSelector = $('.leaflet-control-layers-overlays input.leaflet-control-layers-selector');
-    var $layerSelectorArray = $layerSelector.next();
 
-    var index = getIndexOfSelectedLayerFromLayerSelectorArray($layerSelectorArray);
 
-    if ($layerSelector.eq(index).is(':checked')) {
-      createMarkerBasedOnCurrentLayerSelected(e);
-    }
-    else {
-      notifyUserThatMarkerLayerIsOff();
-    }
-  }
+
+
 
   function deleteMarkerOnPopupClickHandler() {
     for (var key in selectorObject) {
@@ -257,12 +262,6 @@ $(function() {
     savedMarkerInfo[thisId].items = $(this).parent().find('.items').val();
     savedMarkerInfo[thisId].prices = $(this).parent().find('.prices').val();
   }
-
-  function saveInfoJustLoc(marker) {
-    savedMarkerInfo[marker._leaflet_id] = {};
-    reverseGeocode(marker._latlng.lat, marker._latlng.lng, true, marker._leaflet_id);
-  }
-
 
   function infoLabelDeleteSaveButtonHandler(e) {
     e.preventDefault();
@@ -362,8 +361,17 @@ $(function() {
 
   function addMarkerToMap(key, marker) {
     selectorObject[key].layerGroup.addLayer(marker);
-    saveInfoJustLoc.call(this, marker);
+
+    //create an object that stores .location, ...
+    //use own ID?
+    savedMarkerInfo[marker._leaflet_id] = {};
+
+    reverseGeocode(marker._latlng.lat, marker._latlng.lng, true, marker._leaflet_id);
+
+    //here's where we get into storing markers for localStorage I think
     selectorObject[key].array[marker._leaflet_id] = marker;
+
+    //use your own IDs that later get saved to geoJSON object???
     marker.bindPopup(key + " id: " + marker._leaflet_id + "<br/><input type='button' value='Delete' class='remove' id='" + marker._leaflet_id + "' data-layer='" + key + "'/>");
     marker.on("dragend", function(e) {
       var newLoc = e.target._latlng;
