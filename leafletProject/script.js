@@ -240,9 +240,9 @@ $(function() {
   }
 
   function findLayerOfInfoLabelAndDelete() {
-    for (var key in layerSelectorObject) {
-      if ($(this).parent().parent().data('layer') === key) {
-        deleteMarker.call(this, key, false);
+    for (var layer in layerSelectorObject) {
+      if ($(this).parent().parent().data('layer') === layer) {
+        deleteMarker.call(this, layer, false);
         deleteInfoLabel.call(this);
       }
     }
@@ -322,10 +322,10 @@ $(function() {
   //for adding layers to map automatically
   function loopLayerGroups() {
     var newArray = [];
-    for (var key in layerSelectorObject) {
-      if (key === "cops") {}
+    for (var layer in layerSelectorObject) {
+      if (layer === "cops") {}
       else {
-        newArray.push(layerSelectorObject[key].layerGroup);
+        newArray.push(layerSelectorObject[layer].layerGroup);
       }
     }
     return newArray;
@@ -341,23 +341,23 @@ $(function() {
     });
   }
 
-  function addMarkerToMap(key, marker) {
-    layerSelectorObject[key].layerGroup.addLayer(marker);
+  function addMarkerToMap(layer, marker) {
+    layerSelectorObject[layer].layerGroup.addLayer(marker);
     var id = marker._leaflet_id;
 
     //create an object that stores .location, label info...
     //use own ID?
     savedMarkerInfo[id] = {};
-    savedMarkerInfo[id].layer = key;
+    savedMarkerInfo[id].layer = layer;
     reverseGeocode(marker._latlng.lat, marker._latlng.lng, true, id);
 
     //here's where we get into storing markers for localStorage I think
-    layerSelectorObject[key].array[id] = marker;
+    layerSelectorObject[layer].array[id] = marker;
 
     //use your own IDs that later get saved to geoJSON object???
-    marker.bindPopup(key + " id: " + id + "<br/><input type='button' " +
+    marker.bindPopup(layer + " id: " + id + "<br/><input type='button' " +
                       "value='Delete' class='remove' id='" + id +
-                      "' data-layer='" + key + "'/>");
+                      "' data-layer='" + layer + "'/>");
     marker.on("dragend", function(e) {
       var newLoc = e.target._latlng;
       var id = e.target._leaflet_id;
@@ -371,13 +371,13 @@ $(function() {
 
 
 
-  function addMarkerLabelInfoOnMarkerCreation(key, marker, e) {
+  function addMarkerLabelInfoOnMarkerCreation(layer, marker, e) {
     var id = marker._leaflet_id;
     $infoContainer.children('.label-info').remove();
     $infoContainer.children('#select-layer-message').remove();
-    var $labelInfo = $("<div class='label-info' data-layer='" + key + "'></div>");
+    var $labelInfo = $("<div class='label-info' data-layer='" + layer + "'></div>");
     $infoContainer.append($labelInfo);
-    $labelInfo.prepend("<p>Peddler Type: " + key + " - ID: " + id + "</p><br/>");
+    $labelInfo.prepend("<p>Peddler Type: " + layer + " - ID: " + id + "</p><br/>");
     var $form = $("<form id='" + id + "'></form><br/>");
     $labelInfo.append($form);
     $form.prepend("<label>Location:<input type='text' class='location' style='width: 301px'/></label><br/>");
@@ -407,16 +407,16 @@ $(function() {
   }
 
    //deleteMarkerOnPopupClick functions (2), "this" refers to popup or info label click handler
-   function deleteMarker(key, OnPopup) {
+   function deleteMarker(layer, OnPopup) {
     if (OnPopup) {
       //remove from layerGroup (map)
-      layerSelectorObject[key].layerGroup.removeLayer(layerSelectorObject[key].array[$(this).attr('id')]);
+      layerSelectorObject[layer].layerGroup.removeLayer(layerSelectorObject[layer].array[$(this).attr('id')]);
       //remove record of layer
-      delete layerSelectorObject[key].array[$(this).attr('id')];
+      delete layerSelectorObject[layer].array[$(this).attr('id')];
     }
     else {
-      layerSelectorObject[key].layerGroup.removeLayer(layerSelectorObject[key].array[$(this).parent().attr('id')]);
-      delete layerSelectorObject[key].array[$(this).parent().attr('id')];
+      layerSelectorObject[layer].layerGroup.removeLayer(layerSelectorObject[layer].array[$(this).parent().attr('id')]);
+      delete layerSelectorObject[layer].array[$(this).parent().attr('id')];
     }
   }
 
@@ -484,9 +484,9 @@ $(function() {
   }
 
   function deleteAll() {
-    for (var key in layerSelectorObject) {
-      layerSelectorObject[key].array = [];
-      layerSelectorObject[key].layerGroup.clearLayers();
+    for (var layer in layerSelectorObject) {
+      layerSelectorObject[layer].array = [];
+      layerSelectorObject[layer].layerGroup.clearLayers();
     }
     $('.label-info').remove();
     savedMarkerInfo = {};
