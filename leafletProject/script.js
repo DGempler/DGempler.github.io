@@ -7,6 +7,7 @@ $(function() {
   var $body = $('body');
   var $window = $(window);
   var $infoContainer = $('#info-container');
+  var idCounter = 0;
 
   var savedMarkerInfo = {};
   var layerSelectorObject = {};
@@ -195,13 +196,9 @@ $(function() {
   }
 
   function createMarkerBasedOnCurrentLayerSelected(e) {
-    for (var layer in layerSelectorObject) {
-      if (currentLayerSelected === layer) {
-        var marker = singleMarkerMaker(e, layer);
-        addMarkerToMap(layer, marker);
-        addMarkerLabelInfoOnMarkerCreation(layer, marker, e);
-      }
-    }
+    var marker = singleMarkerMaker(e, currentLayerSelected);
+    addMarkerToMap(currentLayerSelected, marker);
+    addMarkerLabelInfoOnMarkerCreation(currentLayerSelected, marker, e);
   }
 
   function notifyUserThatMarkerLayerIsOff() {
