@@ -195,11 +195,11 @@ $(function() {
   }
 
   function createMarkerBasedOnCurrentLayerSelected(e) {
-    for (var key in layerSelectorObject) {
-      if (currentLayerSelected === key) {
-        var marker = singleMarkerMaker(e, key);
-        addMarkerToMap(key, marker);
-        addMarkerLabelInfoOnMarkerCreation(key, marker, e);
+    for (var layer in layerSelectorObject) {
+      if (currentLayerSelected === layer) {
+        var marker = singleMarkerMaker(e, layer);
+        addMarkerToMap(layer, marker);
+        addMarkerLabelInfoOnMarkerCreation(layer, marker, e);
       }
     }
   }
@@ -225,9 +225,9 @@ $(function() {
 
 
   function deleteMarkerOnPopupClickHandler() {
-    for (var key in layerSelectorObject) {
-      if (this.dataset.layer === key) {
-        deleteMarker.call(this, key, true);
+    for (var layer in layerSelectorObject) {
+      if (this.dataset.layer === layer) {
+        deleteMarker.call(this, layer, true);
         deleteInfoLabel.call(this, true);
       }
     }
