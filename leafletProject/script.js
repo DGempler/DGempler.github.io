@@ -230,7 +230,7 @@ $(function() {
 
   //on popup open
   function addInfoLabelToScreenHandler(e) {
-    var id = e.popup._source._leaflet_id;
+    var id = e.popup._source.id;
     populateMarkerLableInfoFromExistingSavedInfoOnPopupOpen.call(this, id);
   }
 
@@ -363,7 +363,7 @@ $(function() {
 
 
   function addMarkerLabelInfoOnMarkerCreation(layer, marker, e) {
-    var id = marker._leaflet_id;
+    var id = marker.id;
     $infoContainer.children('.label-info').remove();
     $infoContainer.children('#select-layer-message').remove();
     var $labelInfo = $("<div class='label-info' data-layer='" + layer + "'></div>");
