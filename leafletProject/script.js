@@ -8,7 +8,7 @@ $(function() {
   var $window = $(window);
   var $infoContainer = $('#info-container');
 
-  var savedInfo = {};
+  var savedMarkerInfo = {};
   var selectorObject = {};
   var overlayMaps = {};
 
@@ -138,7 +138,7 @@ $(function() {
             var id = e.target._leaflet_id;
             // $('form#' + id + ' .location').val("Lat: " + newLoc.lat + ", Lng: " + newLoc.lng);
             reverseGeocode(newLoc.lat, newLoc.lng, true, id);
-            if (savedInfo[id] === undefined) {
+            if (savedMarkerInfo[id] === undefined) {
               return;
             }
           });
@@ -149,9 +149,9 @@ $(function() {
         }
       }
     }
-    if (localStorage.getItem("savedInfo") !== null) {
-      // localStorage.removeItem('savedInfo');
-      savedInfo = JSON.parse(localStorage.savedInfo);
+    if (localStorage.getItem("savedMarkerInfo") !== null) {
+      // localStorage.removeItem('savedMarkerInfo');
+      savedMarkerInfo = JSON.parse(localStorage.savedMarkerInfo);
     }
   })();
 
@@ -183,7 +183,7 @@ $(function() {
         if (currentSelection === key) {
           var marker = singleMarkerMaker(e, key);
           addMarkerToMap.call(this, key, marker);
-          addMarkerLabelInfo.call(this, key, marker, e);
+          addMarkerLabelInfoOnMarkerCreation.call(this, key, marker, e);
         }
       }
     }
@@ -214,7 +214,7 @@ $(function() {
 
   function addInfoLabelToScreenHandler(e) {
     var id = e.popup._source._leaflet_id;
-    if (savedInfo[id] === undefined) {
+    if (savedMarkerInfo[id] === undefined) {
       var string = e.popup._content.toString();
       var newString = "";
       for (var i = 0; i < string.length; i++) {
@@ -225,25 +225,25 @@ $(function() {
           break;
         }
       }
-      addMarkerLabelInfoV3.call(this, newString, id);
+      addMarkerLabelInfoIfNoSavedInfoExistsOnPopup.call(this, newString, id);
     }
     else {
-      addMarkerLabelInfoV2.call(this, id);
+      populateMarkerLableInfoFromExistingSavedInfo.call(this, id);
     }
     // saveInfo.call(this, id);
   }
 
 
   function saveInfo(thisId) {
-    savedInfo[thisId] = {};
-    savedInfo[thisId].layer = $(this).parent().parent().data('layer');
-    savedInfo[thisId].location = $(this).parent().find('.location').val();
-    savedInfo[thisId].items = $(this).parent().find('.items').val();
-    savedInfo[thisId].prices = $(this).parent().find('.prices').val();
+    savedMarkerInfo[thisId] = {};
+    savedMarkerInfo[thisId].layer = $(this).parent().parent().data('layer');
+    savedMarkerInfo[thisId].location = $(this).parent().find('.location').val();
+    savedMarkerInfo[thisId].items = $(this).parent().find('.items').val();
+    savedMarkerInfo[thisId].prices = $(this).parent().find('.prices').val();
   }
 
   function saveInfoJustLoc(marker) {
-    savedInfo[marker._leaflet_id] = {};
+    savedMarkerInfo[marker._leaflet_id] = {};
     reverseGeocode(marker._latlng.lat, marker._latlng.lng, true, marker._leaflet_id);
   }
 
@@ -353,16 +353,16 @@ $(function() {
       var newLoc = e.target._latlng;
       var id = e.target._leaflet_id;
       reverseGeocode(newLoc.lat, newLoc.lng, true, id);
-      // if (savedInfo[id] === undefined) {
+      // if (savedMarkerInfo[id] === undefined) {
       //   return;
       // }
-      // console.log(savedInfo[id].location);
+      // console.log(savedMarkerInfo[id].location);
     });
   }
 
 
 
-  function addMarkerLabelInfo(key, marker, e) {
+  function addMarkerLabelInfoOnMarkerCreation(key, marker, e) {
     $infoContainer.children('.label-info').remove();
     $infoContainer.children('#select-layer-message').remove();
     var $labelInfo = $("<div class='label-info' data-layer='" + key + "'></div>");
@@ -379,22 +379,22 @@ $(function() {
   }
 
   //addInfoLabeltoScreen function(1) can probably combine with V1 later
-  function addMarkerLabelInfoV2(id) {
+  function populateMarkerLableInfoFromExistingSavedInfo(id) {
     $infoContainer.children('.label-info').remove();
     $infoContainer.children('#select-layer-message').remove();
-    var $labelInfo = $("<div class='label-info' data-layer='" + savedInfo[id].layer + "'></div>");
+    var $labelInfo = $("<div class='label-info' data-layer='" + savedMarkerInfo[id].layer + "'></div>");
     $infoContainer.append($labelInfo);
-    $labelInfo.prepend("<p>Peddler Type: " + savedInfo[id].layer + " - ID: " + id + "</p><br/>");
+    $labelInfo.prepend("<p>Peddler Type: " + savedMarkerInfo[id].layer + " - ID: " + id + "</p><br/>");
     var $form = $("<form id='" + id + "'></form><br/>");
     $labelInfo.append($form);
-    $form.prepend("<label>Location:<input type='text' class='location' value='" + savedInfo[id].location + "' style='width: 299px'/></label><br/>");
-    $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" + savedInfo[id].items + "' style='width: 228px'/></label><br/>");
-    $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + savedInfo[id].prices + "' style='width: 278px'/></label><br/>");
+    $form.prepend("<label>Location:<input type='text' class='location' value='" + savedMarkerInfo[id].location + "' style='width: 299px'/></label><br/>");
+    $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" + savedMarkerInfo[id].items + "' style='width: 228px'/></label><br/>");
+    $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + savedMarkerInfo[id].prices + "' style='width: 278px'/></label><br/>");
     $form.append("<button class='save'>Save & Close</button>");
     $form.append("<button class='delete'>Delete</button>");
   }
 
-  function addMarkerLabelInfoV3(newString, id) {
+  function addMarkerLabelInfoIfNoSavedInfoExistsOnPopup(newString, id) {
     $infoContainer.children('.label-info').remove();
     $infoContainer.children('#select-layer-message').remove();
     var $labelInfo = $("<div class='label-info' data-layer='" + newString + "'></div>");
@@ -409,11 +409,11 @@ $(function() {
     // $form.append("<button class='save'>Save & Close</button>");
     // $form.append("<button class='delete'>Delete</button>");
     $form.prepend("<label>Location:<input type='text' class='location' value='" +
-                  savedInfo[id].location + "' style='width: 299px'/></label><br/>");
+                  savedMarkerInfo[id].location + "' style='width: 299px'/></label><br/>");
     $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" +
-                  savedInfo[id].items + "' style='width: 228px'/></label><br/>");
+                  savedMarkerInfo[id].items + "' style='width: 228px'/></label><br/>");
     $form.append("<label>Enter Prices:<input type='text' class='prices' value='" +
-                  savedInfo[id].prices + "' style='width: 278px'/></label><br/>");
+                  savedMarkerInfo[id].prices + "' style='width: 278px'/></label><br/>");
     $form.append("<button class='save'>Save & Close</button>");
     $form.append("<button class='delete'>Delete</button>");
     // reverseGeocode(selectorObject[newString].array[id]._latlng.lat, selectorObject[newString].array[id]._latlng.lng, $form);
@@ -440,7 +440,7 @@ $(function() {
     else {
       $(this).parent().parent().fadeOut('slow', removeThis.call(this));
     }
-    delete savedInfo[$(this).attr('id')];
+    delete savedMarkerInfo[$(this).attr('id')];
   }
 
   function removeThis() {
@@ -448,11 +448,11 @@ $(function() {
   }
 
   // function saveInfo($form, thisId) {
-  //   savedInfo[thisId] = {};
-  //   savedInfo[thisId].layer = $form.parent().data('layer');
-  //   savedInfo[thisId].location = $form.find('.location').val();
-  //   savedInfo[thisId].items = $form.find('.items').val();
-  //   savedInfo[thisId].prices = $form.find('.prices').val();
+  //   savedMarkerInfo[thisId] = {};
+  //   savedMarkerInfo[thisId].layer = $form.parent().data('layer');
+  //   savedMarkerInfo[thisId].location = $form.find('.location').val();
+  //   savedMarkerInfo[thisId].items = $form.find('.items').val();
+  //   savedMarkerInfo[thisId].prices = $form.find('.prices').val();
   // }
 
   function popoMode(on) {
@@ -501,7 +501,7 @@ $(function() {
       selectorObject[key].layerGroup.clearLayers();
     }
     $('.label-info').remove();
-    savedInfo = {};
+    savedMarkerInfo = {};
     currentSelection = "";
   }
 
@@ -516,7 +516,7 @@ $(function() {
           $('form#' + id + ' .location').attr("value", address);
         }
         if (id) {
-          savedInfo[id].location = address;
+          savedMarkerInfo[id].location = address;
         }
       },
     });
@@ -528,7 +528,7 @@ $(function() {
       if (selectorObject[key].array !== [])
       localStorage[key] = JSON.stringify((selectorObject[key].layerGroup).toGeoJSON());
     }
-    localStorage.savedInfo = JSON.stringify(savedInfo);
+    localStorage.savedMarkerInfo = JSON.stringify(savedMarkerInfo);
 
     // console.log(localStorage.seahawks);
     // return "are you sure?";
