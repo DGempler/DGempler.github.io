@@ -180,6 +180,30 @@ $(function() {
     return foundIndex;
   }
 
+  function createMarkerBasedOnCurrentLayerSelected(e) {
+    for (var key in selectorObject) {
+      if (currentLayerSelected === key) {
+        var marker = singleMarkerMaker(e, key);
+        addMarkerToMap.call(this, key, marker);
+        addMarkerLabelInfoOnMarkerCreation.call(this, key, marker, e);
+      }
+    }
+  }
+
+  function notifyUserThatMarkerLayerIsOff() {
+    $infoContainer.children('.label-info').remove();
+    var $selectLayerMessage = $("<br/><p id='select-layer-message'>" +
+                                "This layer is currently turned off!</p>").hide();
+    $selectLayerMessage.css('margin-top', '25px').css('font-size', '24px').css('color', 'white');
+    $infoContainer.append($selectLayerMessage);
+    $selectLayerMessage.fadeIn(600, function() {
+      setTimeout(function () {
+        $selectLayerMessage.fadeOut(600, function() {
+          $(this).remove();
+        });
+      }, 1000);
+    });
+  }
 
   function createMarkerAndInfoLabelHandler(e) {
     var $layerSelector = $('.leaflet-control-layers-overlays input.leaflet-control-layers-selector');
@@ -188,27 +212,10 @@ $(function() {
     var index = getIndexOfSelectedLayerFromLayerSelectorArray($layerSelectorArray);
 
     if ($layerSelector.eq(index).is(':checked')) {
-      for (var key in selectorObject) {
-        if (currentLayerSelected === key) {
-          var marker = singleMarkerMaker(e, key);
-          addMarkerToMap.call(this, key, marker);
-          addMarkerLabelInfoOnMarkerCreation.call(this, key, marker, e);
-        }
-      }
+      createMarkerBasedOnCurrentLayerSelected(e);
     }
     else {
-      $infoContainer.children('.label-info').remove();
-      var $selectLayerMessage = $("<br/><p id='select-layer-message'>" +
-                                  "This layer is currently turned off!</p>").hide();
-      $selectLayerMessage.css('margin-top', '25px').css('font-size', '24px').css('color', 'white');
-      $infoContainer.append($selectLayerMessage);
-      $selectLayerMessage.fadeIn(600, function() {
-        setTimeout(function () {
-          $selectLayerMessage.fadeOut(600, function() {
-            $(this).remove();
-          });
-        }, 1000);
-      });
+      notifyUserThatMarkerLayerIsOff();
     }
   }
 
