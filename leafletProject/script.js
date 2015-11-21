@@ -159,7 +159,7 @@ $(function() {
 
   //event handlers
   map.on("singleclick", createMarkerAndInfoLabelHandler);
-  $map.on("click", ".remove", deleteMarkerOnPopupClickHandler);
+  $map.on("click", ".remove", deleteMarkerAndInfoLabelOnPopupClickHandler);
   map.on("popupopen", addInfoLabelToScreenHandler);
   $infoContainer.on("click", "button", infoLabelDeleteSaveButtonHandler);
   $infoContainer.on("change", "input", infoLabelSaveHandler);
@@ -221,13 +221,9 @@ $(function() {
 
 
 
-  function deleteMarkerOnPopupClickHandler() {
-    for (var layer in layerSelectorObject) {
-      if (this.dataset.layer === layer) {
-        deleteMarker.call(this, layer, true);
-        deleteInfoLabel.call(this, true);
-      }
-    }
+  function deleteMarkerAndInfoLabelOnPopupClickHandler() {
+    deleteMarker.call(this, this.dataset.layer, true);
+    deleteInfoLabel.call(this, true);
   }
 
   //on popup open
