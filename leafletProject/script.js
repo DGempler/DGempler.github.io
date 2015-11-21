@@ -197,6 +197,8 @@ $(function() {
 
   function createMarkerBasedOnCurrentLayerSelected(e) {
     var marker = singleMarkerMaker(e, currentLayerSelected);
+    marker.id = idCounter;
+    idCounter++;
     addMarkerToMap(currentLayerSelected, marker);
     addMarkerLabelInfoOnMarkerCreation(currentLayerSelected, marker, e);
   }
@@ -332,8 +334,7 @@ $(function() {
 
   function addMarkerToMap(layer, marker) {
     layerSelectorObject[layer].layerGroup.addLayer(marker);
-    var id = marker._leaflet_id;
-
+    var id = marker.id;
     //create an object that stores .location, label info...
     //use own ID?
     savedMarkerInfo[id] = {};
@@ -348,8 +349,9 @@ $(function() {
                       "value='Delete' class='remove' id='" + id +
                       "' data-layer='" + layer + "'/>");
     marker.on("dragend", function(e) {
+      console.log(e.target);
       var newLoc = e.target._latlng;
-      var id = e.target._leaflet_id;
+      var id = e.target.id;
       reverseGeocode(newLoc.lat, newLoc.lng, true, id);
       // if (savedMarkerInfo[id] === undefined) {
       //   return;
