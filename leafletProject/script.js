@@ -233,12 +233,9 @@ $(function() {
   }
 
   function findLayerOfInfoLabelAndDelete() {
-    for (var layer in layerSelectorObject) {
-      if ($(this).parent().parent().data('layer') === layer) {
-        deleteMarker.call(this, layer, false);
-        deleteInfoLabel.call(this);
-      }
-    }
+    var layer = $(this).parent().parent().data('layer');
+    deleteMarker.call(this, layer, false);
+    deleteInfoLabel.call(this);
   }
 
   function getIdSaveAndCloseInfoLabel() {
