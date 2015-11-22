@@ -114,8 +114,7 @@ $(function() {
               return L.marker(latlng, singleMarkerMaker(layer));
             },
             onEachFeature: function(geoJsonMarker, marker) {
-              marker.id = idCounter;
-              idCounter++;
+              setMarkerId(marker);
 
               savedMarkerInfo[marker.id] = {};
               savedMarkerInfo[marker.id].layer = layer;
@@ -207,10 +206,14 @@ $(function() {
     return foundIndex;
   }
 
-  function createMarkerBasedOnCurrentLayerSelected(e) {
-    var marker = L.marker(e.latlng, singleMarkerMaker(currentLayerSelected));
+  function setMarkerId(marker) {
     marker.id = idCounter;
     idCounter++;
+  }
+
+  function createMarkerBasedOnCurrentLayerSelected(e) {
+    var marker = L.marker(e.latlng, singleMarkerMaker(currentLayerSelected));
+    setMarkerId(marker);
     addMarkerToMap(currentLayerSelected, marker);
     addMarkerLabelInfoOnMarkerCreation(currentLayerSelected, marker, e);
   }
