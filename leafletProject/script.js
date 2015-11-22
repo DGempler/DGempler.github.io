@@ -104,14 +104,6 @@ $(function() {
   geocoderControl = L.mapbox.geocoderControl('mapbox.places');
   geocoderControl.addTo(map);
 
-  console.log(localStorage);
-  if (window.confirm('delete?')) {
-    for (var layer in layerSelectorObject) {
-      localStorage.removeItem(layer);
-    }
-  }
-
-
   (function localStorageRestore() {
     for (var layer in layerSelectorObject) {
       if (localStorage.getItem(layer) !== null) {
@@ -565,20 +557,9 @@ $(function() {
           };
           layerArrayForLocalStorage.push(JSON.stringify(geoJSONedMarker));
         });
-        // localStorage[layer] = JSON.stringify((layerSelectorObject[layer].layerGroup).toGeoJSON());
         localStorage[layer] = JSON.stringify(layerArrayForLocalStorage);
       }
     }
-    // localStorage.savedMarkerInfo = JSON.stringify(savedMarkerInfo);
-    console.log(localStorage);
-
-    // console.log(localStorage.seahawks);
-    return "are you sure?";
-
-
-    // localStorage.seahawksArray = JSON.stringify(layerSelectorObject['seahawks'].array);
-
-  // localStorage.removeItem('seahawks');
 
   });
 
