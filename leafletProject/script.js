@@ -378,29 +378,31 @@ $(function() {
     layerSelectorObject[layer].layerGroup.addLayer(marker);
     var id = marker.id;
     //create an object that stores .location, label info...
-    //use own ID?
     savedMarkerInfo[id] = {};
     savedMarkerInfo[id].layer = layer;
     reverseGeocode(marker._latlng.lat, marker._latlng.lng, true, id);
-    //here's where we get into storing markers for localStorage I think
+
     layerSelectorObject[layer].array[id] = marker;
 
-    //use your own IDs that later get saved to geoJSON object???
-    marker.bindPopup(layer + " id: " + id + "<br/><input type='button' " +
-                      "value='Delete' class='remove' id='" + id +
-                      "' data-layer='" + layer + "'/>");
+    bindPopupToMarker(marker, layer);
+
+    addDragendEventListenerToMarker(marker);
+
+  }
+
+  function bindPopupToMarker(marker, layer) {
+    marker.bindPopup(layer + " id: " + marker.id + "<br/><input type='button' " +
+                    "value='Delete' class='remove' id='" + marker.id +
+                    "' data-layer='" + layer + "'/>");
+  }
+
+  function addDragendEventListenerToMarker(marker) {
     marker.on("dragend", function(e) {
       var newLoc = e.target._latlng;
       var id = e.target.id;
       reverseGeocode(newLoc.lat, newLoc.lng, true, id);
-      // if (savedMarkerInfo[id] === undefined) {
-      //   return;
-      // }
-      // console.log(savedMarkerInfo[id].location);
     });
   }
-
-
 
   function addMarkerLabelInfoOnMarkerCreation(layer, marker, e) {
     var id = marker.id;
@@ -541,7 +543,6 @@ $(function() {
     });
   }
 
-
   $window.on("beforeunload", function() {
     for (var layer in layerSelectorObject) {
       if (layerSelectorObject[layer].array.length !== 0) {
@@ -560,14 +561,6 @@ $(function() {
         localStorage[layer] = JSON.stringify(layerArrayForLocalStorage);
       }
     }
-
   });
-
-// $.ajax({
-//   url: 'https://api.mapbox.com/v4/geocode/{dataset}/{lon},{lat}.json?access_token=<your access token>',
-//   sucess: function(data) {
-//     console.log(data);
-//   }
-// })
 
 });
