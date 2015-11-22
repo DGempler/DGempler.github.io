@@ -116,11 +116,7 @@ $(function() {
             onEachFeature: function(geoJsonMarker, marker) {
               setMarkerId(marker);
 
-              savedMarkerInfo[marker.id] = {};
-              savedMarkerInfo[marker.id].layer = layer;
-              savedMarkerInfo[marker.id].location = geoJsonMarker.properties.location;
-              savedMarkerInfo[marker.id].items = geoJsonMarker.properties.items;
-              savedMarkerInfo[marker.id].prices = geoJsonMarker.properties.prices;
+              setSavedMarkerInfo(marker.id, geoJsonMarker);
 
               layerSelectorObject[layer].layerGroup.addLayer(marker);
 
@@ -136,6 +132,14 @@ $(function() {
       }
     }
   })();
+
+  function setSavedMarkerInfo(id, geoJsonMarker) {
+    savedMarkerInfo[id] = {};
+    savedMarkerInfo[id].layer = layer;
+    savedMarkerInfo[id].location = geoJsonMarker.properties.location;
+    savedMarkerInfo[id].items = geoJsonMarker.properties.items;
+    savedMarkerInfo[id].prices = geoJsonMarker.properties.prices;
+  }
 
   function addMarkerToMap(layer, marker) {
     layerSelectorObject[layer].layerGroup.addLayer(marker);
