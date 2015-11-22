@@ -121,28 +121,28 @@ $(function() {
       if (localStorage.getItem(layer) !== null) {
         var localStorageArray = JSON.parse(localStorage[layer]);
         localStorageArray.forEach(function(marker) {
-          console.log(marker);
           marker = L.geoJson(JSON.parse(marker), {
-            pointToLayer: function (feature, latlng) {
+            pointToLayer: function (geoJsonMarker, latlng) {
               return L.marker(latlng, singleMarkerMaker(layer));
+            },
+            onEachFeature: function(geoJsonMarker, marker) {
+              marker.id = idCounter;
+              idCounter++;
+              var id = marker.id;
+
+              layerSelectorObject[layer].layerGroup.addLayer(marker);
+              layerSelectorObject[layer].array[id] = marker;
+              marker.bindPopup(layer + " id: " + id + "<br/><input type='button' " +
+                                    "value='Delete' class='remove' id='" + id +
+                                    "' data-layer='" + layer + "'/>");
+              marker.on("dragend", function(e) {
+                var newLoc = e.target._latlng;
+                var id = e.target.id;
+                reverseGeocode(newLoc.lat, newLoc.lng, true, id);
+              });
+
             }
           });
-          marker.id = idCounter;
-          idCounter++;
-          var id = marker.id;
-
-          layerSelectorObject[layer].layerGroup.addLayer(marker);
-          layerSelectorObject[layer].array[id] = marker;
-          marker.bindPopup(layer + " id: " + id + "<br/><input type='button' " +
-                                "value='Delete' class='remove' id='" + id +
-                                "' data-layer='" + layer + "'/>");
-          marker.on("dragend", function(e) {
-            var newLoc = e.target._latlng;
-            var id = e.target.id;
-            reverseGeocode(newLoc.lat, newLoc.lng, true, id);
-          });
-
-          console.log(marker);
         });
 
         // layerSelectorObject[layer].array = newMarkerArray;
@@ -534,6 +534,7 @@ $(function() {
       if (layerSelectorObject[layer].array.length !== 0) {
         var layerArrayForLocalStorage = [];
         layerSelectorObject[layer].array.forEach(function(marker) {
+          console.log(marker);
           var geoJSONedMarker = marker.toGeoJSON();
           var savedMarker = savedMarkerInfo[marker.id];
           geoJSONedMarker.properties = {
