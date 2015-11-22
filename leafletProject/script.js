@@ -118,13 +118,7 @@ $(function() {
 
               setSavedMarkerInfo(marker.id, geoJsonMarker, layer);
 
-              layerSelectorObject[layer].layerGroup.addLayer(marker);
-
-              layerSelectorObject[layer].array[marker.id] = marker;
-
-              bindPopupToMarker(marker, layer);
-
-              addDragendEventListenerToMarker(marker);
+              applyMarkerToLayerGroupAndBindPopupAndEventListener(marker, layer, marker.id);
 
             }
           });
@@ -148,6 +142,11 @@ $(function() {
 
     reverseGeocode(marker._latlng.lat, marker._latlng.lng, true, id);
 
+    applyMarkerToLayerGroupAndBindPopupAndEventListener(marker, layer, id);
+
+  }
+
+  function applyMarkerToLayerGroupAndBindPopupAndEventListener(marker, layer, id) {
     layerSelectorObject[layer].layerGroup.addLayer(marker);
 
     layerSelectorObject[layer].array[id] = marker;
