@@ -124,18 +124,20 @@ $(function() {
             onEachFeature: function(geoJsonMarker, marker) {
               marker.id = idCounter;
               idCounter++;
-              var id = marker.id;
+
+              savedMarkerInfo[marker.id] = {};
+              savedMarkerInfo[marker.id].layer = layer;
+              savedMarkerInfo[marker.id].location = geoJsonMarker.properties.location;
+              savedMarkerInfo[marker.id].items = geoJsonMarker.properties.items;
+              savedMarkerInfo[marker.id].prices = geoJsonMarker.properties.prices;
 
               layerSelectorObject[layer].layerGroup.addLayer(marker);
-              layerSelectorObject[layer].array[id] = marker;
-              marker.bindPopup(layer + " id: " + id + "<br/><input type='button' " +
-                                    "value='Delete' class='remove' id='" + id +
-                                    "' data-layer='" + layer + "'/>");
-              marker.on("dragend", function(e) {
-                var newLoc = e.target._latlng;
-                var id = e.target.id;
-                reverseGeocode(newLoc.lat, newLoc.lng, true, id);
-              });
+
+              layerSelectorObject[layer].array[marker.id] = marker;
+
+              bindPopupToMarker(marker, layer);
+
+              addDragendEventListenerToMarker(marker);
 
             }
           });
@@ -143,6 +145,39 @@ $(function() {
       }
     }
   })();
+
+  function addMarkerToMap(layer, marker) {
+    layerSelectorObject[layer].layerGroup.addLayer(marker);
+    var id = marker.id;
+    //create an object that stores .location, label info...
+    savedMarkerInfo[id] = {};
+    savedMarkerInfo[id].layer = layer;
+    reverseGeocode(marker._latlng.lat, marker._latlng.lng, true, id);
+
+    layerSelectorObject[layer].array[id] = marker;
+
+    bindPopupToMarker(marker, layer);
+
+    addDragendEventListenerToMarker(marker);
+
+  }
+
+  function bindPopupToMarker(marker, layer) {
+    marker.bindPopup(layer + " id: " + marker.id + "<br/><input type='button' " +
+                    "value='Delete' class='remove' id='" + marker.id +
+                    "' data-layer='" + layer + "'/>");
+  }
+
+  function addDragendEventListenerToMarker(marker) {
+    marker.on("dragend", function(e) {
+      var newLoc = e.target._latlng;
+      var id = e.target.id;
+      reverseGeocode(newLoc.lat, newLoc.lng, true, id);
+    });
+  }
+
+
+
 
         /*for (var index in layerSelectorObject[layer].layerGroup._layers) {
           var object = layerSelectorObject[layer].layerGroup._layers;
