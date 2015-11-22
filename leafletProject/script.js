@@ -485,6 +485,7 @@ $(function() {
     for (var layer in layerSelectorObject) {
       layerSelectorObject[layer].array = [];
       layerSelectorObject[layer].layerGroup.clearLayers();
+      delete localStorage[layer];
     }
     $('.label-info').remove();
     savedMarkerInfo = {};
