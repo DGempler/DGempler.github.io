@@ -169,36 +169,6 @@ $(function() {
   }
 
 
-
-
-        /*for (var index in layerSelectorObject[layer].layerGroup._layers) {
-          var object = layerSelectorObject[layer].layerGroup._layers;
-          var marker = object[index];
-          layerSelectorObject[layer].array[index] = marker;
-          var name = object[index].options.title;
-          marker.bindPopup(name + " id: " + marker._leaflet_id + "<br/><input type='button' " +
-                            "value='Delete' class='remove' id='" + marker._leaflet_id +
-                            "' data-layer='" + name + "'/>");
-          marker.on("dragend", function(e) {
-            var newLoc = e.target._latlng;
-            var id = e.target._leaflet_id;
-            // $('form#' + id + ' .location').val("Lat: " + newLoc.lat + ", Lng: " + newLoc.lng);
-            reverseGeocode(newLoc.lat, newLoc.lng, true, id);
-            if (savedMarkerInfo[id] === undefined) {
-              return;
-            }
-          });
-        }*/
-
-    // if (localStorage.getItem("savedMarkerInfo") !== null) {
-    //   // localStorage.removeItem('savedMarkerInfo');
-    //   savedMarkerInfo = JSON.parse(localStorage.savedMarkerInfo);
-    // }
-/*        if (layer === "cops") {
-          control.removeLayer(layerSelectorObject["cops"].layerGroup);
-          map.removeLayer(layerSelectorObject["cops"].layerGroup);
-        }*/
-
   //event handlers
   map.on("singleclick", createMarkerAndInfoLabelHandler);
   $map.on("click", ".remove", deleteMarkerAndInfoLabelOnPopupClickHandler);
@@ -259,11 +229,6 @@ $(function() {
       }, 1000);
     });
   }
-
-
-
-
-
 
   function deleteMarkerAndInfoLabelOnPopupClickHandler() {
     deleteMarker.call(this, this.dataset.layer, true);
