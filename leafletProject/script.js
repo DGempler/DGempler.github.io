@@ -121,17 +121,6 @@ $(function() {
     };
   }
 
-  function singleMarkerMaker(event, currentKey) {
-    return L.marker(event.latlng, {
-      icon: layerSelectorObject[currentKey].icon,
-      draggable: true,
-      title: currentKey,
-      riseOnHover: true,
-    });
-  }
-
-
-
   (function localStorageRestore() {
     for (var layer in layerSelectorObject) {
       // console.log(layer);
@@ -245,7 +234,7 @@ $(function() {
   }
 
   function createMarkerBasedOnCurrentLayerSelected(e) {
-    var marker = singleMarkerMaker(e, currentLayerSelected);
+    var marker = singleMarkerMaker(e.latlng, currentLayerSelected);
     marker.id = idCounter;
     idCounter++;
     addMarkerToMap(currentLayerSelected, marker);
@@ -372,11 +361,11 @@ $(function() {
   }
 
   //Create Marker and Info Label functions (3)
-  function singleMarkerMaker(event, currentKey) {
-    return L.marker(event.latlng, {
-      icon: layerSelectorObject[currentKey].icon,
+  function singleMarkerMaker(latlng, layer) {
+    return L.marker(latlng, {
+      icon: layerSelectorObject[layer].icon,
       draggable: true,
-      title: currentKey,
+      title: layer,
       riseOnHover: true,
     });
   }
