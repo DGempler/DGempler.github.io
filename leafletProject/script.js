@@ -116,7 +116,7 @@ $(function() {
             onEachFeature: function(geoJsonMarker, marker) {
               setMarkerId(marker);
 
-              setSavedMarkerInfo(marker.id, geoJsonMarker);
+              setSavedMarkerInfo(marker.id, geoJsonMarker, layer);
 
               layerSelectorObject[layer].layerGroup.addLayer(marker);
 
@@ -133,7 +133,7 @@ $(function() {
     }
   })();
 
-  function setSavedMarkerInfo(id, geoJsonMarker) {
+  function setSavedMarkerInfo(id, geoJsonMarker, layer) {
     savedMarkerInfo[id] = {};
     savedMarkerInfo[id].layer = layer;
     savedMarkerInfo[id].location = geoJsonMarker.properties.location;
@@ -142,19 +142,19 @@ $(function() {
   }
 
   function addMarkerToMap(layer, marker) {
-    layerSelectorObject[layer].layerGroup.addLayer(marker);
     var id = marker.id;
-    //create an object that stores .location, label info...
     savedMarkerInfo[id] = {};
     savedMarkerInfo[id].layer = layer;
+
     reverseGeocode(marker._latlng.lat, marker._latlng.lng, true, id);
+
+    layerSelectorObject[layer].layerGroup.addLayer(marker);
 
     layerSelectorObject[layer].array[id] = marker;
 
     bindPopupToMarker(marker, layer);
 
     addDragendEventListenerToMarker(marker);
-
   }
 
   function bindPopupToMarker(marker, layer) {
@@ -346,21 +346,6 @@ $(function() {
     };
   }
 
-  function addMarkerToMap(layer, marker) {
-    layerSelectorObject[layer].layerGroup.addLayer(marker);
-    var id = marker.id;
-    //create an object that stores .location, label info...
-    savedMarkerInfo[id] = {};
-    savedMarkerInfo[id].layer = layer;
-    reverseGeocode(marker._latlng.lat, marker._latlng.lng, true, id);
-
-    layerSelectorObject[layer].array[id] = marker;
-
-    bindPopupToMarker(marker, layer);
-
-    addDragendEventListenerToMarker(marker);
-
-  }
 
   function bindPopupToMarker(marker, layer) {
     marker.bindPopup(layer + " id: " + marker.id + "<br/><input type='button' " +
