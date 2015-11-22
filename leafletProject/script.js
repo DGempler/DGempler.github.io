@@ -104,32 +104,84 @@ $(function() {
   geocoderControl = L.mapbox.geocoderControl('mapbox.places');
   geocoderControl.addTo(map);
 
+  console.log(localStorage);
+  if (window.confirm('delete?')) {
+    for (var layer in layerSelectorObject) {
+      localStorage.removeItem(layer);
+    }
+  }
 
 
-
-
-/*
-  function geojsonMarkerOptions(key) {
+  function geojsonMarkerOptions(layer) {
     return {
-      icon: layerSelectorObject[key].icon,
+      icon: layerSelectorObject[layer].icon,
       draggable: true,
-      title: key,
+      title: layer,
       riseOnHover: true,
     };
   }
+
+  function singleMarkerMaker(event, currentKey) {
+    return L.marker(event.latlng, {
+      icon: layerSelectorObject[currentKey].icon,
+      draggable: true,
+      title: currentKey,
+      riseOnHover: true,
+    });
+  }
+
+
+
   (function localStorageRestore() {
-    for (var key in layerSelectorObject) {
-      // localStorage.removeItem(key);
-      if (localStorage.getItem(key) !== null) {
-        layerSelectorObject[key].layerGroup = L.geoJson(JSON.parse(localStorage[key]), {
+    for (var layer in layerSelectorObject) {
+      // console.log(layer);
+      // localStorage.removeItem(layer);
+      // console.log(localStorage[layer]);
+      // console.log(localStorage.getItem(layer));
+      if (localStorage.getItem(layer) !== null) {
+        var localStorageArray = JSON.parse(localStorage[layer]);
+        localStorageArray.forEach(function(marker) {
+          console.log(marker);
+          marker = L.geoJson(JSON.parse(marker), {
+            pointToLayer: function (feature, latlng) {
+              return L.marker(latlng, geojsonMarkerOptions(layer));
+            }
+          });
+          marker.id = idCounter;
+          idCounter++;
+          var id = marker.id;
+
+          layerSelectorObject[layer].layerGroup.addLayer(marker);
+          layerSelectorObject[layer].array[id] = marker;
+          marker.bindPopup(layer + " id: " + id + "<br/><input type='button' " +
+                                "value='Delete' class='remove' id='" + id +
+                                "' data-layer='" + layer + "'/>");
+          marker.on("dragend", function(e) {
+            var newLoc = e.target._latlng;
+            var id = e.target.id;
+            reverseGeocode(newLoc.lat, newLoc.lng, true, id);
+          });
+
+          console.log(marker);
+        });
+
+        // layerSelectorObject[layer].array = newMarkerArray;
+        // layerSelectorObject[layer].layerGroup = this.array;
+
+/*        layerSelectorObject[layer].layerGroup = L.geoJson(JSON.parse(localStorage[layer]), {
           pointToLayer: function (feature, latlng) {
-            return L.marker(latlng, geojsonMarkerOptions(key));
+            return L.marker(latlng, geojsonMarkerOptions(layer));
           }
-        }).addTo(map);
-        for (var index in layerSelectorObject[key].layerGroup._layers) {
-          var object = layerSelectorObject[key].layerGroup._layers;
+        }).addTo(map);*/
+
+      }
+    }
+  })();
+
+        /*for (var index in layerSelectorObject[layer].layerGroup._layers) {
+          var object = layerSelectorObject[layer].layerGroup._layers;
           var marker = object[index];
-          layerSelectorObject[key].array[index] = marker;
+          layerSelectorObject[layer].array[index] = marker;
           var name = object[index].options.title;
           marker.bindPopup(name + " id: " + marker._leaflet_id + "<br/><input type='button' " +
                             "value='Delete' class='remove' id='" + marker._leaflet_id +
@@ -143,19 +195,16 @@ $(function() {
               return;
             }
           });
-        }
-        if (key === "cops") {
+        }*/
+
+    // if (localStorage.getItem("savedMarkerInfo") !== null) {
+    //   // localStorage.removeItem('savedMarkerInfo');
+    //   savedMarkerInfo = JSON.parse(localStorage.savedMarkerInfo);
+    // }
+/*        if (layer === "cops") {
           control.removeLayer(layerSelectorObject["cops"].layerGroup);
           map.removeLayer(layerSelectorObject["cops"].layerGroup);
-        }
-      }
-    }
-    if (localStorage.getItem("savedMarkerInfo") !== null) {
-      // localStorage.removeItem('savedMarkerInfo');
-      savedMarkerInfo = JSON.parse(localStorage.savedMarkerInfo);
-    }
-  })();
-*/
+        }*/
 
   //event handlers
   map.on("singleclick", createMarkerAndInfoLabelHandler);
@@ -514,12 +563,12 @@ $(function() {
           };
           layerArrayForLocalStorage.push(JSON.stringify(geoJSONedMarker));
         });
-
         // localStorage[layer] = JSON.stringify((layerSelectorObject[layer].layerGroup).toGeoJSON());
         localStorage[layer] = JSON.stringify(layerArrayForLocalStorage);
       }
     }
     // localStorage.savedMarkerInfo = JSON.stringify(savedMarkerInfo);
+    console.log(localStorage);
 
     // console.log(localStorage.seahawks);
     return "are you sure?";
