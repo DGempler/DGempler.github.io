@@ -112,15 +112,6 @@ $(function() {
   }
 
 
-  function geojsonMarkerOptions(layer) {
-    return {
-      icon: layerSelectorObject[layer].icon,
-      draggable: true,
-      title: layer,
-      riseOnHover: true,
-    };
-  }
-
   (function localStorageRestore() {
     for (var layer in layerSelectorObject) {
       // console.log(layer);
@@ -133,7 +124,7 @@ $(function() {
           console.log(marker);
           marker = L.geoJson(JSON.parse(marker), {
             pointToLayer: function (feature, latlng) {
-              return L.marker(latlng, geojsonMarkerOptions(layer));
+              return L.marker(latlng, singleMarkerMaker(layer));
             }
           });
           marker.id = idCounter;
@@ -234,7 +225,7 @@ $(function() {
   }
 
   function createMarkerBasedOnCurrentLayerSelected(e) {
-    var marker = singleMarkerMaker(e.latlng, currentLayerSelected);
+    var marker = L.marker(e.latlng, singleMarkerMaker(currentLayerSelected));
     marker.id = idCounter;
     idCounter++;
     addMarkerToMap(currentLayerSelected, marker);
@@ -361,13 +352,13 @@ $(function() {
   }
 
   //Create Marker and Info Label functions (3)
-  function singleMarkerMaker(latlng, layer) {
-    return L.marker(latlng, {
+  function singleMarkerMaker(layer) {
+    return {
       icon: layerSelectorObject[layer].icon,
       draggable: true,
       title: layer,
       riseOnHover: true,
-    });
+    };
   }
 
   function addMarkerToMap(layer, marker) {
