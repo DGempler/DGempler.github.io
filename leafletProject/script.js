@@ -351,13 +351,24 @@ $(function() {
     });
   }
 
-  function CreateForm() {
-
-  }
 
   function clearInfoContainer() {
     $infoContainer.children('.label-info').remove();
     $infoContainer.children('#select-layer-message').remove();
+  }
+
+  function createForm(layer, id, location, items, prices) {
+    var $labelInfo = $("<div class='label-info' data-layer='" + layer + "'></div>");
+    $infoContainer.append($labelInfo);
+
+    $labelInfo.prepend("<p>Peddler Type: " + layer + " - ID: " + id + "</p><br/>");
+    var $form = $("<form id='" + id + "'></form><br/>");
+    $labelInfo.append($form);
+    $form.prepend("<label>Location:<input type='text' class='location' value='" + location + "' style='width: 301px'/></label><br/>");
+    $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" + items + "' style='width: 230px'/></label><br/>");
+    $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + prices + "' style='width: 280px'/></label><br/>");
+    $form.append("<button class='close'>Close</button>");
+    $form.append("<button class='delete'>Delete Marker</button>");
   }
 
   function addMarkerLabelInfoOnMarkerCreation(layer, marker, e) {
@@ -365,18 +376,10 @@ $(function() {
 
     clearInfoContainer();
 
-    var $labelInfo = $("<div class='label-info' data-layer='" + layer + "'></div>");
-    $infoContainer.append($labelInfo);
+    createForm(layer, id, "", "", "");
 
-    $labelInfo.prepend("<p>Peddler Type: " + layer + " - ID: " + id + "</p><br/>");
-    var $form = $("<form id='" + id + "'></form><br/>");
-    $labelInfo.append($form);
-    $form.prepend("<label>Location:<input type='text' class='location' style='width: 301px'/></label><br/>");
-    $form.append("<label>Enter items for Sale:<input type='text' class='items' style='width: 230px'/></label><br/>");
-    $form.append("<label>Enter Prices:<input type='text' class='prices' style='width: 280px'/></label><br/>");
-    $form.append("<button class='close'>Close</button>");
-    $form.append("<button class='delete'>Delete Marker</button>");
   }
+
 
   //addInfoLabeltoScreen function(1) can probably combine with V1 later
   function populateMarkerLableInfoFromExistingSavedInfoOnPopupOpen(id) {
@@ -385,17 +388,7 @@ $(function() {
 
     clearInfoContainer();
 
-    var $labelInfo = $("<div class='label-info' data-layer='" + savedMarkerInfo[id].layer + "'></div>");
-    $infoContainer.append($labelInfo);
-
-    $labelInfo.prepend("<p>Peddler Type: " + savedMarkerInfo[id].layer + " - ID: " + id + "</p><br/>");
-    var $form = $("<form id='" + id + "'></form><br/>");
-    $labelInfo.append($form);
-    $form.prepend("<label>Location:<input type='text' class='location' value='" + savedMarkerInfo[id].location + "' style='width: 299px'/></label><br/>");
-    $form.append("<label>Enter items for Sale:<input type='text' class='items' value='" + items + "' style='width: 228px'/></label><br/>");
-    $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + prices + "' style='width: 278px'/></label><br/>");
-    $form.append("<button class='close'>Close</button>");
-    $form.append("<button class='delete'>Delete Marker</button>");
+    createForm(savedMarkerInfo[id].layer, id, savedMarkerInfo[id].location, items, prices);
 
   }
 
