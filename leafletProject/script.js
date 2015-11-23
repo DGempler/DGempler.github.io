@@ -26,7 +26,6 @@ $(function() {
 
   var currentLayerSelected;
 
-  //create markers
   markerGroupMaker("fruits", [31,40], [17, 0]);
   markerGroupMaker("flowers", [28, 40], [14, 40]);
   markerGroupMaker("trees", [31,43], [15, 43]);
@@ -61,11 +60,10 @@ $(function() {
     }
   });
 
-  //create map, add base & overlap layers, various controls to map
   map = L.map('map', {
     center: [47.679223, -122.196983],
     zoom: 15,
-    layers: loopLayerGroups(),
+    layers: loopLayerGroupsAndAddToMap(),
   });
 
   base = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.4a7eb7cb/{z}/{x}/{y}.png?' +
@@ -179,7 +177,6 @@ $(function() {
   }
 
 
-  //event handlers
   map.on("singleclick", createMarkerAndInfoLabelHandler);
   $map.on("click", ".remove", deleteMarkerAndInfoLabelOnPopupClickHandler);
   map.on("popupopen", addInfoLabelToScreenHandler);
@@ -247,7 +244,6 @@ $(function() {
     deleteInfoLabel.call(this, true);
   }
 
-  //on popup open
   function addInfoLabelToScreenHandler(e) {
     var id = e.popup._source.id;
     populateMarkerLableInfoFromExistingSavedInfoOnPopupOpen.call(this, id);
@@ -313,9 +309,6 @@ $(function() {
     }
   }
 
-  //Functions used in event handler functions
-
-  //creates markers & also adds them to overlapMaps, which is used in layer control
   function markerGroupMaker(layer, iconSize, iconAnchor) {
     layerSelectorObject[layer] = {
       icon: produceIcon(layer, iconSize, iconAnchor),
@@ -329,8 +322,7 @@ $(function() {
     return layerSelectorObject[layer];
   }
 
-  //for adding layers to map automatically
-  function loopLayerGroups() {
+  function loopLayerGroupsAndAddToMap() {
     var newArray = [];
     for (var layer in layerSelectorObject) {
       if (layer === "cops") {}
@@ -341,7 +333,6 @@ $(function() {
     return newArray;
   }
 
-  //Create Marker and Info Label functions (3)
   function singleMarkerMaker(layer) {
     return {
       icon: layerSelectorObject[layer].icon,
@@ -350,7 +341,6 @@ $(function() {
       riseOnHover: true,
     };
   }
-
 
   function bindPopupToMarker(marker, layer) {
     marker.bindPopup(layer + " id: " + marker.id + "<br/><input type='button' " +
