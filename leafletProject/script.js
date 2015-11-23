@@ -255,7 +255,7 @@ $(function() {
   function getIdSaveAndCloseInfoLabel() {
     var thisId = $(this).parent().attr('id');
     saveInfo.call(this, thisId);
-    $(this).parent().parent().fadeOut('slow', removeThis.call(this));
+    $(this).parent().parent().fadeOut('slow', removeThisElement.call(this));
   }
 
   function infoLabelDeleteSaveButtonHandler(e) {
@@ -380,8 +380,6 @@ $(function() {
 
   }
 
-
-  //addInfoLabeltoScreen function(1) can probably combine with V1 later
   function populateMarkerLableInfoFromExistingSavedInfoOnPopupOpen(id) {
     var items = savedMarkerInfo[id].items ? savedMarkerInfo[id].items : "";
     var prices = savedMarkerInfo[id].prices ? savedMarkerInfo[id].prices : "";
@@ -392,12 +390,10 @@ $(function() {
 
   }
 
-   //deleteMarkerOnPopupClick functions (2), "this" refers to popup or info label click handler
+   //"this" refers to popup or info label click handler
    function deleteMarker(layer, OnPopup) {
     if (OnPopup) {
-      //remove from layerGroup (map)
       layerSelectorObject[layer].layerGroup.removeLayer(layerSelectorObject[layer].array[$(this).attr('id')]);
-      //remove record of layer
       delete layerSelectorObject[layer].array[$(this).attr('id')];
     }
     else {
@@ -410,16 +406,15 @@ $(function() {
   function deleteInfoLabel(OnPopup) {
     if (OnPopup) {
       $('input#' + $(this).attr('id')).remove();
-      $('form#' + $(this).attr('id')).parent().fadeOut('slow', removeThis.call(this));
+      $('form#' + $(this).attr('id')).parent().fadeOut('slow', removeThisElement.call(this));
     }
     else {
-      $(this).parent().parent().fadeOut('slow', removeThis.call(this));
+      $(this).parent().parent().fadeOut('slow', removeThisElement.call(this));
     }
-    //remove record of layer
     delete savedMarkerInfo[$(this).attr('id')];
   }
 
-  function removeThis() {
+  function removeThisElement() {
     $(this).remove();
   }
 
@@ -445,7 +440,7 @@ $(function() {
     }
     $body.append($secretMsg);
     $secretMsg.css("color", "gray");
-    $secretMsg.fadeIn(1200).fadeOut(1200, removeThis.call(this));
+    $secretMsg.fadeIn(1200).fadeOut(1200, removeThisElement.call(this));
   }
 
   function layerSelectorHandler() {
