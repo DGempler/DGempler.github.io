@@ -103,9 +103,9 @@ $(function() {
   geocoderControl = L.mapbox.geocoderControl('mapbox.places');
   geocoderControl.addTo(map);
 
+  localStorageRestore();
 
-
-  (function localStorageRestore() {
+  function localStorageRestore() {
     for (var layer in layerSelectorObject) {
       if (localStorage.getItem(layer) !== null) {
         var localStorageArray = JSON.parse(localStorage[layer]);
@@ -126,7 +126,7 @@ $(function() {
         });
       }
     }
-  })();
+  }
 
   function setSavedMarkerInfo(id, geoJsonMarker, layer) {
     savedMarkerInfo[id] = {};
@@ -183,6 +183,7 @@ $(function() {
   $('div.leaflet-control-layers-overlays').on("click",
                                               "input.leaflet-control-layers-selector",
                                               layerSelectorHandler);
+  $window.on('beforeunload', saveToLocalStorage);
 
 
   function createMarkerAndInfoLabelHandler(e) {
@@ -488,7 +489,7 @@ $(function() {
     });
   }
 
-  $window.on("beforeunload", function() {
+  function saveToLocalStorage() {
     for (var layer in layerSelectorObject) {
       if (layerSelectorObject[layer].array.length !== 0) {
         var layerArrayForLocalStorage = [];
@@ -506,6 +507,6 @@ $(function() {
         localStorage[layer] = JSON.stringify(layerArrayForLocalStorage);
       }
     }
-  });
+  }
 
 });
