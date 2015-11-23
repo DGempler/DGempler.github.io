@@ -141,7 +141,7 @@ $(function() {
     savedMarkerInfo[id] = {};
     savedMarkerInfo[id].layer = layer;
 
-    reverseGeocode(marker._latlng.lat, marker._latlng.lng, true, id);
+    reverseGeocode(marker._latlng.lat, marker._latlng.lng, id);
 
     applyMarkerToLayerGroupAndBindPopupAndEventListener(marker, layer, id);
 
@@ -167,7 +167,7 @@ $(function() {
     marker.on("dragend", function(e) {
       var newLoc = e.target._latlng;
       var id = e.target.id;
-      reverseGeocode(newLoc.lat, newLoc.lng, true, id);
+      reverseGeocode(newLoc.lat, newLoc.lng, id);
     });
   }
 
@@ -347,7 +347,7 @@ $(function() {
     marker.on("dragend", function(e) {
       var newLoc = e.target._latlng;
       var id = e.target.id;
-      reverseGeocode(newLoc.lat, newLoc.lng, true, id);
+      reverseGeocode(newLoc.lat, newLoc.lng, id);
     });
   }
 
@@ -475,19 +475,15 @@ $(function() {
     currentLayerSelected = "";
   }
 
-  function reverseGeocode(lat, lng, form, id) {
+  function reverseGeocode(lat, lng, id) {
     $.ajax({
       url: 'https://api.mapbox.com/v4/geocode/mapbox.places/' + lng + ',' + lat +
             '.json?access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMj' +
             'BhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA',
       success: function(data) {
         var address = data.features[0].place_name;
-        if (form) {
-          $('form#' + id + ' .location').attr("value", address);
-        }
-        if (id) {
-          savedMarkerInfo[id].location = address;
-        }
+        $('form#' + id + ' .location').attr("value", address);
+        savedMarkerInfo[id].location = address;
       },
     });
   }
