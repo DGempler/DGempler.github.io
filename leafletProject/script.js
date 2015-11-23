@@ -1,110 +1,5 @@
 $(function() {
 
-  L.mapbox.accessToken = 'pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA';
-
-  var $container = $('#container');
-  var $map = $('#map');
-  var $body = $('body');
-  var $window = $(window);
-  var $infoContainer = $('#info-container');
-
-  var idCounter = 1;
-
-  var savedMarkerInfo = {};
-  var layerSelectorObject = {};
-  var overlayMaps = {};
-
-  var map;
-  var control;
-  var locate;
-  var geocoderControl;
-  var base;
-  var baseSat;
-  var baseMaps;
-
-  var currentLayerSelected;
-
-  markerGroupMaker("fruits", [31,40], [17, 0]);
-  markerGroupMaker("flowers", [28, 40], [14, 40]);
-  markerGroupMaker("trees", [31,43], [15, 43]);
-  markerGroupMaker("seahawks", [51,22],[47,22]);
-  markerGroupMaker("lemonade", [20, 30], [13, 30]);
-  markerGroupMaker("fireworks", [30, 30], [20, 25]);
-  markerGroupMaker("sale", [28, 40], [14, 35]);
-  markerGroupMaker("cops", [26,32], [13, 32]);
-
-
-  //"click" to "singleclick" plugin - Alpstein's leaflet-singleclick_0.7
-  L.Map.addInitHook(function () {
-    var that = this, h ;
-    if (that.on) {
-      that.on( 'click',    check_later );
-      that.on( 'dblclick', function () { setTimeout( clear_h, 0 ); } );
-    }
-    function check_later( e ) {
-      clear_h();
-      h = setTimeout( check, 200 );
-      function check(){
-          that.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
-      }
-    }
-    function clear_h()
-    {
-      if (h !== null)
-      {
-          clearTimeout( h );
-          h = null;
-      }
-    }
-  });
-
-  map = L.map('map', {
-    center: [47.679223, -122.196983],
-    zoom: 15,
-    layers: loopLayerGroupsAndAddToMap(),
-  });
-
-  base = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.4a7eb7cb/{z}/{x}/{y}.png?' +
-                      'access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmR' +
-                      'jZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#4', {
-    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a>' +
-                      'contributors, <a href="http://creativecommons.org/licenses/by-sa' +
-                      '/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    maxZoom: 20
-  })
-  .addTo(map);
-
-  baseSat = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.n947bfnn/{z}/{x}/{y}.png?' +
-                        'access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRj' +
-                        'ZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#19/', {
-    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a>' +
-                  'contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">' +
-                  'CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    maxZoom: 20
-  });
-
-  baseMaps = {
-    "Street": base,
-    "Aerial": baseSat,
-  };
-
-  control = L.control.layers(baseMaps, overlayMaps);
-  control.addTo(map);
-
-  locate = L.control.locate().addTo(map);
-  locate.start();
-
-  map.on('startfollowing', function() {
-    map.on('dragstart', locate._stopFollowing, locate);
-  }).on('stopfollowing', function() {
-    map.off('dragstart', locate._stopFollowing, locate);
-  });
-
-  geocoderControl = L.mapbox.geocoderControl('mapbox.places');
-  geocoderControl.addTo(map);
-
-  localStorageRestore();
-
   function createMarkerOnLocalStorageRestore(marker, layer) {
     marker = L.geoJson(JSON.parse(marker), {
       pointToLayer: function (geoJsonMarker, latlng) {
@@ -116,7 +11,6 @@ $(function() {
         setSavedMarkerInfo(marker.id, geoJsonMarker, layer);
 
         applyMarkerToLayerGroupAndBindPopupAndEventListener(marker, layer, marker.id);
-
       }
     });
   }
@@ -148,7 +42,6 @@ $(function() {
     reverseGeocode(marker._latlng.lat, marker._latlng.lng, id);
 
     applyMarkerToLayerGroupAndBindPopupAndEventListener(marker, layer, id);
-
   }
 
   function applyMarkerToLayerGroupAndBindPopupAndEventListener(marker, layer, id) {
@@ -174,21 +67,6 @@ $(function() {
       reverseGeocode(newLoc.lat, newLoc.lng, id);
     });
   }
-
-
-  map.on("singleclick", createMarkerAndInfoLabelHandler);
-  $map.on("click", ".remove", deleteMarkerAndInfoLabelOnPopupClickHandler);
-  map.on("popupopen", addInfoLabelToScreenHandler);
-  $infoContainer.on("click", "button", infoLabelDeleteSaveButtonHandler);
-  $infoContainer.on("change", "input", infoLabelSaveHandler);
-  $window.on("keydown", hotkeyClearDeleteHandler);
-  $window.on("keypress", popoModeOnOffHandler);
-  $container.on("click", "div", assignSelectionHandler);
-  $('div.leaflet-control-layers-overlays').on("click",
-                                              "input.leaflet-control-layers-selector",
-                                              layerSelectorHandler);
-  $window.on('beforeunload', saveToLocalStorage);
-
 
   function createMarkerAndInfoLabelHandler(e) {
     var $layerSelector = $('.leaflet-control-layers-overlays input.leaflet-control-layers-selector');
@@ -356,7 +234,6 @@ $(function() {
     });
   }
 
-
   function clearInfoContainer() {
     $infoContainer.children('.label-info').remove();
     $infoContainer.children('#select-layer-message').remove();
@@ -382,7 +259,6 @@ $(function() {
     clearInfoContainer();
 
     createForm(layer, id, "", "", "");
-
   }
 
   function populateMarkerLableInfoFromExistingSavedInfoOnPopupOpen(id) {
@@ -392,7 +268,6 @@ $(function() {
     clearInfoContainer();
 
     createForm(savedMarkerInfo[id].layer, id, savedMarkerInfo[id].location, items, prices);
-
   }
 
    //"this" refers to popup or info label click handler
@@ -456,8 +331,6 @@ $(function() {
     $infoContainer.children('.label-info').attr("data", chosenLayer).remove();
   }
 
-
-  //Other functions
   function produceIcon(url, size, iconAnchor) {
     var icon = new IconMaker(url, size, iconAnchor);
     return L.icon(icon);
@@ -512,5 +385,126 @@ $(function() {
       }
     }
   }
+
+
+  L.mapbox.accessToken = 'pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRjZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA';
+
+  var $container = $('#container');
+  var $map = $('#map');
+  var $body = $('body');
+  var $window = $(window);
+  var $infoContainer = $('#info-container');
+
+  var idCounter = 1;
+
+  var savedMarkerInfo = {};
+  var layerSelectorObject = {};
+  var overlayMaps = {};
+
+  var map;
+  var control;
+  var locate;
+  var geocoderControl;
+  var base;
+  var baseSat;
+  var baseMaps;
+
+  var currentLayerSelected;
+
+  markerGroupMaker("fruits", [31,40], [17, 0]);
+  markerGroupMaker("flowers", [28, 40], [14, 40]);
+  markerGroupMaker("trees", [31,43], [15, 43]);
+  markerGroupMaker("seahawks", [51,22],[47,22]);
+  markerGroupMaker("lemonade", [20, 30], [13, 30]);
+  markerGroupMaker("fireworks", [30, 30], [20, 25]);
+  markerGroupMaker("sale", [28, 40], [14, 35]);
+  markerGroupMaker("cops", [26,32], [13, 32]);
+
+
+  //"click" to "singleclick" plugin - Alpstein's leaflet-singleclick_0.7
+  L.Map.addInitHook(function () {
+    var that = this, h ;
+    if (that.on) {
+      that.on( 'click',    check_later );
+      that.on( 'dblclick', function () { setTimeout( clear_h, 0 ); } );
+    }
+    function check_later( e ) {
+      clear_h();
+      h = setTimeout( check, 200 );
+      function check(){
+          that.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
+      }
+    }
+    function clear_h()
+    {
+      if (h !== null)
+      {
+          clearTimeout( h );
+          h = null;
+      }
+    }
+  });
+
+
+  map = L.map('map', {
+    center: [47.679223, -122.196983],
+    zoom: 15,
+    layers: loopLayerGroupsAndAddToMap(),
+  });
+
+  base = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.4a7eb7cb/{z}/{x}/{y}.png?' +
+                      'access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmR' +
+                      'jZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#4', {
+    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a>' +
+                      'contributors, <a href="http://creativecommons.org/licenses/by-sa' +
+                      '/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 20
+  })
+  .addTo(map);
+
+  baseSat = L.tileLayer('https://a.tiles.mapbox.com/v4/dgempler.n947bfnn/{z}/{x}/{y}.png?' +
+                        'access_token=pk.eyJ1IjoiZGdlbXBsZXIiLCJhIjoiYTk4ZTgxMjBhNzUyMmRj' +
+                        'ZThhYzBkMDQ3MzdlOWMxZjkifQ.Uw-FNsJvZm-5JDPBRv06fA#19/', {
+    attribution: 'Map data &#169 <a href="http://openstreetmap.org">OpenStreetMap</a>' +
+                  'contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">' +
+                  'CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 20
+  });
+
+  baseMaps = {
+    "Street": base,
+    "Aerial": baseSat,
+  };
+
+  control = L.control.layers(baseMaps, overlayMaps);
+  control.addTo(map);
+
+  locate = L.control.locate().addTo(map);
+  locate.start();
+
+  map.on('startfollowing', function() {
+    map.on('dragstart', locate._stopFollowing, locate);
+  }).on('stopfollowing', function() {
+    map.off('dragstart', locate._stopFollowing, locate);
+  });
+
+  geocoderControl = L.mapbox.geocoderControl('mapbox.places');
+  geocoderControl.addTo(map);
+
+  localStorageRestore();
+
+
+  map.on("singleclick", createMarkerAndInfoLabelHandler);
+  $map.on("click", ".remove", deleteMarkerAndInfoLabelOnPopupClickHandler);
+  map.on("popupopen", addInfoLabelToScreenHandler);
+  $infoContainer.on("click", "button", infoLabelDeleteSaveButtonHandler);
+  $infoContainer.on("change", "input", infoLabelSaveHandler);
+  $window.on("keydown", hotkeyClearDeleteHandler);
+  $window.on("keypress", popoModeOnOffHandler);
+  $container.on("click", "div", assignSelectionHandler);
+  $('div.leaflet-control-layers-overlays').on("click",
+                                              "input.leaflet-control-layers-selector",
+                                              layerSelectorHandler);
+  $window.on('beforeunload', saveToLocalStorage);
 
 });
