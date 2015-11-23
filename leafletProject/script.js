@@ -7,8 +7,6 @@ $(function() {
   var $body = $('body');
   var $window = $(window);
   var $infoContainer = $('#info-container');
-  var $layerSelector;
-  var $layerSelectorArray;
 
   var idCounter = 1;
 
@@ -105,9 +103,6 @@ $(function() {
   geocoderControl = L.mapbox.geocoderControl('mapbox.places');
   geocoderControl.addTo(map);
 
-  $layerSelector = $('.leaflet-control-layers-overlays input.leaflet-control-layers-selector');
-  $layerSelectorArray = $layerSelector.next();
-
 
 
   (function localStorageRestore() {
@@ -191,6 +186,8 @@ $(function() {
 
 
   function createMarkerAndInfoLabelHandler(e) {
+    var $layerSelector = $('.leaflet-control-layers-overlays input.leaflet-control-layers-selector');
+    var $layerSelectorArray = $layerSelector.next();
 
     var index = getIndexOfSelectedLayerFromLayerSelectorArray($layerSelectorArray);
 
@@ -315,8 +312,7 @@ $(function() {
       array: [],
       layerGroup: L.layerGroup(this.array)
     };
-    if (layer === "cops") {}
-    else {
+    if (layer !== "cops") {
       overlayMaps[layer] = layerSelectorObject[layer].layerGroup;
     }
     return layerSelectorObject[layer];
@@ -325,8 +321,7 @@ $(function() {
   function loopLayerGroupsAndAddToMap() {
     var newArray = [];
     for (var layer in layerSelectorObject) {
-      if (layer === "cops") {}
-      else {
+      if (layer !== "cops") {
         newArray.push(layerSelectorObject[layer].layerGroup);
       }
     }
