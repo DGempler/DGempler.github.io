@@ -222,7 +222,7 @@ $(function() {
   }
 
   function notifyUserThatMarkerLayerIsOff() {
-    $infoContainer.children('.label-info').remove();
+    clearInfoContainer();
     var $selectLayerMessage = $("<br/><p id='select-layer-message'>" +
                                 "This layer is currently turned off!</p>").hide();
     $selectLayerMessage.css('margin-top', '25px').css('font-size', '24px').css('color', 'white');
@@ -351,12 +351,23 @@ $(function() {
     });
   }
 
-  function addMarkerLabelInfoOnMarkerCreation(layer, marker, e) {
-    var id = marker.id;
+  function CreateForm() {
+
+  }
+
+  function clearInfoContainer() {
     $infoContainer.children('.label-info').remove();
     $infoContainer.children('#select-layer-message').remove();
+  }
+
+  function addMarkerLabelInfoOnMarkerCreation(layer, marker, e) {
+    var id = marker.id;
+
+    clearInfoContainer();
+
     var $labelInfo = $("<div class='label-info' data-layer='" + layer + "'></div>");
     $infoContainer.append($labelInfo);
+
     $labelInfo.prepend("<p>Peddler Type: " + layer + " - ID: " + id + "</p><br/>");
     var $form = $("<form id='" + id + "'></form><br/>");
     $labelInfo.append($form);
@@ -372,10 +383,11 @@ $(function() {
     var items = savedMarkerInfo[id].items ? savedMarkerInfo[id].items : "";
     var prices = savedMarkerInfo[id].prices ? savedMarkerInfo[id].prices : "";
 
-    $infoContainer.children('.label-info').remove();
-    $infoContainer.children('#select-layer-message').remove();
+    clearInfoContainer();
+
     var $labelInfo = $("<div class='label-info' data-layer='" + savedMarkerInfo[id].layer + "'></div>");
     $infoContainer.append($labelInfo);
+
     $labelInfo.prepend("<p>Peddler Type: " + savedMarkerInfo[id].layer + " - ID: " + id + "</p><br/>");
     var $form = $("<form id='" + id + "'></form><br/>");
     $labelInfo.append($form);
@@ -384,6 +396,7 @@ $(function() {
     $form.append("<label>Enter Prices:<input type='text' class='prices' value='" + prices + "' style='width: 278px'/></label><br/>");
     $form.append("<button class='close'>Close</button>");
     $form.append("<button class='delete'>Delete Marker</button>");
+
   }
 
    //deleteMarkerOnPopupClick functions (2), "this" refers to popup or info label click handler
