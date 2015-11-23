@@ -105,24 +105,28 @@ $(function() {
 
   localStorageRestore();
 
+  function createMarkerOnLocalStorageRestore(marker, layer) {
+    marker = L.geoJson(JSON.parse(marker), {
+      pointToLayer: function (geoJsonMarker, latlng) {
+        return L.marker(latlng, singleMarkerMaker(layer));
+      },
+      onEachFeature: function(geoJsonMarker, marker) {
+        setMarkerId(marker);
+
+        setSavedMarkerInfo(marker.id, geoJsonMarker, layer);
+
+        applyMarkerToLayerGroupAndBindPopupAndEventListener(marker, layer, marker.id);
+
+      }
+    });
+  }
+
   function localStorageRestore() {
     for (var layer in layerSelectorObject) {
       if (localStorage.getItem(layer) !== null) {
         var localStorageArray = JSON.parse(localStorage[layer]);
         localStorageArray.forEach(function(marker) {
-          marker = L.geoJson(JSON.parse(marker), {
-            pointToLayer: function (geoJsonMarker, latlng) {
-              return L.marker(latlng, singleMarkerMaker(layer));
-            },
-            onEachFeature: function(geoJsonMarker, marker) {
-              setMarkerId(marker);
-
-              setSavedMarkerInfo(marker.id, geoJsonMarker, layer);
-
-              applyMarkerToLayerGroupAndBindPopupAndEventListener(marker, layer, marker.id);
-
-            }
-          });
+          createMarkerOnLocalStorageRestore(marker, layer);
         });
       }
     }
