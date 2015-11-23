@@ -7,6 +7,9 @@ $(function() {
   var $body = $('body');
   var $window = $(window);
   var $infoContainer = $('#info-container');
+  var $layerSelector;
+  var $layerSelectorArray;
+
   var idCounter = 1;
 
   var savedMarkerInfo = {};
@@ -104,6 +107,11 @@ $(function() {
   geocoderControl = L.mapbox.geocoderControl('mapbox.places');
   geocoderControl.addTo(map);
 
+  $layerSelector = $('.leaflet-control-layers-overlays input.leaflet-control-layers-selector');
+  $layerSelectorArray = $layerSelector.next();
+
+
+
   (function localStorageRestore() {
     for (var layer in layerSelectorObject) {
       if (localStorage.getItem(layer) !== null) {
@@ -186,8 +194,6 @@ $(function() {
 
 
   function createMarkerAndInfoLabelHandler(e) {
-    var $layerSelector = $('.leaflet-control-layers-overlays input.leaflet-control-layers-selector');
-    var $layerSelectorArray = $layerSelector.next();
 
     var index = getIndexOfSelectedLayerFromLayerSelectorArray($layerSelectorArray);
 
