@@ -17,7 +17,7 @@ $(function() {
 
   function localStorageRestore() {
     for (var layer in layerSelectorObject) {
-      if (localStorage.getItem(layer) !== null) {
+      if (localStorage.getItem(layer) && localStorage.getItem(layer) !== null) {
         var localStorageArray = JSON.parse(localStorage[layer]);
         localStorageArray.forEach(function(marker) {
           createMarkerOnLocalStorageRestore(marker, layer);
