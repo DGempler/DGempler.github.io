@@ -299,8 +299,8 @@ $(function() {
   }
 
   function saveInfo(id) {
-    savedMarkerInfo[id].items = $(this).parent().find('.items').val();
-    savedMarkerInfo[id].prices = $(this).parent().find('.prices').val();
+    savedMarkerInfo[id].items = $infoContainer.find('.items').val();
+    savedMarkerInfo[id].prices = $infoContainer.find('.prices').val();
   }
 
   function popoMode(on) {
