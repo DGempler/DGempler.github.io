@@ -1,6 +1,6 @@
 # Roadside Peddler App
 
-[App link](http://dgempler.github.io/leafletProject/index.html)
+<a href="http://dgempler.github.io/leafletProject/index.html" target="\_blank">App Link</a>
 
 This is a purely front-end app that I created 4 weeks after starting the [6-month full-stack web developer course at Galvanize](http://www.galvanize.com/courses/full-stack/). The 3-day assignment was to pick a Javascript library, learn it, and create a small demo app using that library.
 
