@@ -5,8 +5,10 @@
 
 ### Projects
 ---
-#### [Know Your Circle](https://github.com/DGempler/know-your-circle)
-A localhost app that allows users to uploading images of people whose names they want to memorize, by playing memory games like flashcards.
+#### [Know Your Circle](https://knowyourcircle.herokuapp.com/)
+[Github link](https://github.com/DGempler/know-your-circle)
+<br/>
+A in-progress app that allows users to uploading images of people whose names they want to memorize, by playing memory games like flashcards.
 <br/>
 **Technologies**: Rails, PostgreSQL, Angular, AWS S3, Bootstrap
 <br/>
